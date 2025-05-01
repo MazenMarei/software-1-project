@@ -1,10 +1,10 @@
 <mxfile host="65bd71144e">
     <diagram id="bKp49UdGL7_Tw28Ozf0e" name="Page-1">
-        <mxGraphModel dx="2256" dy="1494" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="2507" dy="1660" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="3" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeWidth=2;" parent="1" vertex="1">
+                <mxCell id="3" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=default;strokeWidth=2;" parent="1" vertex="1">
                     <mxGeometry x="570" y="100" width="1380" height="2010" as="geometry"/>
                 </mxCell>
                 <mxCell id="5" value="Online Art Gallery" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Helvetica;fontSize=41;fontColor=default;" parent="1" vertex="1">
