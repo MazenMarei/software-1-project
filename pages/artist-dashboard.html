@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Artist Dashboard - ArtShelf</title>
+    <meta
+      name="description"
+      content="Manage your artist profile, upload artworks, and track sales on ArtShelf."
+    />
+
+    <!-- Favicon -->
+    <link rel="icon" href="../assets/images/favicon.ico" type="image/x-icon" />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      .dashboard-sidebar {
+        background-color: var(--white);
+        border-radius: 8px;
+        box-shadow: var(--box-shadow);
+        padding: 20px;
+        height: 100%;
+      }
+
+      .dashboard-sidebar .nav-link {
+        color: var(--primary-text-dark);
+        padding: 12px 20px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+
+      .dashboard-sidebar .nav-link:hover,
+      .dashboard-sidebar .nav-link.active {
+        background-color: var(--accent-color);
+        color: var(--white);
+      }
+
+      .dashboard-sidebar .nav-link i {
+        width: 24px;
+        text-align: center;
+        margin-right: 8px;
+      }
+
+      .dashboard-content {
+        background-color: var(--white);
+        border-radius: 8px;
+        box-shadow: var(--box-shadow);
+        padding: 30px;
+        min-height: 500px;
+      }
+
+      .tab-pane {
+        display: none;
+      }
+
+      .tab-pane.active {
+        display: block;
+      }
+
+      .stats-card {
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        color: var(--white);
+      }
+
+      .stats-card.primary {
+        background: linear-gradient(45deg, var(--accent-color), #d3bba7);
+      }
+
+      .stats-card.secondary {
+        background: linear-gradient(45deg, #73663b, #a09066);
+      }
+
+      .stats-card.tertiary {
+        background: linear-gradient(45deg, #2f2f2f, #757575);
+      }
+
+      .stats-card.quaternary {
+        background: linear-gradient(45deg, #aaa, #eee);
+        color: var(--primary-text-dark);
+      }
+
+      .stats-value {
+        font-size: 2rem;
+        font-weight: 600;
+        margin: 10px 0;
+      }
+
+      .artwork-card {
+        margin-bottom: 20px;
+        transition: transform 0.3s ease;
+      }
+
+      .artwork-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .artwork-img-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 4px;
+      }
+
+      .artwork-img-container img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+
+      .artwork-img-container:hover img {
+        transform: scale(1.05);
+      }
+
+      .artwork-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .artwork-img-container:hover .artwork-overlay {
+        opacity: 1;
+      }
+
+      .artwork-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .status-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+
+      .status-badge.pending {
+        background-color: #ffe082;
+        color: #795548;
+      }
+
+      .status-badge.approved {
+        background-color: #a5d6a7;
+        color: #2e7d32;
+      }
+
+      .status-badge.rejected {
+        background-color: #ef9a9a;
+        color: #c62828;
+      }
+
+      .collection-item {
+        border-left: 3px solid var(--accent-color);
+        margin-bottom: 15px;
+        padding: 15px;
+        background-color: var(--light-gray);
+        border-radius: 0 4px 4px 0;
+        transition: transform 0.3s ease;
+      }
+
+      .collection-item:hover {
+        transform: translateX(5px);
+      }
+
+      .sales-chart-container {
+        height: 300px;
+        margin-bottom: 30px;
+      }
+
+      .upload-area {
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        padding: 40px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+      }
+
+      .upload-area:hover {
+        border-color: var(--accent-color);
+        background-color: rgba(197, 169, 146, 0.05);
+      }
+
+      .upload-area i {
+        font-size: 3rem;
+        color: var(--accent-color);
+        margin-bottom: 15px;
+      }
+
+      .fair-item {
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: transform 0.3s ease;
+      }
+
+      .fair-item:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--box-shadow);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <nav class="navbar">
+          <a href="../index.html" class="logo">Art<span>Shelf</span></a>
+          <ul class="nav-links">
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="artists.html">Artists</a></li>
+            <li><a href="collections.html">Collections</a></li>
+            <li><a href="fairs.html">Fairs</a></li>
+            <li class="dropdown">
+              <a
+                href="#"
+                class="dropdown-toggle"
+                id="userDropdown"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <i class="fas fa-user-circle"></i>
+                <span class="user-name">Jane Artist</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="artist-dashboard.html"
+                  >My Dashboard</a
+                >
+                <a class="dropdown-item" href="profile.html">My Profile</a>
+                <a class="dropdown-item" href="artist-portfolio.html"
+                  >My Portfolio</a
+                >
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item logout-btn" href="#">Logout</a>
+              </div>
+            </li>
+            <li>
+              <a href="notifications.html">
+                <i class="fas fa-bell"></i>
+                <span class="notification-count">2</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Alerts Container -->
+    <div id="alerts" class="container mt-4"></div>
+
+    <!-- Dashboard Section -->
+    <section class="section">
+      <div class="container">
+        <div class="row">
+          <!-- Sidebar -->
+          <div class="col-lg-3 mb-4">
+            <div class="dashboard-sidebar">
+              <h4 class="mb-4">Artist Dashboard</h4>
+              <div
+                class="nav flex-column nav-pills"
+                id="dashboard-tabs"
+                role="tablist"
+                aria-orientation="vertical"
+              >
+                <a
+                  class="nav-link active"
+                  id="overview-tab"
+                  data-toggle="pill"
+                  href="#overview"
+                  role="tab"
+                  aria-controls="overview"
+                  aria-selected="true"
+                >
+                  <i class="fas fa-home"></i> Overview
+                </a>
+                <a
+                  class="nav-link"
+                  id="artworks-tab"
+                  data-toggle="pill"
+                  href="#artworks"
+                  role="tab"
+                  aria-controls="artworks"
+                  aria-selected="false"
+                >
+                  <i class="fas fa-paint-brush"></i> My Artworks
+                </a>
+                <a
+                  class="nav-link"
+                  id="upload-tab"
+                  data-toggle="pill"
+                  href="#upload"
+                  role="tab"
+                  aria-controls="upload"
+                  aria-selected="false"
+                >
+                  <i class="fas fa-upload"></i> Upload Artwork
+                </a>
+                <a
+                  class="nav-link"
+                  id="collections-tab"
+                  data-toggle="pill"
+                  href="#collections"
+                  role="tab"
+                  aria-controls="collections"
+                  aria-selected="false"
+                >
+                  <i class="fas fa-layer-group"></i> Collections
+                </a>
+                <a
+                  class="nav-link"
+                  id="sales-tab"
+                  data-toggle="pill"
+                  href="#sales"
+                  role="tab"
+                  aria-controls="sales"
+                  aria-selected="false"
+                >
+                  <i class="fas fa-chart-line"></i> Sales & Reports
+                </a>
+                <a
+                  class="nav-link"
+                  id="followers-tab"
+                  data-toggle="pill"
+                  href="#followers"
+                  role="tab"
+                  aria-controls="followers"
+                  aria-selected="false"
+                >
+                  <i class="fas fa-users"></i> Followers
+                </a>
+                <a
+                  class="nav-link"
+                  id="fairs-tab"
+                  data-toggle="pill"
+                  href="#fairs"
+                  role="tab"
+                  aria-controls="fairs"
+                  aria-selected="false"
+                >
+                  <i class="fas fa-map-marker-alt"></i> Art Fairs
+                </a>
+                <a
+                  class="nav-link"
+                  id="withdrawals-tab"
+                  data-toggle="pill"
+                  href="#withdrawals"
+                  role="tab"
+                  aria-controls="withdrawals"
+                  aria-selected="false"
+                >
+                  <i class="fas fa-wallet"></i> Balance & Withdrawals
+                </a>
+                <a
+                  class="nav-link"
+                  id="settings-tab"
+                  data-toggle="pill"
+                  href="#settings"
+                  role="tab"
+                  aria-controls="settings"
+                  aria-selected="false"
+                >
+                  <i class="fas fa-cog"></i> Account Settings
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dashboard Content -->
+          <div class="col-lg-9">
+            <div class="dashboard-content">
+              <div class="tab-content" id="dashboard-content">
+                <!-- Overview Tab -->
+                <div
+                  class="tab-pane fade show active"
+                  id="overview"
+                  role="tabpanel"
+                  aria-labelledby="overview-tab"
+                >
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-4"
+                  >
+                    <div>
+                      <h2>Welcome, <span class="user-name">Jane</span>!</h2>
+                      <p class="text-muted">
+                        Here's what's happening with your artwork.
+                      </p>
+                    </div>
+                    <div>
+                      <span
+                        class="badge badge-pill badge-warning py-2 px-3 mb-2"
+                        >Account Approval: Pending</span
+                      >
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6 col-lg-3">
+                      <div class="stats-card primary">
+                        <h6>Total Artworks</h6>
+                        <div class="stats-value">8</div>
+                        <p class="mb-0">5 approved, 3 pending</p>
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                      <div class="stats-card secondary">
+                        <h6>Total Sales</h6>
+                        <div class="stats-value">3</div>
+                        <p class="mb-0">$3,600.00 total revenue</p>
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                      <div class="stats-card tertiary">
+                        <h6>Followers</h6>
+                        <div class="stats-value">42</div>
+                        <p class="mb-0">+12 this month</p>
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                      <div class="stats-card quaternary">
+                        <h6>Current Balance</h6>
+                        <div class="stats-value">$3,240.00</div>
+                        <p class="mb-0">
+                          <a href="#withdrawals" data-toggle="pill"
+                            >Request Withdrawal</a
+                          >
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mt-4">
+                    <div class="col-md-8">
+                      <div class="card mb-4">
+                        <div class="card-body">
+                          <h5 class="card-title">Recent Sales</h5>
+                          <div class="table-responsive">
+                            <table class="table table-hover">
+                              <thead>
+                                <tr>
+                                  <th>Artwork</th>
+                                  <th>Date</th>
+                                  <th>Price</th>
+                                  <th>Status</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td>Sunset Horizon</td>
+                                  <td>Apr 25, 2025</td>
+                                  <td>$1,200.00</td>
+                                  <td>
+                                    <span class="badge badge-success"
+                                      >Shipped</span
+                                    >
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Urban Fragments</td>
+                                  <td>Apr 18, 2025</td>
+                                  <td>$950.00</td>
+                                  <td>
+                                    <span class="badge badge-success"
+                                      >Delivered</span
+                                    >
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Forest Dreams</td>
+                                  <td>Apr 10, 2025</td>
+                                  <td>$1,450.00</td>
+                                  <td>
+                                    <span class="badge badge-success"
+                                      >Delivered</span
+                                    >
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                          <a
+                            href="#sales"
+                            class="btn btn-link"
+                            data-toggle="pill"
+                            >View All Sales</a
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="card">
+                        <div class="card-body">
+                          <h5 class="card-title">Pending Approvals</h5>
+                          <div class="list-group list-group-flush">
+                            <a
+                              href="#"
+                              class="list-group-item list-group-item-action"
+                            >
+                              <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Mountain Serenity</h6>
+                                <small>2 days ago</small>
+                              </div>
+                              <p class="mb-1">Painting</p>
+                              <small class="text-warning">Pending Review</small>
+                            </a>
+                            <a
+                              href="#"
+                              class="list-group-item list-group-item-action"
+                            >
+                              <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Ocean Whispers</h6>
+                                <small>4 days ago</small>
+                              </div>
+                              <p class="mb-1">Mixed Media</p>
+                              <small class="text-warning">Pending Review</small>
+                            </a>
+                            <a
+                              href="#"
+                              class="list-group-item list-group-item-action"
+                            >
+                              <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Desert Bloom</h6>
+                                <small>5 days ago</small>
+                              </div>
+                              <p class="mb-1">Photography</p>
+                              <small class="text-warning">Pending Review</small>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card mt-4">
+                    <div class="card-body">
+                      <h5 class="card-title">Recent Activity</h5>
+                      <div class="timeline">
+                        <div class="timeline-item pb-3">
+                          <div class="d-flex justify-content-between">
+                            <strong>New Follower</strong>
+                            <span class="text-muted">2 hours ago</span>
+                          </div>
+                          <p class="mb-0">
+                            Sarah Johnson started following you.
+                          </p>
+                        </div>
+                        <div class="timeline-item pb-3">
+                          <div class="d-flex justify-content-between">
+                            <strong>Artwork Favorited</strong>
+                            <span class="text-muted">Yesterday</span>
+                          </div>
+                          <p class="mb-0">
+                            Your artwork "Sunset Horizon" was added to 3 new
+                            favorites.
+                          </p>
+                        </div>
+                        <div class="timeline-item pb-3">
+                          <div class="d-flex justify-content-between">
+                            <strong>Artwork Comment</strong>
+                            <span class="text-muted">2 days ago</span>
+                          </div>
+                          <p class="mb-0">
+                            Michael left a comment on "Urban Fragments": "The
+                            composition is extraordinary!"
+                          </p>
+                        </div>
+                        <div class="timeline-item">
+                          <div class="d-flex justify-content-between">
+                            <strong>Weekly Collection Feature</strong>
+                            <span class="text-muted">3 days ago</span>
+                          </div>
+                          <p class="mb-0">
+                            Your artwork "Forest Dreams" was featured in the
+                            "Nature Inspired" collection.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- My Artworks Tab -->
+                <div
+                  class="tab-pane fade"
+                  id="artworks"
+                  role="tabpanel"
+                  aria-labelledby="artworks-tab"
+                >
+                  <h2>My Artworks</h2>
+                  <p class="text-muted mb-4">
+                    Manage your published artwork portfolio.
+                  </p>
+
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-4"
+                  >
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-secondary active">
+                        All (8)
+                      </button>
+                      <button type="button" class="btn btn-outline-secondary">
+                        Published (5)
+                      </button>
+                      <button type="button" class="btn btn-outline-secondary">
+                        Pending (3)
+                      </button>
+                      <button type="button" class="btn btn-outline-secondary">
+                        Sold (3)
+                      </button>
+                    </div>
+                    <a
+                      href="#upload"
+                      class="btn btn-primary"
+                      data-toggle="pill"
+                    >
+                      <i class="fas fa-plus"></i> Upload New Artwork
+                    </a>
+                  </div>
+
+                  <div class="row">
+                    <!-- Artwork Item -->
+                    <div class="col-md-6 col-lg-4">
+                      <div class="artwork-card">
+                        <div class="artwork-img-container">
+                          <img
+                            src="../assets/images/artworks/sunset-horizon.jpg"
+                            alt="Sunset Horizon"
+                          />
+                          <div class="status-badge approved">Approved</div>
+                          <div class="artwork-overlay">
+                            <div class="artwork-actions">
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-eye"></i
+                              ></a>
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-edit"></i
+                              ></a>
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-trash"></i
+                              ></a>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card-body">
+                          <h5 class="card-title">Sunset Horizon</h5>
+                          <p class="mb-1 text-muted small">
+                            Painting • 80 x 60 cm
+                          </p>
+                          <div
+                            class="d-flex justify-content-between align-items-center mt-2"
+                          >
+                            <span class="font-weight-bold">$1,200.00</span>
+                            <span class="badge badge-success">Sold</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Artwork Item -->
+                    <div class="col-md-6 col-lg-4">
+                      <div class="artwork-card">
+                        <div class="artwork-img-container">
+                          <img
+                            src="../assets/images/artworks/urban-fragments.jpg"
+                            alt="Urban Fragments"
+                          />
+                          <div class="status-badge approved">Approved</div>
+                          <div class="artwork-overlay">
+                            <div class="artwork-actions">
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-eye"></i
+                              ></a>
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-edit"></i
+                              ></a>
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-trash"></i
+                              ></a>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card-body">
+                          <h5 class="card-title">Urban Fragments</h5>
+                          <p class="mb-1 text-muted small">
+                            Mixed Media • 70 x 70 cm
+                          </p>
+                          <div
+                            class="d-flex justify-content-between align-items-center mt-2"
+                          >
+                            <span class="font-weight-bold">$950.00</span>
+                            <span class="badge badge-success">Sold</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Artwork Item -->
+                    <div class="col-md-6 col-lg-4">
+                      <div class="artwork-card">
+                        <div class="artwork-img-container">
+                          <img
+                            src="../assets/images/artworks/forest-dreams.jpg"
+                            alt="Forest Dreams"
+                          />
+                          <div class="status-badge approved">Approved</div>
+                          <div class="artwork-overlay">
+                            <div class="artwork-actions">
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-eye"></i
+                              ></a>
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-edit"></i
+                              ></a>
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-trash"></i
+                              ></a>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card-body">
+                          <h5 class="card-title">Forest Dreams</h5>
+                          <p class="mb-1 text-muted small">
+                            Photography • 90 x 60 cm
+                          </p>
+                          <div
+                            class="d-flex justify-content-between align-items-center mt-2"
+                          >
+                            <span class="font-weight-bold">$1,450.00</span>
+                            <span class="badge badge-success">Sold</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Artwork Item -->
+                    <div class="col-md-6 col-lg-4">
+                      <div class="artwork-card">
+                        <div class="artwork-img-container">
+                          <img
+                            src="../assets/images/artworks/cityscape.jpg"
+                            alt="Cityscape Reflections"
+                          />
+                          <div class="status-badge approved">Approved</div>
+                          <div class="artwork-overlay">
+                            <div class="artwork-actions">
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-eye"></i
+                              ></a>
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-edit"></i
+                              ></a>
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-trash"></i
+                              ></a>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card-body">
+                          <h5 class="card-title">Cityscape Reflections</h5>
+                          <p class="mb-1 text-muted small">
+                            Painting • 100 x 80 cm
+                          </p>
+                          <div
+                            class="d-flex justify-content-between align-items-center mt-2"
+                          >
+                            <span class="font-weight-bold">$1,800.00</span>
+                            <span class="badge badge-info">For Sale</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Artwork Item -->
+                    <div class="col-md-6 col-lg-4">
+                      <div class="artwork-card">
+                        <div class="artwork-img-container">
+                          <img
+                            src="../assets/images/artworks/abstract-motion.jpg"
+                            alt="Abstract Motion"
+                          />
+                          <div class="status-badge approved">Approved</div>
+                          <div class="artwork-overlay">
+                            <div class="artwork-actions">
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-eye"></i
+                              ></a>
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-edit"></i
+                              ></a>
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-trash"></i
+                              ></a>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card-body">
+                          <h5 class="card-title">Abstract Motion</h5>
+                          <p class="mb-1 text-muted small">
+                            Mixed Media • 65 x 65 cm
+                          </p>
+                          <div
+                            class="d-flex justify-content-between align-items-center mt-2"
+                          >
+                            <span class="font-weight-bold">$1,100.00</span>
+                            <span class="badge badge-info">For Sale</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Artwork Item (Pending) -->
+                    <div class="col-md-6 col-lg-4">
+                      <div class="artwork-card">
+                        <div class="artwork-img-container">
+                          <img
+                            src="../assets/images/artworks/mountain-serenity.jpg"
+                            alt="Mountain Serenity"
+                          />
+                          <div class="status-badge pending">Pending</div>
+                          <div class="artwork-overlay">
+                            <div class="artwork-actions">
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-eye"></i
+                              ></a>
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-edit"></i
+                              ></a>
+                              <a href="#" class="btn btn-sm btn-light"
+                                ><i class="fas fa-trash"></i
+                              ></a>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card-body">
+                          <h5 class="card-title">Mountain Serenity</h5>
+                          <p class="mb-1 text-muted small">
+                            Painting • 85 x 70 cm
+                          </p>
+                          <div
+                            class="d-flex justify-content-between align-items-center mt-2"
+                          >
+                            <span class="font-weight-bold">$1,350.00</span>
+                            <span class="badge badge-warning"
+                              >Pending Approval</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Upload Artwork Tab -->
+                <div
+                  class="tab-pane fade"
+                  id="upload"
+                  role="tabpanel"
+                  aria-labelledby="upload-tab"
+                >
+                  <h2>Upload New Artwork</h2>
+                  <p class="text-muted mb-4">
+                    Add new artwork to your portfolio. All submissions are
+                    reviewed by our curators before being published.
+                  </p>
+
+                  <form id="uploadArtworkForm">
+                    <div class="upload-area" id="uploadArea">
+                      <i class="fas fa-cloud-upload-alt"></i>
+                      <h5>Drag & Drop Artwork Images Here</h5>
+                      <p class="text-muted">or</p>
+                      <label for="artworkImages" class="btn btn-primary">
+                        Select Files
+                      </label>
+                      <input
+                        type="file"
+                        id="artworkImages"
+                        class="d-none"
+                        multiple
+                        accept="image/*"
+                      />
+                      <p class="text-muted mt-2">
+                        Upload up to 5 images. Max 10MB each. Supported formats:
+                        JPG, PNG, WEBP
+                      </p>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="artworkTitle">Artwork Title*</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="artworkTitle"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="artworkCategory">Category*</label>
+                          <select
+                            class="form-control"
+                            id="artworkCategory"
+                            required
+                          >
+                            <option value="">Select a category</option>
+                            <option value="painting">Painting</option>
+                            <option value="sculpture">Sculpture</option>
+                            <option value="photography">Photography</option>
+                            <option value="drawing">Drawing</option>
+                            <option value="collage">Collage</option>
+                            <option value="digital">Digital Art</option>
+                            <option value="mixed-media">Mixed Media</option>
+                            <option value="printmaking">Printmaking</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="artworkDescription">Description*</label>
+                      <textarea
+                        class="form-control"
+                        id="artworkDescription"
+                        rows="4"
+                        required
+                      ></textarea>
+                      <small class="form-text text-muted"
+                        >Describe your artwork, techniques used, inspiration,
+                        etc.</small
+                      >
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="artworkPrice">Price (USD)*</label>
+                          <div class="input-group">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text">$</span>
+                            </div>
+                            <input
+                              type="number"
+                              class="form-control"
+                              id="artworkPrice"
+                              min="1"
+                              step="0.01"
+                              required
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="artworkYear">Year Created*</label>
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="artworkYear"
+                            min="1900"
+                            max="2025"
+                            value="2025"
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="artworkWidth">Width (cm)*</label>
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="artworkWidth"
+                            min="1"
+                            step="0.1"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="artworkHeight">Height (cm)*</label>
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="artworkHeight"
+                            min="1"
+                            step="0.1"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="artworkDepth">Depth (cm)</label>
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="artworkDepth"
+                            min="0"
+                            step="0.1"
+                            value="0"
+                          />
+                          <small class="form-text text-muted"
+                            >Required for 3D artworks</small
+                          >
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="artworkMaterials">Materials*</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="artworkMaterials"
+                        required
+                      />
+                      <small class="form-text text-muted"
+                        >E.g., Oil on canvas, Bronze, Digital print, etc.</small
+                      >
+                    </div>
+
+                    <div class="form-group">
+                      <label>Keywords/Tags</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="artworkTags"
+                      />
+                      <small class="form-text text-muted"
+                        >Separate tags with commas (e.g., abstract, nature,
+                        blue)</small
+                      >
+                    </div>
+
+                    <div class="form-group">
+                      <div class="custom-control custom-checkbox">
+                        <input
+                          type="checkbox"
+                          class="custom-control-input"
+                          id="artworkOriginal"
+                          checked
+                        />
+                        <label
+                          class="custom-control-label"
+                          for="artworkOriginal"
+                          >This is an original artwork</label
+                        >
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="custom-control custom-checkbox">
+                        <input
+                          type="checkbox"
+                          class="custom-control-input"
+                          id="artworkTerms"
+                          required
+                        />
+                        <label class="custom-control-label" for="artworkTerms"
+                          >I confirm that I own all rights to this artwork and
+                          agree to the
+                          <a href="terms.html" target="_blank"
+                            >Terms of Service</a
+                          ></label
+                        >
+                      </div>
+                    </div>
+
+                    <div class="text-right">
+                      <button type="button" class="btn btn-secondary mr-2">
+                        Save as Draft
+                      </button>
+                      <button type="submit" class="btn btn-primary">
+                        Submit for Review
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                <!-- Other tabs would be implemented similarly -->
+
+                <!-- Sales & Reports Tab -->
+                <div
+                  class="tab-pane fade"
+                  id="sales"
+                  role="tabpanel"
+                  aria-labelledby="sales-tab"
+                >
+                  <h2>Sales & Reports</h2>
+                  <p class="text-muted mb-4">
+                    Track your sales performance and generate reports.
+                  </p>
+
+                  <div class="row mb-4">
+                    <div class="col-md-4">
+                      <div class="card">
+                        <div class="card-body text-center">
+                          <h5 class="card-title">Total Sales</h5>
+                          <h2 class="mb-0">$3,600.00</h2>
+                          <p class="text-muted">from 3 artworks</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="card">
+                        <div class="card-body text-center">
+                          <h5 class="card-title">This Month</h5>
+                          <h2 class="mb-0">$1,200.00</h2>
+                          <p class="text-muted">from 1 artwork</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="card">
+                        <div class="card-body text-center">
+                          <h5 class="card-title">Commission Paid</h5>
+                          <h2 class="mb-0">$360.00</h2>
+                          <p class="text-muted">10% platform fee</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Content would continue here -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-columns">
+          <div class="footer-column">
+            <h3>ArtShelf</h3>
+            <ul class="footer-links">
+              <li><a href="about.html">About Us</a></li>
+              <li><a href="contact.html">Contact Us</a></li>
+              <li><a href="careers.html">Careers</a></li>
+              <li><a href="press.html">Press</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Discover</h3>
+            <ul class="footer-links">
+              <li><a href="gallery.html">Art Gallery</a></li>
+              <li><a href="artists.html">Artists</a></li>
+              <li><a href="collections.html">Collections</a></li>
+              <li><a href="fairs.html">Art Fairs</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Help</h3>
+            <ul class="footer-links">
+              <li><a href="faq.html">FAQs</a></li>
+              <li><a href="shipping.html">Shipping Info</a></li>
+              <li><a href="returns.html">Returns</a></li>
+              <li><a href="terms.html">Terms of Service</a></li>
+              <li><a href="privacy.html">Privacy Policy</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Connect With Us</h3>
+            <div class="social-links">
+              <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+              <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+              <a href="#" target="_blank"><i class="fab fa-pinterest-p"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="copyright">
+          <p>&copy; 2025 ArtShelf. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Preview Modal -->
+    <div
+      class="modal fade"
+      id="previewModal"
+      tabindex="-1"
+      aria-labelledby="previewModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="previewModalLabel">Artwork Preview</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="previewContent">
+            <!-- Preview content will be injected here -->
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JS Dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="../assets/js/main.js"></script>
+    <script>
+      $(document).ready(function () {
+        // Check if the user is logged in and is an artist
+        if (
+          !authService.isLoggedIn() ||
+          authService.getCurrentUser().role !== "artist"
+        ) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        // Get the current user
+        const user = authService.getCurrentUser();
+
+        // Update user name in the header and dashboard
+        $(".user-name").text(user.name);
+
+        // Handle tab navigation
+        $("#dashboard-tabs a").on("click", function (e) {
+          e.preventDefault();
+          $(this).tab("show");
+        });
+
+        // Set up sales chart
+        const salesCtx = document.getElementById("salesChart").getContext("2d");
+        const salesChart = new Chart(salesCtx, {
+          type: "line",
+          data: {
+            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+            datasets: [
+              {
+                label: "Sales ($)",
+                data: [1200, 1900, 800, 1500, 2200, 3450],
+                backgroundColor: "rgba(197, 169, 146, 0.2)",
+                borderColor: "rgba(197, 169, 146, 1)",
+                borderWidth: 2,
+                tension: 0.4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function (value) {
+                    return "$" + value;
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        // Set up artwork performance chart
+        const artworkCtx = document
+          .getElementById("artworkChart")
+          .getContext("2d");
+        const artworkChart = new Chart(artworkCtx, {
+          type: "pie",
+          data: {
+            labels: ["Paintings", "Photography", "Mixed Media", "Digital Art"],
+            datasets: [
+              {
+                data: [65, 15, 12, 8],
+                backgroundColor: [
+                  "rgba(197, 169, 146, 0.8)",
+                  "rgba(90, 92, 105, 0.8)",
+                  "rgba(76, 168, 175, 0.8)",
+                  "rgba(246, 194, 139, 0.8)",
+                ],
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
+            },
+          },
+        });
+
+        // File upload functionality
+        const dropArea = document.getElementById("dropArea");
+        const fileInput = document.getElementById("fileInput");
+        const browseButton = document.getElementById("browseButton");
+        const imagePreviewContainer = document.getElementById(
+          "imagePreviewContainer"
+        );
+        const maxFiles = 5;
+        const uploadedFiles = [];
+
+        // Trigger file input when browse button is clicked
+        browseButton.addEventListener("click", () => {
+          fileInput.click();
+        });
+
+        // Handle file selection
+        fileInput.addEventListener("change", handleFiles);
+
+        // Drag and drop functionality
+        ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+          dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+
+        ["dragenter", "dragover"].forEach((eventName) => {
+          dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ["dragleave", "drop"].forEach((eventName) => {
+          dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+          dropArea.classList.add("highlight");
+        }
+
+        function unhighlight() {
+          dropArea.classList.remove("highlight");
+        }
+
+        dropArea.addEventListener("drop", handleDrop, false);
+
+        function handleDrop(e) {
+          const dt = e.dataTransfer;
+          const files = dt.files;
+          handleFiles(files);
+        }
+
+        function handleFiles(files) {
+          files = files.files || files; // Handle both file input and drop events
+
+          if (uploadedFiles.length + files.length > maxFiles) {
+            alert(`You can only upload up to ${maxFiles} images.`);
+            return;
+          }
+
+          [...files].forEach((file) => {
+            if (!file.type.match("image.*")) {
+              alert("Only image files are allowed.");
+              return;
+            }
+
+            uploadedFiles.push(file);
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              const previewElement = document.createElement("div");
+              previewElement.className = "image-preview";
+              previewElement.innerHTML = `
+                            <img src="${e.target.result}" alt="Artwork preview">
+                            <span class="remove-img" data-filename="${file.name}">
+                                <i class="fas fa-times"></i>
+                            </span>
+                        `;
+              imagePreviewContainer.appendChild(previewElement);
+
+              // Add remove functionality
+              previewElement
+                .querySelector(".remove-img")
+                .addEventListener("click", function () {
+                  const fileName = this.getAttribute("data-filename");
+                  const fileIndex = uploadedFiles.findIndex(
+                    (f) => f.name === fileName
+                  );
+                  if (fileIndex !== -1) {
+                    uploadedFiles.splice(fileIndex, 1);
+                  }
+                  previewElement.remove();
+                });
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+
+        // Show/hide edition details based on selection
+        document
+          .getElementById("artworkEdition")
+          .addEventListener("change", function () {
+            const editionDetailsContainer = document.getElementById(
+              "editionDetailsContainer"
+            );
+            if (this.value === "limited") {
+              editionDetailsContainer.style.display = "block";
+            } else {
+              editionDetailsContainer.style.display = "none";
+            }
+          });
+
+        // Preview button functionality
+        document
+          .getElementById("previewBtn")
+          .addEventListener("click", function () {
+            const title =
+              document.getElementById("artworkTitle").value || "Artwork Title";
+            const category =
+              document.getElementById("artworkCategory").value || "Category";
+            const description =
+              document.getElementById("artworkDescription").value ||
+              "Artwork Description";
+            const price =
+              document.getElementById("artworkPrice").value || "0.00";
+
+            let previewImage =
+              "../assets/images/placeholders/artwork-placeholder.jpg";
+            if (uploadedFiles.length > 0) {
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                previewImage = e.target.result;
+                renderPreview();
+              };
+              reader.readAsDataURL(uploadedFiles[0]);
+            } else {
+              renderPreview();
+            }
+
+            function renderPreview() {
+              const previewContent = document.getElementById("previewContent");
+              previewContent.innerHTML = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="${previewImage}" alt="${title}" class="img-fluid rounded">
+                            </div>
+                            <div class="col-md-6">
+                                <h3>${title}</h3>
+                                <p class="text-muted">${category}</p>
+                                <p class="font-weight-bold mt-3">$${price}</p>
+                                <p>${description}</p>
+                                <div class="d-flex">
+                                    <p><strong>Artist:</strong> ${user.name}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+              $("#previewModal").modal("show");
+            }
+          });
+
+        // Form submission
+        document
+          .getElementById("uploadArtworkForm")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            if (uploadedFiles.length === 0) {
+              alert("Please upload at least one image of your artwork.");
+              return;
+            }
+
+            // In a real application, this would submit the form data and images to the server
+            // For demo purposes, we'll simulate a successful upload
+
+            const successAlert = `
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Your artwork has been submitted for review and will be published soon!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                `;
+
+            document.getElementById("alerts").innerHTML = successAlert;
+
+            // Scroll to the top to show the alert
+            window.scrollTo(0, 0);
+
+            // In a real app, we would redirect to the artwork page or reset the form
+            setTimeout(() => {
+              // Redirect to artworks tab
+              $('#dashboard-tabs a[href="#artworks"]').tab("show");
+            }, 2000);
+          });
+
+        // Save as draft functionality
+        document
+          .getElementById("saveDraftBtn")
+          .addEventListener("click", function () {
+            const draftAlert = `
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Your artwork has been saved as a draft.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                `;
+
+            document.getElementById("alerts").innerHTML = draftAlert;
+
+            // Scroll to the top to show the alert
+            window.scrollTo(0, 0);
+          });
+      });
+    </script>
+  </body>
+</html>
