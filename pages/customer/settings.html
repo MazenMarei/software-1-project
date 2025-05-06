@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Settings | ArtShelf</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../../css/main.css" />
+    <link rel="stylesheet" href="../../css/dashboard.css" />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Poppins:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .settings-header {
+        background-color: var(--white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-xl);
+        margin-bottom: var(--space-xl);
+        box-shadow: var(--shadow-md);
+      }
+
+      .settings-section {
+        background-color: var(--white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-xl);
+        margin-bottom: var(--space-xl);
+        box-shadow: var(--shadow-md);
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+        margin-bottom: var(--space-lg);
+        color: var(--primary-text-dark);
+      }
+
+      .settings-form .form-group {
+        margin-bottom: var(--space-lg);
+      }
+
+      .settings-form label {
+        font-weight: 500;
+        color: var(--primary-text-dark);
+        margin-bottom: var(--space-xs);
+      }
+
+      .settings-tabs {
+        margin-bottom: var(--space-xl);
+      }
+
+      .settings-tabs .nav-link {
+        color: var(--secondary-text);
+        padding: var(--space-md) var(--space-lg);
+        border: none;
+        border-bottom: 2px solid transparent;
+        font-weight: 500;
+      }
+
+      .settings-tabs .nav-link.active {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
+        background: transparent;
+      }
+
+      .settings-tabs .nav-link:hover {
+        color: var(--accent);
+      }
+
+      .security-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--space-md) 0;
+        border-bottom: 1px solid var(--secondary-bg);
+      }
+
+      .security-item:last-child {
+        border-bottom: none;
+      }
+
+      .security-info h4 {
+        font-size: 1rem;
+        margin-bottom: var(--space-xs);
+        color: var(--primary-text-dark);
+      }
+
+      .security-info p {
+        color: var(--secondary-text);
+        margin-bottom: 0;
+        font-size: 0.9rem;
+      }
+
+      .preferences-section {
+        margin-bottom: var(--space-xl);
+      }
+
+      .preferences-section h4 {
+        font-size: 1.1rem;
+        margin-bottom: var(--space-md);
+        color: var(--primary-text-dark);
+      }
+
+      .preference-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--space-sm) 0;
+      }
+
+      .preference-info {
+        flex: 1;
+      }
+
+      .preference-info h5 {
+        font-size: 1rem;
+        margin-bottom: var(--space-xs);
+        color: var(--primary-text-dark);
+      }
+
+      .preference-info p {
+        color: var(--secondary-text);
+        margin-bottom: 0;
+        font-size: 0.9rem;
+      }
+
+      .form-switch {
+        padding-left: 2.5rem;
+      }
+
+      .form-switch .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+        margin-left: -2.5rem;
+      }
+
+      .form-switch .form-check-input:checked {
+        background-color: var(--accent);
+        border-color: var(--accent);
+      }
+
+      .payment-method {
+        display: flex;
+        align-items: center;
+        padding: var(--space-md);
+        border: 1px solid var(--secondary-bg);
+        border-radius: var(--radius-md);
+        margin-bottom: var(--space-md);
+      }
+
+      .payment-method.default {
+        border-color: var(--accent);
+        background-color: var(--accent-light);
+      }
+
+      .payment-logo {
+        width: 50px;
+        margin-right: var(--space-md);
+      }
+
+      .payment-details {
+        flex: 1;
+      }
+
+      .payment-title {
+        font-weight: 500;
+        margin-bottom: 0;
+      }
+
+      .payment-info {
+        color: var(--secondary-text);
+        font-size: 0.9rem;
+      }
+
+      .payment-actions {
+        display: flex;
+        gap: var(--space-xs);
+      }
+
+      .address-item {
+        padding: var(--space-md);
+        border: 1px solid var(--secondary-bg);
+        border-radius: var(--radius-md);
+        margin-bottom: var(--space-md);
+      }
+
+      .address-item.default {
+        border-color: var(--accent);
+        background-color: var(--accent-light);
+      }
+
+      .address-title {
+        font-weight: 500;
+        margin-bottom: var(--space-xs);
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .address-badge {
+        font-size: 0.75rem;
+        background-color: var(--accent);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+      }
+
+      .address-text {
+        color: var(--secondary-text);
+        margin-bottom: var(--space-sm);
+      }
+
+      .address-actions {
+        display: flex;
+        gap: var(--space-xs);
+      }
+
+      .delete-account-section {
+        border-top: 1px solid var(--secondary-bg);
+        padding-top: var(--space-xl);
+        margin-top: var(--space-xl);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="dashboard.html">
+          <img
+            src="../../assets/images/artshelf-logo.png"
+            alt="ArtShelf Logo"
+            height="40"
+          />
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="dashboard.html">Discover</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="artists.html">Artists</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="collections.html">Collections</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="fairs.html">Art Fairs</a>
+            </li>
+          </ul>
+          <div class="navbar-right d-flex align-items-center">
+            <div class="dropdown me-3">
+              <button
+                class="btn btn-icon"
+                type="button"
+                data-bs-toggle="dropdown"
+              >
+                <i class="far fa-heart"></i>
+                <span class="badge bg-accent">3</span>
+              </button>
+              <div class="dropdown-menu dropdown-menu-end">
+                <h6 class="dropdown-header">Favorites</h6>
+                <div class="favorites-preview">
+                  <!-- Will be populated by JavaScript -->
+                </div>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item text-center" href="favorites.html"
+                  >View All Favorites</a
+                >
+              </div>
+            </div>
+            <div class="dropdown me-3">
+              <button
+                class="btn btn-icon"
+                type="button"
+                data-bs-toggle="dropdown"
+              >
+                <i class="fa fa-shopping-cart"></i>
+                <span class="badge bg-accent">1</span>
+              </button>
+              <div class="dropdown-menu dropdown-menu-end">
+                <h6 class="dropdown-header">Shopping Cart</h6>
+                <div class="cart-preview">
+                  <!-- Will be populated by JavaScript -->
+                </div>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item text-center" href="cart.html"
+                  >View Cart</a
+                >
+              </div>
+            </div>
+            <div class="dropdown">
+              <button
+                class="btn btn-icon profile-btn"
+                type="button"
+                data-bs-toggle="dropdown"
+              >
+                <img
+                  src="https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=200"
+                  alt="Profile Picture"
+                  class="profile-picture"
+                />
+              </button>
+              <div class="dropdown-menu dropdown-menu-end">
+                <h6 class="dropdown-header">John Smith</h6>
+                <a class="dropdown-item" href="profile.html">
+                  <i class="fa fa-user me-2"></i> My Profile
+                </a>
+                <a class="dropdown-item" href="orders.html">
+                  <i class="fa fa-shopping-bag me-2"></i> My Orders
+                </a>
+                <a class="dropdown-item" href="following.html">
+                  <i class="fa fa-users me-2"></i> Following
+                </a>
+                <a class="dropdown-item active" href="settings.html">
+                  <i class="fa fa-cog me-2"></i> Settings
+                </a>
+                <div class="dropdown-divider"></div>
+                <a
+                  class="dropdown-item text-danger"
+                  href="#"
+                  onclick="window.auth.logout(); return false;"
+                >
+                  <i class="fa fa-sign-out-alt me-2"></i> Logout
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="container">
+        <!-- Settings Header -->
+        <div class="settings-header">
+          <h1 class="mb-3">Account Settings</h1>
+          <p class="text-muted">Manage your account settings and preferences</p>
+        </div>
+
+        <!-- Settings Navigation -->
+        <ul class="nav nav-tabs settings-tabs" id="settingsTabs" role="tablist">
+          <li class="nav-item">
+            <a
+              class="nav-link active"
+              id="general-tab"
+              data-bs-toggle="tab"
+              href="#general"
+              role="tab"
+              >General</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              id="security-tab"
+              data-bs-toggle="tab"
+              href="#security"
+              role="tab"
+              >Security</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              id="payment-tab"
+              data-bs-toggle="tab"
+              href="#payment"
+              role="tab"
+              >Payment Methods</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              id="address-tab"
+              data-bs-toggle="tab"
+              href="#address"
+              role="tab"
+              >Addresses</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              id="notifications-tab"
+              data-bs-toggle="tab"
+              href="#notifications"
+              role="tab"
+              >Notifications</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              id="privacy-tab"
+              data-bs-toggle="tab"
+              href="#privacy"
+              role="tab"
+              >Privacy</a
+            >
+          </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="settingsTabsContent">
+          <!-- General Settings Tab -->
+          <div class="tab-pane fade show active" id="general" role="tabpanel">
+            <div class="settings-section">
+              <h3 class="section-title">Profile Information</h3>
+              <form class="settings-form" id="profile-form">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="firstName">First Name</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="firstName"
+                        value="John"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="lastName">Last Name</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="lastName"
+                        value="Smith"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="email">Email Address</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    value="john.smith@example.com"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="phone">Phone Number</label>
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="phone"
+                    value="+1 (555) 123-4567"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="bio">Bio</label>
+                  <textarea class="form-control" id="bio" rows="4">
+Art enthusiast and collector with a passion for contemporary abstract art.</textarea
+                  >
+                </div>
+                <div class="form-group">
+                  <label>Profile Picture</label>
+                  <div class="d-flex align-items-center">
+                    <img
+                      src="https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=200"
+                      alt="Profile Picture"
+                      class="rounded-circle me-3"
+                      style="width: 80px; height: 80px; object-fit: cover"
+                    />
+                    <div>
+                      <button
+                        type="button"
+                        class="btn btn-outline-primary mb-2"
+                      >
+                        Change Picture
+                      </button>
+                      <p class="text-muted small">
+                        Recommended size: 400×400 pixels
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-end">
+                  <button type="submit" class="btn btn-primary">
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <div class="settings-section">
+              <h3 class="section-title">Account Preferences</h3>
+              <form class="settings-form" id="preferences-form">
+                <div class="form-group">
+                  <label for="language">Language</label>
+                  <select class="form-control" id="language">
+                    <option value="en" selected>English</option>
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                    <option value="de">German</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="currency">Currency</label>
+                  <select class="form-control" id="currency">
+                    <option value="usd" selected>USD ($)</option>
+                    <option value="eur">EUR (€)</option>
+                    <option value="gbp">GBP (£)</option>
+                    <option value="jpy">JPY (¥)</option>
+                  </select>
+                </div>
+                <div class="text-end">
+                  <button type="submit" class="btn btn-primary">
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Security Tab -->
+          <div class="tab-pane fade" id="security" role="tabpanel">
+            <div class="settings-section">
+              <h3 class="section-title">Security Settings</h3>
+              <div class="security-item">
+                <div class="security-info">
+                  <h4>Password</h4>
+                  <p>Last changed 3 months ago</p>
+                </div>
+                <button class="btn btn-outline-primary" id="changePasswordBtn">
+                  Change Password
+                </button>
+              </div>
+              <div class="security-item">
+                <div class="security-info">
+                  <h4>Two-Factor Authentication</h4>
+                  <p>Add an extra layer of security to your account</p>
+                </div>
+                <button class="btn btn-outline-primary" id="enableTwoFactorBtn">
+                  Enable
+                </button>
+              </div>
+              <div class="security-item">
+                <div class="security-info">
+                  <h4>Connected Devices</h4>
+                  <p>Manage devices that have access to your account</p>
+                </div>
+                <button class="btn btn-outline-primary" id="viewDevicesBtn">
+                  View Devices
+                </button>
+              </div>
+              <div class="security-item">
+                <div class="security-info">
+                  <h4>Login History</h4>
+                  <p>View recent login activity on your account</p>
+                </div>
+                <button
+                  class="btn btn-outline-primary"
+                  id="viewLoginHistoryBtn"
+                >
+                  View History
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Methods Tab -->
+          <div class="tab-pane fade" id="payment" role="tabpanel">
+            <div class="settings-section">
+              <h3 class="section-title">Payment Methods</h3>
+              <div class="payment-method default">
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/179/179457.png"
+                  alt="Visa"
+                  class="payment-logo"
+                />
+                <div class="payment-details">
+                  <p class="payment-title">Visa ending in 4242</p>
+                  <p class="payment-info">Expires 05/2026</p>
+                </div>
+                <div class="payment-actions">
+                  <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                  <button class="btn btn-sm btn-outline-danger">Remove</button>
+                </div>
+              </div>
+              <div class="payment-method">
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/5968/5968299.png"
+                  alt="MasterCard"
+                  class="payment-logo"
+                />
+                <div class="payment-details">
+                  <p class="payment-title">MasterCard ending in 5555</p>
+                  <p class="payment-info">Expires 03/2025</p>
+                </div>
+                <div class="payment-actions">
+                  <button class="btn btn-sm btn-outline-primary">
+                    Set as Default
+                  </button>
+                  <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                  <button class="btn btn-sm btn-outline-danger">Remove</button>
+                </div>
+              </div>
+              <div class="mt-4">
+                <button class="btn btn-primary" id="addPaymentMethodBtn">
+                  <i class="fas fa-plus me-2"></i> Add Payment Method
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Addresses Tab -->
+          <div class="tab-pane fade" id="address" role="tabpanel">
+            <div class="settings-section">
+              <h3 class="section-title">Your Addresses</h3>
+              <div class="address-item default">
+                <div class="address-title">
+                  <span>Home</span>
+                  <span class="address-badge">Default</span>
+                </div>
+                <p class="address-text">
+                  John Smith<br />
+                  123 Main Street, Apt 4B<br />
+                  New York, NY 10001<br />
+                  United States<br />
+                  Phone: +1 (555) 123-4567
+                </p>
+                <div class="address-actions">
+                  <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                  <button class="btn btn-sm btn-outline-danger">Remove</button>
+                </div>
+              </div>
+              <div class="address-item">
+                <div class="address-title">
+                  <span>Office</span>
+                </div>
+                <p class="address-text">
+                  John Smith<br />
+                  456 Business Ave, Suite 201<br />
+                  New York, NY 10002<br />
+                  United States<br />
+                  Phone: +1 (555) 987-6543
+                </p>
+                <div class="address-actions">
+                  <button class="btn btn-sm btn-outline-primary">
+                    Set as Default
+                  </button>
+                  <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                  <button class="btn btn-sm btn-outline-danger">Remove</button>
+                </div>
+              </div>
+              <div class="mt-4">
+                <button class="btn btn-primary" id="addAddressBtn">
+                  <i class="fas fa-plus me-2"></i> Add Address
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notifications Tab -->
+          <div class="tab-pane fade" id="notifications" role="tabpanel">
+            <div class="settings-section">
+              <h3 class="section-title">Notification Preferences</h3>
+
+              <div class="preferences-section">
+                <h4>Email Notifications</h4>
+                <div class="preference-item">
+                  <div class="preference-info">
+                    <h5>New Artwork Alerts</h5>
+                    <p>Get notified when artists you follow add new artworks</p>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="newArtworkNotification"
+                      checked
+                    />
+                  </div>
+                </div>
+                <div class="preference-item">
+                  <div class="preference-info">
+                    <h5>Special Offers</h5>
+                    <p>Receive discounts and special promotions</p>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="specialOffersNotification"
+                      checked
+                    />
+                  </div>
+                </div>
+                <div class="preference-item">
+                  <div class="preference-info">
+                    <h5>Order Updates</h5>
+                    <p>Get notified about order status changes</p>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="orderUpdatesNotification"
+                      checked
+                    />
+                  </div>
+                </div>
+                <div class="preference-item">
+                  <div class="preference-info">
+                    <h5>Newsletter</h5>
+                    <p>Receive our weekly newsletter with art insights</p>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="newsletterNotification"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="preferences-section">
+                <h4>Push Notifications</h4>
+                <div class="preference-item">
+                  <div class="preference-info">
+                    <h5>New Messages</h5>
+                    <p>Get notified when you receive new messages</p>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="newMessagesNotification"
+                      checked
+                    />
+                  </div>
+                </div>
+                <div class="preference-item">
+                  <div class="preference-info">
+                    <h5>Artist Updates</h5>
+                    <p>Get notified about updates from artists you follow</p>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="artistUpdatesNotification"
+                      checked
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-end">
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  id="saveNotificationSettings"
+                >
+                  Save Preferences
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Privacy Tab -->
+          <div class="tab-pane fade" id="privacy" role="tabpanel">
+            <div class="settings-section">
+              <h3 class="section-title">Privacy Settings</h3>
+
+              <div class="preferences-section">
+                <h4>Profile Visibility</h4>
+                <div class="preference-item">
+                  <div class="preference-info">
+                    <h5>Public Profile</h5>
+                    <p>Allow other users to view your profile</p>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="publicProfileSetting"
+                      checked
+                    />
+                  </div>
+                </div>
+                <div class="preference-item">
+                  <div class="preference-info">
+                    <h5>Show Artwork Collection</h5>
+                    <p>Display your purchased artworks on your profile</p>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="showCollectionSetting"
+                      checked
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="preferences-section">
+                <h4>Data Usage</h4>
+                <div class="preference-item">
+                  <div class="preference-info">
+                    <h5>Personalized Recommendations</h5>
+                    <p>
+                      Allow us to use your browsing history to recommend
+                      artworks
+                    </p>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="personalRecommendationsSetting"
+                      checked
+                    />
+                  </div>
+                </div>
+                <div class="preference-item">
+                  <div class="preference-info">
+                    <h5>Browsing Data</h5>
+                    <p>
+                      Allow us to collect browsing data to improve your
+                      experience
+                    </p>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="browsingDataSetting"
+                      checked
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-end">
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  id="savePrivacySettings"
+                >
+                  Save Privacy Settings
+                </button>
+              </div>
+
+              <div class="delete-account-section">
+                <h4>Delete Account</h4>
+                <p class="text-muted">
+                  Once you delete your account, there is no going back. Please
+                  be certain.
+                </p>
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  id="deleteAccountBtn"
+                >
+                  Delete My Account
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+            <h5>ArtShelf</h5>
+            <p class="text-muted">
+              Discover, collect, and sell extraordinary art from leading artists
+              around the world.
+            </p>
+            <div class="social-icons">
+              <a href="#" class="social-icon"
+                ><i class="fab fa-facebook-f"></i
+              ></a>
+              <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+              <a href="#" class="social-icon"
+                ><i class="fab fa-instagram"></i
+              ></a>
+              <a href="#" class="social-icon"
+                ><i class="fab fa-pinterest"></i
+              ></a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+            <h5>Marketplace</h5>
+            <ul class="footer-links">
+              <li><a href="#">All Artworks</a></li>
+              <li><a href="#">Contemporary</a></li>
+              <li><a href="#">Abstract</a></li>
+              <li><a href="#">Photography</a></li>
+              <li><a href="#">Sculptures</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+            <h5>My Account</h5>
+            <ul class="footer-links">
+              <li><a href="profile.html">Profile</a></li>
+              <li><a href="favorites.html">Favorites</a></li>
+              <li><a href="orders.html">My Orders</a></li>
+              <li><a href="settings.html">Settings</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <h5>Information</h5>
+            <ul class="footer-links">
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Contact</a></li>
+              <li><a href="#">Terms of Service</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">FAQ</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p class="copyright">© 2025 ArtShelf. All rights reserved.</p>
+          <div class="payment-methods">
+            <i class="fab fa-cc-visa"></i>
+            <i class="fab fa-cc-mastercard"></i>
+            <i class="fab fa-cc-amex"></i>
+            <i class="fab fa-cc-paypal"></i>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap and jQuery JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../../js/config.js"></script>
+    <script src="../../js/customer/settings.js"></script>
+  </body>
+</html>

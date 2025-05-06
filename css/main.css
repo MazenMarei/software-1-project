@@ -1,0 +1,247 @@
+/* Main CSS for ArtShelf */
+
+:root {
+    /* Color palette */
+    --main-bg: #F3F2EC;
+    --secondary-bg: #EDEBE4;
+    --primary-text-dark: #2F2F2F;
+    --primary-text-light: #73663B;
+    --secondary-text: #757575;
+    --accent: #C5A992;
+    --error: #754344;
+    --warning: #ebe898;
+    --white: #FFFFFF;
+    --black: #000000;
+    --light-accent: #e2d1c3;
+    --dark-accent: #a88974;
+    
+    /* Spacing system */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-xxl: 48px;
+    
+    /* Typography */
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Poppins', sans-serif;
+    
+    /* Border radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-medium: 0.3s ease;
+    --transition-slow: 0.5s ease;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Reset & Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--main-bg);
+    color: var(--primary-text-dark);
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    line-height: 1.2;
+    margin-bottom: var(--space-md);
+    color: var(--primary-text-dark);
+}
+
+p {
+    margin-bottom: var(--space-md);
+    color: var(--secondary-text);
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+a:hover {
+    color: var(--dark-accent);
+}
+
+/* Button Styles */
+.btn {
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    transition: all var(--transition-fast);
+}
+
+.btn-primary {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background-color: var(--dark-accent);
+    border-color: var(--dark-accent);
+    transform: translateY(-2px);
+}
+
+.btn-outline-primary {
+    background-color: transparent;
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--accent);
+    color: var(--white);
+    transform: translateY(-2px);
+}
+
+/* Form Styles */
+.form-control {
+    border-radius: var(--radius-md);
+    border: 1px solid #E0E0E0;
+    padding: var(--space-sm);
+    background-color: var(--white);
+    transition: border-color var(--transition-fast);
+}
+
+.form-control:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(197, 169, 146, 0.25);
+}
+
+.form-label {
+    color: var(--primary-text-dark);
+    margin-bottom: var(--space-xs);
+    font-weight: 500;
+}
+
+/* Layout */
+.container {
+    padding: var(--space-lg);
+}
+
+.section {
+    margin-bottom: var(--space-xxl);
+}
+
+/* Utility Classes */
+.text-accent {
+    color: var(--accent);
+}
+
+.bg-accent {
+    background-color: var(--accent);
+}
+
+.bg-secondary {
+    background-color: var(--secondary-bg);
+}
+
+.shadow-sm {
+    box-shadow: var(--shadow-sm);
+}
+
+.shadow-md {
+    box-shadow: var(--shadow-md);
+}
+
+.shadow-lg {
+    box-shadow: var(--shadow-lg);
+}
+
+.rounded-sm {
+    border-radius: var(--radius-sm);
+}
+
+.rounded-md {
+    border-radius: var(--radius-md);
+}
+
+.rounded-lg {
+    border-radius: var(--radius-lg);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes slideInUp {
+    0% { 
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    100% { 
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn var(--transition-medium) forwards;
+}
+
+.slide-in-up {
+    animation: slideInUp var(--transition-medium) forwards;
+}
+
+/* Bootstrap Overrides */
+.card {
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    border: none;
+    transition: transform var(--transition-medium), box-shadow var(--transition-medium);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.navbar {
+    background-color: transparent;
+    transition: background-color var(--transition-fast);
+}
+
+.navbar.scrolled {
+    background-color: var(--white);
+    box-shadow: var(--shadow-sm);
+}
+
+.modal-content {
+    border-radius: var(--radius-md);
+    border: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    
+    h2 {
+        font-size: 1.75rem;
+    }
+    
+    .container {
+        padding: var(--space-md);
+    }
+}

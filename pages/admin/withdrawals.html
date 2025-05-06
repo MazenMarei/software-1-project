@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Withdrawals | ArtShelf Admin</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../../css/main.css" />
+    <link rel="stylesheet" href="../../css/dashboard.css" />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Poppins:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Admin Dashboard Styles */
+      .admin-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 250px;
+        background-color: var(--white);
+        box-shadow: var(--shadow-md);
+        padding: var(--space-lg);
+        z-index: 1000;
+        overflow-y: auto;
+      }
+
+      .admin-logo {
+        text-align: center;
+        padding: var(--space-lg) 0;
+        margin-bottom: var(--space-lg);
+        border-bottom: 1px solid var(--secondary-bg);
+      }
+
+      .admin-nav {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .admin-nav-item {
+        margin-bottom: var(--space-xs);
+      }
+
+      .admin-nav-link {
+        display: flex;
+        align-items: center;
+        padding: var(--space-md);
+        color: var(--secondary-text);
+        border-radius: var(--radius-md);
+        transition: all var(--transition-fast);
+      }
+
+      .admin-nav-link:hover {
+        color: var(--accent);
+        background-color: var(--secondary-bg);
+      }
+
+      .admin-nav-link.active {
+        color: var(--accent);
+        background-color: var(--secondary-bg);
+      }
+
+      .admin-nav-link i {
+        width: 20px;
+        margin-right: var(--space-md);
+      }
+
+      .admin-content {
+        margin-left: 250px;
+        padding: var(--space-xl);
+        min-height: 100vh;
+        background-color: var(--main-bg);
+      }
+
+      .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+      }
+
+      .admin-title {
+        font-size: 1.75rem;
+        margin: 0;
+      }
+
+      .table-container {
+        background-color: var(--white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: var(--space-xl);
+      }
+
+      .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-lg);
+      }
+
+      .table-title {
+        font-size: 1.2rem;
+        margin: 0;
+        color: var(--primary-text-dark);
+      }
+
+      .admin-table {
+        width: 100%;
+      }
+
+      .admin-table th {
+        font-weight: 500;
+        color: var(--primary-text-dark);
+        padding: var(--space-md);
+        border-bottom: 2px solid var(--secondary-bg);
+      }
+
+      .admin-table td {
+        padding: var(--space-md);
+        border-bottom: 1px solid var(--secondary-bg);
+        color: var(--secondary-text);
+      }
+
+      .admin-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .admin-footer {
+        margin-top: var(--space-xxl);
+        padding-top: var(--space-lg);
+        border-top: 1px solid var(--secondary-bg);
+        color: var(--secondary-text);
+        font-size: 0.9rem;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+
+      .status-badge.pending {
+        background-color: #fff3cd;
+        color: #856404;
+      }
+
+      .status-badge.processing {
+        background-color: #cce5ff;
+        color: #004085;
+      }
+
+      .status-badge.completed {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      .status-badge.rejected {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+
+      .status-badge.cancelled {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: var(--space-sm);
+      }
+
+      .action-btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.85rem;
+        border-radius: var(--radius-sm);
+      }
+
+      .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: var(--space-lg);
+      }
+
+      .filter-container {
+        background-color: var(--white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: var(--space-lg);
+      }
+
+      .filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-md);
+        margin-bottom: var(--space-md);
+      }
+
+      .filter-group {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .stat-card {
+        background-color: var(--white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: var(--space-xl);
+        display: flex;
+        align-items: center;
+      }
+
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: var(--space-lg);
+        color: var(--white);
+        font-size: 1.5rem;
+      }
+
+      .stat-icon.primary {
+        background-color: var(--primary);
+      }
+
+      .stat-icon.success {
+        background-color: #28a745;
+      }
+
+      .stat-icon.warning {
+        background-color: #ffc107;
+      }
+
+      .stat-icon.info {
+        background-color: #17a2b8;
+      }
+
+      .stat-icon.danger {
+        background-color: #dc3545;
+      }
+
+      .stat-content h3 {
+        font-size: 2rem;
+        margin-bottom: 0;
+        font-weight: 500;
+      }
+
+      .stat-content p {
+        margin-bottom: 0;
+        color: var(--secondary-text);
+      }
+
+      .custom-date-range {
+        display: none;
+        gap: var(--space-md);
+      }
+
+      .timeline-container {
+        padding: var(--space-md);
+        background-color: var(--secondary-bg);
+        border-radius: var(--radius-md);
+        margin-top: var(--space-md);
+      }
+
+      .timeline-item {
+        display: flex;
+        margin-bottom: var(--space-md);
+        position: relative;
+      }
+
+      .timeline-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .timeline-item:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        left: 5px;
+        top: 20px;
+        height: calc(100% + var(--space-md));
+        width: 2px;
+        background-color: var(--secondary-bg);
+      }
+
+      .timeline-marker {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 15px;
+        margin-top: 5px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .timeline-marker.pending {
+        background-color: #fff3cd;
+      }
+
+      .timeline-marker.processing {
+        background-color: #cce5ff;
+      }
+
+      .timeline-marker.completed {
+        background-color: #d4edda;
+      }
+
+      .timeline-marker.rejected {
+        background-color: #f8d7da;
+      }
+
+      .timeline-date {
+        font-size: 0.8rem;
+        color: var(--secondary-text);
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .payment-method-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.5rem;
+        background-color: var(--secondary-bg);
+        border-radius: var(--radius-sm);
+        font-size: 0.85rem;
+      }
+
+      .payment-method-badge i {
+        margin-right: 0.25rem;
+      }
+
+      .bank-info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .bank-info-item {
+        display: flex;
+        justify-content: space-between;
+        padding: var(--space-sm) 0;
+        border-bottom: 1px dashed var(--secondary-bg);
+      }
+
+      .bank-info-item:last-child {
+        border-bottom: none;
+      }
+
+      .bank-info-label {
+        font-weight: 500;
+        color: var(--secondary-text);
+      }
+
+      .bank-info-value {
+        color: var(--primary-text-dark);
+        text-align: right;
+        word-break: break-word;
+      }
+
+      @media (max-width: 992px) {
+        .admin-sidebar {
+          transform: translateX(-100%);
+          transition: transform var(--transition-medium);
+        }
+
+        .admin-sidebar.show {
+          transform: translateX(0);
+        }
+
+        .admin-content {
+          margin-left: 0;
+        }
+
+        .toggle-sidebar {
+          display: block;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .filter-row {
+          flex-direction: column;
+        }
+
+        .filter-group {
+          width: 100%;
+        }
+
+        .admin-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .admin-header > div {
+          margin-top: var(--space-md);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-logo">
+        <img
+          src="../../assets/images/artshelf-logo.png"
+          alt="ArtShelf Logo"
+          height="40"
+        />
+      </div>
+      <ul class="admin-nav">
+        <li class="admin-nav-item">
+          <a href="dashboard.html" class="admin-nav-link">
+            <i class="fas fa-home"></i>
+            Dashboard
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="artworks.html" class="admin-nav-link">
+            <i class="fas fa-palette"></i>
+            Artworks
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="artists.html" class="admin-nav-link">
+            <i class="fas fa-user-artist"></i>
+            Artists
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="customers.html" class="admin-nav-link">
+            <i class="fas fa-users"></i>
+            Customers
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="collections.html" class="admin-nav-link">
+            <i class="fas fa-layer-group"></i>
+            Collections
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="fairs.html" class="admin-nav-link">
+            <i class="fas fa-map-marker-alt"></i>
+            Art Fairs
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="orders.html" class="admin-nav-link">
+            <i class="fas fa-shopping-cart"></i>
+            Orders
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="withdrawals.html" class="admin-nav-link active">
+            <i class="fas fa-money-bill-wave"></i>
+            Withdrawals
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="offers.html" class="admin-nav-link">
+            <i class="fas fa-tag"></i>
+            Offers
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="reports.html" class="admin-nav-link">
+            <i class="fas fa-chart-bar"></i>
+            Reports
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="settings.html" class="admin-nav-link">
+            <i class="fas fa-cog"></i>
+            Settings
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-content">
+      <div class="admin-header">
+        <button class="btn btn-outline-primary d-lg-none toggle-sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="admin-title">Manage Withdrawals</h1>
+        <div class="dropdown">
+          <button
+            class="btn btn-outline-primary dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+          >
+            <img
+              src="https://images.pexels.com/photos/3779448/pexels-photo-3779448.jpeg?auto=compress&cs=tinysrgb&w=200"
+              alt="Admin"
+              class="rounded-circle me-2"
+              width="30"
+              height="30"
+            />
+            Admin User
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" href="profile.html"
+                ><i class="fas fa-user me-2"></i> Profile</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="settings.html"
+                ><i class="fas fa-cog me-2"></i> Settings</a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a
+                class="dropdown-item text-danger"
+                href="#"
+                onclick="window.auth.logout(); return false;"
+              >
+                <i class="fas fa-sign-out-alt me-2"></i> Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Withdrawal Stats -->
+      <div class="row">
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon primary">
+              <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="stat-content">
+              <h3 id="totalWithdrawalsCount">0</h3>
+              <p>Total Withdrawals</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon warning">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-content">
+              <h3 id="pendingWithdrawalsCount">0</h3>
+              <p>Pending Requests</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon success">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+              <h3 id="completedWithdrawalsCount">0</h3>
+              <p>Completed</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon danger">
+              <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="stat-content">
+              <h3 id="totalAmountWithdrawn">$0.00</h3>
+              <p>30-Day Volume</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Section -->
+      <div class="filter-container">
+        <div class="filter-header">
+          <h2 class="table-title mb-3">Filter Withdrawals</h2>
+        </div>
+        <form id="withdrawalFilterForm">
+          <div class="filter-row">
+            <div class="filter-group">
+              <label for="statusFilter" class="form-label">Status</label>
+              <select class="form-select" id="statusFilter">
+                <option value="all">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="processing">Processing</option>
+                <option value="completed">Completed</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="dateRangeFilter" class="form-label">Date Range</label>
+              <select class="form-select" id="dateRangeFilter">
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="last7days">Last 7 Days</option>
+                <option value="last30days">Last 30 Days</option>
+                <option value="thisMonth">This Month</option>
+                <option value="lastMonth">Last Month</option>
+                <option value="custom">Custom Range</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="artistFilter" class="form-label">Artist</label>
+              <select class="form-select" id="artistFilter">
+                <option value="all">All Artists</option>
+                <!-- Will be populated by JavaScript -->
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="paymentMethodFilter" class="form-label"
+                >Payment Method</label
+              >
+              <select class="form-select" id="paymentMethodFilter">
+                <option value="all">All Methods</option>
+                <option value="bank_transfer">Bank Transfer</option>
+                <option value="paypal">PayPal</option>
+                <option value="stripe">Stripe</option>
+                <option value="crypto">Cryptocurrency</option>
+                <option value="check">Check</option>
+              </select>
+            </div>
+          </div>
+          <div class="filter-row">
+            <div class="filter-group">
+              <label for="amountMinFilter" class="form-label">Min Amount</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="amountMinFilter"
+                  placeholder="Min"
+                  min="0"
+                />
+              </div>
+            </div>
+            <div class="filter-group">
+              <label for="amountMaxFilter" class="form-label">Max Amount</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="amountMaxFilter"
+                  placeholder="Max"
+                  min="0"
+                />
+              </div>
+            </div>
+            <div class="filter-group">
+              <label for="searchFilter" class="form-label">Search</label>
+              <input
+                type="text"
+                class="form-control"
+                id="searchFilter"
+                placeholder="Search by ID, artist, or reference"
+              />
+            </div>
+          </div>
+          <div class="custom-date-range filter-row">
+            <div class="filter-group">
+              <label for="startDateFilter" class="form-label">Start Date</label>
+              <input type="date" class="form-control" id="startDateFilter" />
+            </div>
+            <div class="filter-group">
+              <label for="endDateFilter" class="form-label">End Date</label>
+              <input type="date" class="form-control" id="endDateFilter" />
+            </div>
+          </div>
+          <div class="text-end">
+            <button type="reset" class="btn btn-outline-secondary">
+              Reset
+            </button>
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Withdrawals Table -->
+      <div class="table-container">
+        <div class="table-header">
+          <h2 class="table-title">Withdrawal Requests</h2>
+          <div>
+            <button
+              type="button"
+              class="btn btn-outline-secondary me-2"
+              id="exportWithdrawalsBtn"
+            >
+              <i class="fas fa-file-export me-1"></i> Export
+            </button>
+            <button type="button" class="btn btn-primary" id="batchProcessBtn">
+              <i class="fas fa-check-double me-1"></i> Batch Process
+            </button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="admin-table" id="withdrawalsTable">
+            <thead>
+              <tr>
+                <th>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="selectAllWithdrawals"
+                    />
+                  </div>
+                </th>
+                <th>Withdrawal ID</th>
+                <th>Date</th>
+                <th>Artist</th>
+                <th>Amount</th>
+                <th>Payment Method</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="withdrawalsTableBody">
+              <!-- Will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination-container">
+          <nav aria-label="Withdrawal pagination">
+            <ul class="pagination" id="withdrawalPagination">
+              <!-- Will be populated by JavaScript -->
+            </ul>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Withdrawal Details Modal -->
+      <div
+        class="modal fade"
+        id="withdrawalDetailsModal"
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Withdrawal Details</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body" id="withdrawalDetailsContent">
+              <!-- Will be populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                class="btn btn-danger"
+                id="rejectWithdrawalBtn"
+              >
+                Reject
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="approveWithdrawalBtn"
+              >
+                Approve
+              </button>
+              <button
+                type="button"
+                class="btn btn-success"
+                id="markCompletedBtn"
+              >
+                Mark as Completed
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Update Withdrawal Status Modal -->
+      <div
+        class="modal fade"
+        id="updateWithdrawalModal"
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="updateWithdrawalTitle">
+                Update Withdrawal Status
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form id="updateWithdrawalForm">
+                <input type="hidden" id="updateWithdrawalId" />
+                <div class="mb-3">
+                  <label for="withdrawalStatus" class="form-label"
+                    >Status</label
+                  >
+                  <select class="form-select" id="withdrawalStatus" required>
+                    <option value="pending">Pending</option>
+                    <option value="processing">Processing</option>
+                    <option value="completed">Completed</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="transactionReference" class="form-label"
+                    >Transaction Reference</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="transactionReference"
+                    placeholder="Enter payment reference"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="statusNotes" class="form-label">Notes</label>
+                  <textarea
+                    class="form-control"
+                    id="statusNotes"
+                    rows="3"
+                    placeholder="Add notes about this status update..."
+                  ></textarea>
+                </div>
+                <div class="mb-3 form-check">
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    id="notifyArtist"
+                    checked
+                  />
+                  <label class="form-check-label" for="notifyArtist"
+                    >Notify Artist</label
+                  >
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancel
+              </button>
+              <button type="button" class="btn btn-primary" id="saveStatusBtn">
+                Update Status
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Batch Process Modal -->
+      <div
+        class="modal fade"
+        id="batchProcessModal"
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Batch Process Withdrawals</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                Selected withdrawals will be processed together. Please verify
+                all details before proceeding.
+              </div>
+              <div class="mb-3">
+                <label for="batchAction" class="form-label">Action</label>
+                <select class="form-select" id="batchAction" required>
+                  <option value="approve">Approve Selected</option>
+                  <option value="process">Mark as Processing</option>
+                  <option value="complete">Mark as Completed</option>
+                  <option value="reject">Reject Selected</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="batchNotes" class="form-label">Notes</label>
+                <textarea
+                  class="form-control"
+                  id="batchNotes"
+                  rows="3"
+                  placeholder="Add notes to apply to all selected withdrawals..."
+                ></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Selected Withdrawals</label>
+                <div class="table-responsive">
+                  <table class="table table-sm table-bordered">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Artist</th>
+                        <th>Amount</th>
+                        <th>Payment Method</th>
+                      </tr>
+                    </thead>
+                    <tbody id="batchWithdrawalsBody">
+                      <!-- Will be populated by JavaScript -->
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="2" class="text-end">
+                          <strong>Total:</strong>
+                        </td>
+                        <td id="batchTotalAmount" colspan="2">
+                          <strong>$0.00</strong>
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+              <div class="mb-3 form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="batchNotifyArtists"
+                  checked
+                />
+                <label class="form-check-label" for="batchNotifyArtists"
+                  >Notify Artists</label
+                >
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="confirmBatchBtn"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Footer -->
+      <footer class="admin-footer">
+        <p>&copy; 2025 ArtShelf Admin Dashboard. All rights reserved.</p>
+      </footer>
+    </main>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Custom Scripts -->
+    <script src="../../js/config.js"></script>
+    <script src="../../js/main.js"></script>
+    <script src="../../js/admin/withdrawals.js"></script>
+  </body>
+</html>

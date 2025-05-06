@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | ArtShelf</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/dashboard.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        .profile-header {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            box-shadow: var(--shadow-md);
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--white);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: var(--space-xl);
+            margin: var(--space-lg) 0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+        }
+
+        .profile-section {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            box-shadow: var(--shadow-md);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: var(--space-lg);
+            color: var(--primary-text-dark);
+        }
+
+        .profile-form .form-group {
+            margin-bottom: var(--space-lg);
+        }
+
+        .profile-form label {
+            font-weight: 500;
+            color: var(--primary-text-dark);
+            margin-bottom: var(--space-xs);
+        }
+
+        .profile-tabs {
+            margin-bottom: var(--space-xl);
+        }
+
+        .profile-tabs .nav-link {
+            color: var(--secondary-text);
+            padding: var(--space-md) var(--space-lg);
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+        }
+
+        .profile-tabs .nav-link.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            background: transparent;
+        }
+
+        .profile-tabs .nav-link:hover {
+            color: var(--accent);
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid var(--secondary-bg);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: var(--space-md);
+            color: var(--accent);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            margin-bottom: 0;
+            color: var(--primary-text-dark);
+        }
+
+        .activity-time {
+            font-size: 0.85rem;
+            color: var(--secondary-text);
+        }
+
+        .referral-code {
+            background-color: var(--secondary-bg);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            font-family: monospace;
+            font-size: 1.2rem;
+            text-align: center;
+            margin: var(--space-md) 0;
+        }
+
+        .social-connect {
+            display: flex;
+            gap: var(--space-md);
+            margin-top: var(--space-lg);
+        }
+
+        .social-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            padding: var(--space-md);
+            border: 1px solid #E0E0E0;
+            border-radius: var(--radius-md);
+            background-color: var(--white);
+            color: var(--primary-text-dark);
+            transition: all var(--transition-fast);
+        }
+
+        .social-btn:hover {
+            background-color: var(--secondary-bg);
+            transform: translateY(-2px);
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid var(--secondary-bg);
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: var(--space-md);
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 500;
+            margin-bottom: var(--space-xs);
+            color: var(--primary-text-dark);
+        }
+
+        .notification-text {
+            color: var(--secondary-text);
+            margin-bottom: var(--space-xs);
+        }
+
+        .notification-time {
+            font-size: 0.85rem;
+            color: var(--secondary-text);
+        }
+
+        .notification-actions {
+            margin-left: var(--space-md);
+        }
+
+        .security-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid var(--secondary-bg);
+        }
+
+        .security-item:last-child {
+            border-bottom: none;
+        }
+
+        .security-info h4 {
+            font-size: 1rem;
+            margin-bottom: var(--space-xs);
+            color: var(--primary-text-dark);
+        }
+
+        .security-info p {
+            color: var(--secondary-text);
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+
+        .preferences-section {
+            margin-bottom: var(--space-xl);
+        }
+
+        .preferences-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: var(--space-md);
+            color: var(--primary-text-dark);
+        }
+
+        .preference-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-sm) 0;
+        }
+
+        .preference-info {
+            flex: 1;
+        }
+
+        .preference-info h5 {
+            font-size: 1rem;
+            margin-bottom: var(--space-xs);
+            color: var(--primary-text-dark);
+        }
+
+        .preference-info p {
+            color: var(--secondary-text);
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+
+        .form-switch {
+            padding-left: 2.5rem;
+        }
+
+        .form-switch .form-check-input {
+            width: 3rem;
+            height: 1.5rem;
+            margin-left: -2.5rem;
+        }
+
+        .form-switch .form-check-input:checked {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="dashboard.html">
+                <img src="../../assets/images/artshelf-logo.png" alt="ArtShelf Logo" height="40">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">Discover</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="artists.html">Artists</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="collections.html">Collections</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="fairs.html">Art Fairs</a>
+                    </li>
+                </ul>
+                <div class="navbar-right d-flex align-items-center">
+                    <div class="dropdown me-3">
+                        <button class="btn btn-icon" type="button" data-bs-toggle="dropdown">
+                            <i class="far fa-heart"></i>
+                            <span class="badge bg-accent">3</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header">Favorites</h6>
+                            <div class="favorites-preview">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-center" href="favorites.html">View All Favorites</a>
+                        </div>
+                    </div>
+                    <div class="dropdown me-3">
+                        <button class="btn btn-icon" type="button" data-bs-toggle="dropdown">
+                            <i class="fa fa-shopping-cart"></i>
+                            <span class="badge bg-accent">1</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header">Shopping Cart</h6>
+                            <div class="cart-preview">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-center" href="cart.html">View Cart</a>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-icon profile-btn" type="button" data-bs-toggle="dropdown">
+                            <img src="https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Profile Picture" class="profile-picture">
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header">John Smith</h6>
+                            <a class="dropdown-item active" href="profile.html">
+                                <i class="fa fa-user me-2"></i> My Profile
+                            </a>
+                            <a class="dropdown-item" href="orders.html">
+                                <i class="fa fa-shopping-bag me-2"></i> My Orders
+                            </a>
+                            <a class="dropdown-item" href="following.html">
+                                <i class="fa fa-users me-2"></i> Following
+                            </a>
+                            <a class="dropdown-item" href="settings.html">
+                                <i class="fa fa-cog me-2"></i> Settings
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" href="#" onclick="window.auth.logout(); return false;">
+                                <i class="fa fa-sign-out-alt me-2"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Profile Header -->
+            <div class="profile-header text-center">
+                <img src="https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Profile Picture" class="profile-avatar">
+                <h1 class="mb-2">John Smith</h1>
+                <p class="text-muted mb-3">Art enthusiast and collector</p>
+                <div class="profile-stats justify-content-center">
+                    <div class="stat-item">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Artworks</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">Following</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">$150</div>
+                        <div class="stat-label">Balance</div>
+                    </div>
+                </div>
+                <button class="btn btn-primary">
+                    <i class="fas fa-edit me-2"></i> Edit Profile
+                </button>
+            </div>
+
+            <!-- Profile Navigation -->
+            <ul class="nav nav-tabs profile-tabs" id="profileTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="activity-tab" data-bs-toggle="tab" href="#activity" role="tab">Activity</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="notifications-tab" data-bs-toggle="tab" href="#notifications" role="tab">Notifications</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="security-tab" data-bs-toggle="tab" href="#security" role="tab">Security</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="preferences-tab" data-bs-toggle="tab" href="#preferences" role="tab">Preferences</a>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="profileTabsContent">
+                <!-- Activity Tab -->
+                <div class="tab-pane fade show active" id="activity" role="tabpanel">
+                    <div class="profile-section">
+                        <h3 class="section-title">Recent Activity</h3>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="activity-title">Added "Abstract Harmony" to favorites</p>
+                                <p class="activity-time">2 hours ago</p>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="activity-title">Purchased "Coastal Serenity"</p>
+                                <p class="activity-time">Yesterday</p>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="activity-title">Started following Emma Reynolds</p>
+                                <p class="activity-time">3 days ago</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h3 class="section-title">Referral Program</h3>
+                        <p>Share your referral code with friends and earn $5 credit when they make their first purchase!</p>
+                        <div class="referral-code">JOHN2023</div>
+                        <div class="social-connect">
+                            <button class="social-btn">
+                                <i class="fab fa-facebook-f"></i>
+                                Share
+                            </button>
+                            <button class="social-btn">
+                                <i class="fab fa-twitter"></i>
+                                Tweet
+                            </button>
+                            <button class="social-btn">
+                                <i class="fas fa-envelope"></i>
+                                Email
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications Tab -->
+                <div class="tab-pane fade" id="notifications" role="tabpanel">
+                    <div class="profile-section">
+                        <h3 class="section-title">Notifications</h3>
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-tag"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4 class="notification-title">Special Offer</h4>
+                                <p class="notification-text">15% off on selected artworks this weekend!</p>
+                                <p class="notification-time">1 hour ago</p>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="btn btn-sm btn-outline-primary">View</button>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-palette"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4 class="notification-title">New Collection</h4>
+                                <p class="notification-text">Check out our latest collection "Modern Abstracts"</p>
+                                <p class="notification-time">3 hours ago</p>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="btn btn-sm btn-outline-primary">Explore</button>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4 class="notification-title">Artist Update</h4>
+                                <p class="notification-text">Emma Reynolds added 3 new artworks</p>
+                                <p class="notification-time">Yesterday</p>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="btn btn-sm btn-outline-primary">View</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Tab -->
+                <div class="tab-pane fade" id="security" role="tabpanel">
+                    <div class="profile-section">
+                        <h3 class="section-title">Security Settings</h3>
+                        <div class="security-item">
+                            <div class="security-info">
+                                <h4>Password</h4>
+                                <p>Last changed 3 months ago</p>
+                            </div>
+                            <button class="btn btn-outline-primary">Change Password</button>
+                        </div>
+                        <div class="security-item">
+                            <div class="security-info">
+                                <h4>Two-Factor Authentication</h4>
+                                <p>Add an extra layer of security to your account</p>
+                            </div>
+                            <button class="btn btn-outline-primary">Enable</button>
+                        </div>
+                        <div class="security-item">
+                            <div class="security-info">
+                                <h4>Connected Devices</h4>
+                                <p>Manage devices that have access to your account</p>
+                            </div>
+                            <button class="btn btn-outline-primary">View Devices</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preferences Tab -->
+                <div class="tab-pane fade" id="preferences" role="tabpanel">
+                    <div class="profile-section">
+                        <h3 class="section-title">Account Preferences</h3>
+                        
+                        <div class="preferences-section">
+                            <h4>Notifications</h4>
+                            <div class="preference-item">
+                                <div class="preference-info">
+                                    <h5>Email Notifications</h5>
+                                    <p>Receive updates about new artworks and offers</p>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" checked>
+                                </div>
+                            </div>
+                            <div class="preference-item">
+                                <div class="preference-info">
+                                    <h5>SMS Notifications</h5>
+                                    <p>Get text messages for order updates</p>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="preferences-section">
+                            <h4>Currency</h4>
+                            <select class="form-select">
+                                <option value="usd">USD ($)</option>
+                                <option value="eur">EUR (€)</option>
+                                <option value="gbp">GBP (£)</option>
+                                <option value="cad">CAD ($)</option>
+                                <option value="aud">AUD ($)</option>
+                            </select>
+                        </div>
+
+                        <div class="preferences-section">
+                            <h4>Language</h4>
+                            <select class="form-select">
+                                <option value="en">English</option>
+                                <option value="es">Español</option>
+                                <option value="fr">Français</option>
+                                <option value="de">Deutsch</option>
+                            </select>
+                        </div>
+
+                        <div class="preferences-section">
+                            <h4>Privacy</h4>
+                            <div class="preference-item">
+                                <div class="preference-info">
+                                    <h5>Profile Visibility</h5>
+                                    <p>Allow others to see your profile and collection</p>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" checked>
+                                </div>
+                            </div>
+                            <div class="preference-item">
+                                <div class="preference-info">
+                                    <h5>Activity Status</h5>
+                                    <p>Show when you're active on ArtShelf</p>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" checked>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="footer-logo">
+                        <img src="../../assets/images/artshelf-logo.png" alt="ArtShelf Logo" height="40">
+                    </div>
+                    <p class="footer-description">Discover, buy, and sell extraordinary art from artists around the world.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-pinterest-p"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <h5 class="footer-heading">Explore</h5>
+                    <ul class="footer-links">
+                        <li><a href="artworks.html">Artworks</a></li>
+                        <li><a href="artists.html">Artists</a></li>
+                        <li><a href="collections.html">Collections</a></li>
+                        <li><a href="fairs.html">Art Fairs</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h5 class="footer-heading">Account</h5>
+                    <ul class="footer-links">
+                        <li><a href="profile.html">My Profile</a></li>
+                        <li><a href="favorites.html">Favorites</a></li>
+                        <li><a href="orders.html">Orders</a></li>
+                        <li><a href="settings.html">Settings</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h5 class="footer-heading">Support</h5>
+                    <ul class="footer-links">
+                        <li><a href="../help/faq.html">FAQ</a></li>
+                        <li><a href="../help/contact.html">Contact Us</a></li>
+                        <li><a href="../help/shipping.html">Shipping</a></li>
+                        <li><a href="../help/returns.html">Returns</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h5 class="footer-heading">Legal</h5>
+                    <ul class="footer-links">
+                        <li><a href="../legal/terms.html">Terms of Service</a></li>
+                        <li><a href="../legal/privacy.html">Privacy Policy</a></li>
+                        <li><a href="../legal/copyright.html">Copyright</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <p class="copyright">&copy; 2023 ArtShelf. All rights reserved.</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="payment-methods">
+                            <span>Secured by Stripe</span>
+                            <img src="../../assets/images/payment-methods.png" alt="Payment Methods" height="24">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Custom Scripts -->
+    <script src="../../js/config.js"></script>
+    <script src="../../js/main.js"></script>
+    <!-- <script src="../../js/auth.js"></script> -->
+    <script src="../../js/models/User.js"></script>
+    <script src="../../js/services/UserService.js"></script>

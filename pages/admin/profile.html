@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Profile | ArtShelf Admin</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../../css/main.css" />
+    <link rel="stylesheet" href="../../css/dashboard.css" />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Poppins:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Admin Dashboard Styles */
+      .admin-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 250px;
+        background-color: var(--white);
+        box-shadow: var(--shadow-md);
+        padding: var(--space-lg);
+        z-index: 1000;
+        overflow-y: auto;
+      }
+
+      .admin-logo {
+        text-align: center;
+        padding: var(--space-lg) 0;
+        margin-bottom: var(--space-lg);
+        border-bottom: 1px solid var(--secondary-bg);
+      }
+
+      .admin-nav {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .admin-nav-item {
+        margin-bottom: var(--space-xs);
+      }
+
+      .admin-nav-link {
+        display: flex;
+        align-items: center;
+        padding: var(--space-md);
+        color: var(--secondary-text);
+        border-radius: var(--radius-md);
+        transition: all var(--transition-fast);
+      }
+
+      .admin-nav-link:hover {
+        color: var(--accent);
+        background-color: var(--secondary-bg);
+      }
+
+      .admin-nav-link.active {
+        color: var(--accent);
+        background-color: var(--secondary-bg);
+      }
+
+      .admin-nav-link i {
+        width: 20px;
+        margin-right: var(--space-md);
+      }
+
+      .admin-content {
+        margin-left: 250px;
+        padding: var(--space-xl);
+        min-height: 100vh;
+        background-color: var(--main-bg);
+      }
+
+      .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+      }
+
+      .admin-title {
+        font-family: var(--heading-font);
+        font-weight: 500;
+        margin: 0;
+      }
+
+      .admin-footer {
+        margin-top: var(--space-xxl);
+        padding-top: var(--space-lg);
+        text-align: center;
+        border-top: 1px solid var(--secondary-bg);
+        color: var(--secondary-text);
+        font-size: 0.9rem;
+      }
+
+      .profile-section {
+        background-color: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: var(--space-xl);
+        margin-bottom: var(--space-xl);
+      }
+
+      .profile-section-title {
+        font-family: var(--heading-font);
+        font-size: 1.5rem;
+        margin-bottom: var(--space-lg);
+        padding-bottom: var(--space-md);
+        border-bottom: 1px solid var(--secondary-bg);
+      }
+
+      .profile-avatar-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+      }
+
+      .profile-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: var(--space-md);
+        border: 5px solid var(--secondary-bg);
+      }
+
+      .activity-item {
+        padding: var(--space-md);
+        border-bottom: 1px solid var(--secondary-bg);
+      }
+
+      .activity-item:last-child {
+        border-bottom: none;
+      }
+
+      .activity-icon {
+        background-color: var(--secondary-bg);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent);
+      }
+
+      .activity-time {
+        color: var(--secondary-text);
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 992px) {
+        .admin-sidebar {
+          transform: translateX(-100%);
+          transition: transform var(--transition-medium);
+        }
+
+        .admin-sidebar.show {
+          transform: translateX(0);
+        }
+
+        .admin-content {
+          margin-left: 0;
+        }
+
+        .toggle-sidebar {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-logo">
+        <img
+          src="../../assets/images/artshelf-logo.png"
+          alt="ArtShelf Logo"
+          height="40"
+        />
+      </div>
+      <ul class="admin-nav">
+        <li class="admin-nav-item">
+          <a href="dashboard.html" class="admin-nav-link">
+            <i class="fas fa-home"></i>
+            Dashboard
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="artworks.html" class="admin-nav-link">
+            <i class="fas fa-palette"></i>
+            Artworks
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="artists.html" class="admin-nav-link">
+            <i class="fas fa-user-artist"></i>
+            Artists
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="customers.html" class="admin-nav-link">
+            <i class="fas fa-users"></i>
+            Customers
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="collections.html" class="admin-nav-link">
+            <i class="fas fa-layer-group"></i>
+            Collections
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="fairs.html" class="admin-nav-link">
+            <i class="fas fa-map-marker-alt"></i>
+            Art Fairs
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="orders.html" class="admin-nav-link">
+            <i class="fas fa-shopping-cart"></i>
+            Orders
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="withdrawals.html" class="admin-nav-link">
+            <i class="fas fa-money-bill-wave"></i>
+            Withdrawals
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="offers.html" class="admin-nav-link">
+            <i class="fas fa-tag"></i>
+            Offers
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="reports.html" class="admin-nav-link">
+            <i class="fas fa-chart-bar"></i>
+            Reports
+          </a>
+        </li>
+        <li class="admin-nav-item">
+          <a href="settings.html" class="admin-nav-link">
+            <i class="fas fa-cog"></i>
+            Settings
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-content">
+      <div class="admin-header">
+        <button class="btn btn-outline-primary d-lg-none toggle-sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="admin-title">Admin Profile</h1>
+        <div class="dropdown">
+          <button
+            class="btn btn-outline-primary dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+          >
+            <img
+              src="https://images.pexels.com/photos/3779448/pexels-photo-3779448.jpeg?auto=compress&cs=tinysrgb&w=200"
+              alt="Admin"
+              class="rounded-circle me-2"
+              width="30"
+              height="30"
+            />
+            Admin User
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item active" href="profile.html"
+                ><i class="fas fa-user me-2"></i> Profile</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="settings.html"
+                ><i class="fas fa-cog me-2"></i> Settings</a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item" href="#" id="logoutBtn"
+                ><i class="fas fa-sign-out-alt me-2"></i> Logout</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="container-fluid">
+        <div class="row">
+          <!-- Profile Info Section -->
+          <div class="col-lg-8">
+            <div class="profile-section">
+              <h2 class="profile-section-title">Profile Information</h2>
+              <form id="profileForm">
+                <div class="row mb-4">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="firstName" class="form-label"
+                        >First Name</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="firstName"
+                        name="firstName"
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="lastName" class="form-label">Last Name</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="lastName"
+                        name="lastName"
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="email" class="form-label"
+                        >Email Address</label
+                      >
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="email"
+                        name="email"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="phone" class="form-label">Phone Number</label>
+                      <input
+                        type="tel"
+                        class="form-control"
+                        id="phone"
+                        name="phone"
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="position" class="form-label">Position</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="position"
+                        name="position"
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="department" class="form-label"
+                        >Department</label
+                      >
+                      <select
+                        class="form-select"
+                        id="department"
+                        name="department"
+                      >
+                        <option value="administration">Administration</option>
+                        <option value="content">Content Management</option>
+                        <option value="sales">Sales</option>
+                        <option value="support">Customer Support</option>
+                        <option value="marketing">Marketing</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="mb-3">
+                      <label for="bio" class="form-label">Bio</label>
+                      <textarea
+                        class="form-control"
+                        id="bio"
+                        name="bio"
+                        rows="4"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  Update Profile
+                </button>
+              </form>
+            </div>
+
+            <!-- Security Section -->
+            <div class="profile-section">
+              <h2 class="profile-section-title">Security</h2>
+              <form id="passwordForm">
+                <div class="row mb-4">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="currentPassword" class="form-label"
+                        >Current Password</label
+                      >
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="currentPassword"
+                        name="currentPassword"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-4">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="newPassword" class="form-label"
+                        >New Password</label
+                      >
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="newPassword"
+                        name="newPassword"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="confirmPassword" class="form-label"
+                        >Confirm New Password</label
+                      >
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  Change Password
+                </button>
+              </form>
+            </div>
+
+            <!-- Notification Preferences -->
+            <div class="profile-section">
+              <h2 class="profile-section-title">Notification Preferences</h2>
+              <form id="notificationForm">
+                <div class="mb-3">
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="emailNotifications"
+                      checked
+                    />
+                    <label class="form-check-label" for="emailNotifications">
+                      Email Notifications
+                    </label>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="smsNotifications"
+                    />
+                    <label class="form-check-label" for="smsNotifications">
+                      SMS Notifications
+                    </label>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="appNotifications"
+                      checked
+                    />
+                    <label class="form-check-label" for="appNotifications">
+                      Browser Notifications
+                    </label>
+                  </div>
+                </div>
+                <div class="mb-4">
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="activityDigest"
+                      checked
+                    />
+                    <label class="form-check-label" for="activityDigest">
+                      Weekly Activity Digest
+                    </label>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  Save Notification Preferences
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Sidebar Content -->
+          <div class="col-lg-4">
+            <!-- Profile Avatar Section -->
+            <div class="profile-section">
+              <h2 class="profile-section-title">Profile Picture</h2>
+              <div class="profile-avatar-container">
+                <img
+                  src="https://images.pexels.com/photos/3779448/pexels-photo-3779448.jpeg?auto=compress&cs=tinysrgb&w=200"
+                  alt="Admin Avatar"
+                  class="profile-avatar"
+                  id="profileAvatar"
+                />
+                <div class="mt-3">
+                  <label for="avatarUpload" class="btn btn-outline-primary">
+                    Change Photo
+                  </label>
+                  <input
+                    type="file"
+                    id="avatarUpload"
+                    style="display: none"
+                    accept="image/*"
+                  />
+                </div>
+              </div>
+              <div class="text-center">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-danger"
+                  id="removePhotoBtn"
+                >
+                  Remove Photo
+                </button>
+              </div>
+            </div>
+
+            <!-- Recent Activity Section -->
+            <div class="profile-section">
+              <h2 class="profile-section-title">Recent Activity</h2>
+              <div class="activity-list">
+                <div class="activity-item d-flex align-items-center">
+                  <div class="activity-icon me-3">
+                    <i class="fas fa-sign-in-alt"></i>
+                  </div>
+                  <div class="activity-content flex-grow-1">
+                    <div class="d-flex justify-content-between">
+                      <div>Logged in to the system</div>
+                      <div class="activity-time">2 hours ago</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="activity-item d-flex align-items-center">
+                  <div class="activity-icon me-3">
+                    <i class="fas fa-cog"></i>
+                  </div>
+                  <div class="activity-content flex-grow-1">
+                    <div class="d-flex justify-content-between">
+                      <div>Updated system settings</div>
+                      <div class="activity-time">Yesterday</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="activity-item d-flex align-items-center">
+                  <div class="activity-icon me-3">
+                    <i class="fas fa-check-circle"></i>
+                  </div>
+                  <div class="activity-content flex-grow-1">
+                    <div class="d-flex justify-content-between">
+                      <div>Approved new artwork submission</div>
+                      <div class="activity-time">2 days ago</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="activity-item d-flex align-items-center">
+                  <div class="activity-icon me-3">
+                    <i class="fas fa-user-plus"></i>
+                  </div>
+                  <div class="activity-content flex-grow-1">
+                    <div class="d-flex justify-content-between">
+                      <div>Added new artist account</div>
+                      <div class="activity-time">3 days ago</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="activity-item d-flex align-items-center">
+                  <div class="activity-icon me-3">
+                    <i class="fas fa-comment"></i>
+                  </div>
+                  <div class="activity-content flex-grow-1">
+                    <div class="d-flex justify-content-between">
+                      <div>Responded to customer inquiry</div>
+                      <div class="activity-time">5 days ago</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Account Status -->
+            <div class="profile-section">
+              <h2 class="profile-section-title">Account Status</h2>
+              <div class="mb-3">
+                <div
+                  class="d-flex justify-content-between align-items-center mb-2"
+                >
+                  <div>Account Type:</div>
+                  <div><span class="badge bg-primary">Admin</span></div>
+                </div>
+                <div
+                  class="d-flex justify-content-between align-items-center mb-2"
+                >
+                  <div>Last Login:</div>
+                  <div>April 29, 2025 - 09:45 AM</div>
+                </div>
+                <div
+                  class="d-flex justify-content-between align-items-center mb-2"
+                >
+                  <div>Account Created:</div>
+                  <div>January 15, 2024</div>
+                </div>
+                <div
+                  class="d-flex justify-content-between align-items-center mb-2"
+                >
+                  <div>2FA Status:</div>
+                  <div><span class="badge bg-success">Enabled</span></div>
+                </div>
+              </div>
+              <div class="d-grid gap-2">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary"
+                  id="enable2FABtn"
+                >
+                  Manage Two-Factor Authentication
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  id="sessionBtn"
+                >
+                  View Active Sessions
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Footer -->
+      <footer class="admin-footer">
+        <p>&copy; 2025 ArtShelf Admin Dashboard. All rights reserved.</p>
+      </footer>
+    </main>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Custom Scripts -->
+    <script src="../../js/config.js"></script>
+    <script src="../../js/main.js"></script>
+    <script src="../../js/models/User.js"></script>
+    <script src="../../js/services/UserService.js"></script>
+    <script src="../../js/admin/profile.js"></script>
+  </body>
+</html>

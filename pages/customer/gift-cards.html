@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Cards | ArtShelf</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/dashboard.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Gift Card Page Styles */
+        .gift-card-page {
+            padding-top: 100px;
+            min-height: calc(100vh - 300px);
+        }
+        
+        .gift-card-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .gift-card-title {
+            font-size: 2.5rem;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .gift-card-subtitle {
+            color: var(--secondary-text);
+            max-width: 700px;
+            margin: 0 auto var(--space-lg);
+        }
+        
+        .gift-card-features {
+            display: flex;
+            justify-content: center;
+            margin-bottom: var(--space-xl);
+            gap: var(--space-xl);
+            flex-wrap: wrap;
+        }
+        
+        .feature-item {
+            text-align: center;
+            max-width: 220px;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .feature-title {
+            font-size: 1.2rem;
+            margin-bottom: var(--space-xs);
+            font-weight: 500;
+        }
+        
+        .feature-text {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+        }
+        
+        .gift-card-options {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--space-xxl);
+        }
+        
+        .gift-card-option-row {
+            border-bottom: 1px solid #E0E0E0;
+            padding-bottom: var(--space-lg);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .gift-card-option-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+        
+        .gift-card-selector {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .gift-card-designs {
+            display: flex;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            overflow-x: auto;
+            padding-bottom: var(--space-sm);
+        }
+        
+        .design-option {
+            border: 3px solid transparent;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            overflow: hidden;
+            transition: all var(--transition-fast);
+            flex: 0 0 180px;
+        }
+        
+        .design-option.active {
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+        
+        .design-option img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+        
+        .amount-options {
+            display: flex;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .amount-option {
+            flex: 1 0 80px;
+            text-align: center;
+            padding: var(--space-md);
+            border: 2px solid #E0E0E0;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .amount-option.active {
+            border-color: var(--accent);
+            background-color: var(--light-accent);
+            transform: translateY(-3px);
+        }
+        
+        .amount-value {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--primary-text-dark);
+        }
+        
+        .recipient-info {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .message-container {
+            position: relative;
+        }
+        
+        .message-counter {
+            position: absolute;
+            bottom: var(--space-xs);
+            right: var(--space-sm);
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+        }
+        
+        .gift-card-preview {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 100px;
+        }
+        
+        .preview-header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .preview-title {
+            font-size: 1.5rem;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .preview-card {
+            position: relative;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin-bottom: var(--space-lg);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .preview-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .preview-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.6));
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: var(--space-md);
+            color: var(--white);
+        }
+        
+        .preview-amount {
+            font-size: 2rem;
+            font-weight: 500;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .preview-recipient {
+            font-size: 1.1rem;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .preview-summary {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .summary-total {
+            border-top: 1px solid #E0E0E0;
+            padding-top: var(--space-sm);
+            margin-top: var(--space-sm);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="dashboard.html">
+                <img src="../../assets/images/artshelf-logo.png" alt="ArtShelf Logo" height="40">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">Discover</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="artists.html">Artists</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="collections.html">Collections</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="fairs.html">Art Fairs</a>
+                    </li>
+                </ul>
+                <div class="navbar-right d-flex align-items-center">
+                    <div class="search-container me-3">
+                        <button class="btn-search">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        <div class="search-dropdown">
+                            <form class="search-form">
+                                <input type="text" class="form-control" placeholder="Search artworks, artists...">
+                                <button type="submit" class="btn-search-submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="dropdown me-3">
+                        <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="far fa-heart"></i>
+                            <span class="badge bg-accent">3</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header">Favorites</h6>
+                            <div class="favorites-preview">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-center" href="favorites.html">View All Favorites</a>
+                        </div>
+                    </div>
+                    <div class="dropdown me-3">
+                        <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-shopping-cart"></i>
+                            <span class="badge bg-accent">1</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header">Shopping Cart</h6>
+                            <div class="cart-preview">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-center" href="cart.html">View Cart</a>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-icon profile-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Profile Picture" class="profile-picture">
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header">John Smith</h6>
+                            <a class="dropdown-item" href="profile.html">
+                                <i class="fa fa-user me-2"></i> My Profile
+                            </a>
+                            <a class="dropdown-item" href="orders.html">
+                                <i class="fa fa-shopping-bag me-2"></i> My Orders
+                            </a>
+                            <a class="dropdown-item" href="following.html">
+                                <i class="fa fa-users me-2"></i> Following
+                            </a>
+                            <a class="dropdown-item" href="settings.html">
+                                <i class="fa fa-cog me-2"></i> Settings
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" href="#" onclick="window.auth.logout(); return false;">
+                                <i class="fa fa-sign-out-alt me-2"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="gift-card-page">
+        <div class="container">
+            <div class="gift-card-header">
+                <h1 class="gift-card-title">Give the Gift of Art</h1>
+                <p class="gift-card-subtitle">ArtShelf gift cards are perfect for any occasion. Choose from four elegant designs and customize with a personal message.</p>
+                
+                <div class="gift-card-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-infinity"></i>
+                        </div>
+                        <h3 class="feature-title">Never Expires</h3>
+                        <p class="feature-text">Our gift cards have no expiration date. Use whenever you're ready.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                        <h3 class="feature-title">Digital Delivery</h3>
+                        <p class="feature-text">Send instantly via email or print at home for a physical gift.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <h3 class="feature-title">Any Artwork</h3>
+                        <p class="feature-text">Redeemable for any artwork on ArtShelf, no restrictions.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <h3 class="feature-title">Personalized</h3>
+                        <p class="feature-text">Add a custom message to make your gift special.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="gift-card-options">
+                        <h2 class="mb-4">Customize Your Gift Card</h2>
+                        
+                        <!-- Design Selection -->
+                        <div class="gift-card-option-row">
+                            <div class="gift-card-selector">
+                                <label class="form-label">Choose a Design</label>
+                                <div class="gift-card-designs">
+                                    <div class="design-option active" data-design="design1">
+                                        <img src="https://images.pexels.com/photos/1092364/pexels-photo-1092364.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Abstract Design">
+                                    </div>
+                                    <div class="design-option" data-design="design2">
+                                        <img src="https://images.pexels.com/photos/3631711/pexels-photo-3631711.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Gallery Design">
+                                    </div>
+                                    <div class="design-option" data-design="design3">
+                                        <img src="https://images.pexels.com/photos/1266808/pexels-photo-1266808.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Artist Design">
+                                    </div>
+                                    <div class="design-option" data-design="design4">
+                                        <img src="https://images.pexels.com/photos/1084510/pexels-photo-1084510.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Minimalist Design">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Amount Selection -->
+                        <div class="gift-card-option-row">
+                            <div class="gift-card-selector">
+                                <label class="form-label">Select Amount</label>
+                                <div class="amount-options">
+                                    <div class="amount-option active" data-amount="50">
+                                        <div class="amount-value">$50</div>
+                                    </div>
+                                    <div class="amount-option" data-amount="100">
+                                        <div class="amount-value">$100</div>
+                                    </div>
+                                    <div class="amount-option" data-amount="200">
+                                        <div class="amount-value">$200</div>
+                                    </div>
+                                    <div class="amount-option" data-amount="350">
+                                        <div class="amount-value">$350</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recipient Info -->
+                        <div class="gift-card-option-row">
+                            <div class="recipient-info">
+                                <label class="form-label">Delivery Method</label>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="deliveryMethod" id="emailDelivery" value="email" checked>
+                                    <label class="form-check-label" for="emailDelivery">
+                                        Email - Send directly to recipient
+                                    </label>
+                                </div>
+                                <div class="form-check mb-4">
+                                    <input class="form-check-input" type="radio" name="deliveryMethod" id="printDelivery" value="print">
+                                    <label class="form-check-label" for="printDelivery">
+                                        Print at Home - Receive PDF to print
+                                    </label>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="recipientName" class="form-label">Recipient Name</label>
+                                    <input type="text" class="form-control" id="recipientName" placeholder="Enter recipient's name">
+                                </div>
+                                
+                                <div class="mb-3" id="emailContainer">
+                                    <label for="recipientEmail" class="form-label">Recipient Email</label>
+                                    <input type="email" class="form-control" id="recipientEmail" placeholder="Enter recipient's email">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="senderName" class="form-label">Your Name</label>
+                                    <input type="text" class="form-control" id="senderName" placeholder="Enter your name">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="giftMessage" class="form-label">Personal Message (Optional)</label>
+                                    <div class="message-container">
+                                        <textarea class="form-control" id="giftMessage" rows="3" maxlength="150" placeholder="Add a personal message..."></textarea>
+                                        <div class="message-counter"><span id="messageCount">0</span>/150</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Delivery Date -->
+                        <div class="gift-card-option-row">
+                            <div class="mb-3">
+                                <label class="form-label">Delivery Date</label>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="deliveryDate" id="sendNow" value="now" checked>
+                                    <label class="form-check-label" for="sendNow">
+                                        Send Now
+                                    </label>
+                                </div>
+                                <div class="form-check mb-4">
+                                    <input class="form-check-input" type="radio" name="deliveryDate" id="sendLater" value="later">
+                                    <label class="form-check-label" for="sendLater">
+                                        Send Later
+                                    </label>
+                                </div>
+                                
+                                <div class="mb-3" id="datePicker" style="display: none;">
+                                    <label for="deliveryDateTime" class="form-label">Select Date & Time</label>
+                                    <input type="datetime-local" class="form-control" id="deliveryDateTime">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-5">
+                    <div class="gift-card-preview">
+                        <div class="preview-header">
+                            <h3 class="preview-title">Gift Card Preview</h3>
+                        </div>
+                        
+                        <div class="preview-card">
+                            <img src="https://images.pexels.com/photos/1092364/pexels-photo-1092364.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Gift Card Design" class="preview-image" id="previewImage">
+                            <div class="preview-overlay">
+                                <div class="preview-amount" id="previewAmount">$50</div>
+                                <div class="preview-recipient" id="previewRecipient">For: Gift Recipient</div>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-summary">
+                            <div class="summary-item">
+                                <span>Gift Card Amount</span>
+                                <span id="summaryAmount">$50.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Processing Fee</span>
+                                <span>$0.00</span>
+                            </div>
+                            <div class="summary-item summary-total">
+                                <span>Total</span>
+                                <span id="summaryTotal">$50.00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary btn-lg" id="purchaseBtn">
+                                Purchase Gift Card
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Payment Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Complete Your Purchase</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="payment-summary mb-4">
+                        <h6>Order Summary</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Gift Card ($<span id="modalAmount">50</span>)</span>
+                            <span>$<span id="modalTotal">50.00</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-form">
+                        <div class="mb-3">
+                            <label class="form-label">Card Information</label>
+                            <div id="card-element" class="form-control" style="height: 40px; padding-top: 10px;"></div>
+                            <div id="card-errors" class="text-danger mt-2" style="font-size: 0.875rem;"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="cardholderName" class="form-label">Cardholder Name</label>
+                            <input type="text" class="form-control" id="cardholderName" placeholder="Name on card">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmPaymentBtn">
+                        <span id="confirmButtonText">Pay $<span id="buttonAmount">50.00</span></span>
+                        <span id="loadingSpinner" class="spinner-border spinner-border-sm ms-2" role="status" style="display: none;"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Gift Card Purchased!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="mb-3">Thank You for Your Purchase</h4>
+                    <p id="successMessage">Your gift card has been sent to <span id="recipientEmailConfirm">recipient@example.com</span>.</p>
+                    <p id="printMessage" style="display: none;">Your gift card is ready to download and print.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="downloadPdfBtn" style="display: none;">Download PDF</button>
+                    <a href="dashboard.html" class="btn btn-primary" id="returnHomeBtn">Return to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="footer-logo">
+                        <img src="../../assets/images/artshelf-logo.png" alt="ArtShelf Logo" height="40">
+                    </div>
+                    <p class="footer-description">Discover, buy, and sell extraordinary art from artists around the world.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-pinterest-p"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <h5 class="footer-heading">Explore</h5>
+                    <ul class="footer-links">
+                        <li><a href="artworks.html">Artworks</a></li>
+                        <li><a href="artists.html">Artists</a></li>
+                        <li><a href="collections.html">Collections</a></li>
+                        <li><a href="fairs.html">Art Fairs</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h5 class="footer-heading">Account</h5>
+                    <ul class="footer-links">
+                        <li><a href="profile.html">My Profile</a></li>
+                        <li><a href="favorites.html">Favorites</a></li>
+                        <li><a href="orders.html">Orders</a></li>
+                        <li><a href="settings.html">Settings</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h5 class="footer-heading">Support</h5>
+                    <ul class="footer-links">
+                        <li><a href="../help/faq.html">FAQ</a></li>
+                        <li><a href="../help/contact.html">Contact Us</a></li>
+                        <li><a href="../help/shipping.html">Shipping</a></li>
+                        <li><a href="../help/returns.html">Returns</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h5 class="footer-heading">Legal</h5>
+                    <ul class="footer-links">
+                        <li><a href="../legal/terms.html">Terms of Service</a></li>
+                        <li><a href="../legal/privacy.html">Privacy Policy</a></li>
+                        <li><a href="../legal/copyright.html">Copyright</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <p class="copyright">&copy; 2023 ArtShelf. All rights reserved.</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="payment-methods">
+                            <span>Secured by Stripe</span>
+                            <img src="../../assets/images/payment-methods.png" alt="Payment Methods" height="24">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <!-- Custom Scripts -->
+    <script src="../../js/config.js"></script>
+    <script src="../../js/main.js"></script>
+    <!-- <script src="../../js/auth.js"></script> -->
+    <script src="../../js/services/StripeService.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Stripe
+            stripeService.initialize().then(function() {
+                // Create card element
+                const cardElement = stripeService.createCardElement('card-element');
+                
+                // Handle validation errors
+                cardElement.addEventListener('change', function(event) {
+                    const displayError = document.getElementById('card-errors');
+                    if (event.error) {
+                        displayError.textContent = event.error.message;
+                    } else {
+                        displayError.textContent = '';
+                    }
+                });
+            });
+            
+            // Initialize preview updates
+            initPreviewUpdates();
+            
+            // Initialize design selection
+            initDesignSelection();
+            
+            // Initialize amount selection
+            initAmountSelection();
+            
+            // Initialize delivery method toggle
+            initDeliveryMethod();
+            
+            // Initialize delivery date toggle
+            initDeliveryDate();
+            
+            // Initialize message counter
+            initMessageCounter();
+            
+            // Initialize purchase button
+            initPurchaseButton();
+            
+            // Initialize payment confirmation
+            initPaymentConfirmation();
+        });
+        
+        function initPreviewUpdates() {
+            // Update recipient name
+            const recipientNameInput = document.getElementById('recipientName');
+            const previewRecipient = document.getElementById('previewRecipient');
+            
+            recipientNameInput.addEventListener('input', function() {
+                const name = this.value.trim() || 'Gift Recipient';
+                previewRecipient.textContent = `For: ${name}`;
+            });
+        }
+        
+        function initDesignSelection() {
+            const designOptions = document.querySelectorAll('.design-option');
+            const previewImage = document.getElementById('previewImage');
+            
+            designOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove active class from all options
+                    designOptions.forEach(opt => opt.classList.remove('active'));
+                    
+                    // Add active class to clicked option
+                    this.classList.add('active');
+                    
+                    // Update preview image
+                    const designImage = this.querySelector('img').src;
+                    previewImage.src = designImage;
+                });
+            });
+        }
+        
+        function initAmountSelection() {
+            const amountOptions = document.querySelectorAll('.amount-option');
+            const previewAmount = document.getElementById('previewAmount');
+            const summaryAmount = document.getElementById('summaryAmount');
+            const summaryTotal = document.getElementById('summaryTotal');
+            const modalAmount = document.getElementById('modalAmount');
+            const modalTotal = document.getElementById('modalTotal');
+            const buttonAmount = document.getElementById('buttonAmount');
+            
+            amountOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove active class from all options
+                    amountOptions.forEach(opt => opt.classList.remove('active'));
+                    
+                    // Add active class to clicked option
+                    this.classList.add('active');
+                    
+                    // Get amount value
+                    const amount = this.dataset.amount;
+                    
+                    // Update preview
+                    previewAmount.textContent = `$${amount}`;
+                    summaryAmount.textContent = `$${amount}.00`;
+                    summaryTotal.textContent = `$${amount}.00`;
+                    
+                    // Update modal values
+                    modalAmount.textContent = amount;
+                    modalTotal.textContent = `${amount}.00`;
+                    buttonAmount.textContent = `${amount}.00`;
+                });
+            });
+        }
+        
+        function initDeliveryMethod() {
+            const emailDelivery = document.getElementById('emailDelivery');
+            const printDelivery = document.getElementById('printDelivery');
+            const emailContainer = document.getElementById('emailContainer');
+            
+            emailDelivery.addEventListener('change', function() {
+                if (this.checked) {
+                    emailContainer.style.display = 'block';
+                }
+            });
+            
+            printDelivery.addEventListener('change', function() {
+                if (this.checked) {
+                    emailContainer.style.display = 'none';
+                }
+            });
+        }
+        
+        function initDeliveryDate() {
+            const sendNow = document.getElementById('sendNow');
+            const sendLater = document.getElementById('sendLater');
+            const datePicker = document.getElementById('datePicker');
+            
+            sendNow.addEventListener('change', function() {
+                if (this.checked) {
+                    datePicker.style.display = 'none';
+                }
+            });
+            
+            sendLater.addEventListener('change', function() {
+                if (this.checked) {
+                    datePicker.style.display = 'block';
+                }
+            });
+        }
+        
+        function initMessageCounter() {
+            const messageTextarea = document.getElementById('giftMessage');
+            const messageCount = document.getElementById('messageCount');
+            
+            messageTextarea.addEventListener('input', function() {
+                const count = this.value.length;
+                messageCount.textContent = count;
+            });
+        }
+        
+        function initPurchaseButton() {
+            const purchaseBtn = document.getElementById('purchaseBtn');
+            
+            purchaseBtn.addEventListener('click', function() {
+                // Validate form
+                if (!validateGiftCardForm()) {
+                    return;
+                }
+                
+                // Show payment modal
+                const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+                paymentModal.show();
+            });
+        }
+        
+        function validateGiftCardForm() {
+            const recipientName = document.getElementById('recipientName').value.trim();
+            const senderName = document.getElementById('senderName').value.trim();
+            const emailDelivery = document.getElementById('emailDelivery').checked;
+            const recipientEmail = document.getElementById('recipientEmail').value.trim();
+            
+            if (!recipientName) {
+                window.notifications.error('Please enter recipient name');
+                return false;
+            }
+            
+            if (!senderName) {
+                window.notifications.error('Please enter your name');
+                return false;
+            }
+            
+            if (emailDelivery && !recipientEmail) {
+                window.notifications.error('Please enter recipient email');
+                return false;
+            }
+            
+            if (emailDelivery && !isValidEmail(recipientEmail)) {
+                window.notifications.error('Please enter a valid email address');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        function initPaymentConfirmation() {
+            const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const confirmButtonText = document.getElementById('confirmButtonText');
+            
+            confirmPaymentBtn.addEventListener('click', function() {
+                // Validate cardholder name
+                const cardholderName = document.getElementById('cardholderName').value.trim();
+                if (!cardholderName) {
+                    window.notifications.error('Please enter cardholder name');
+                    return;
+                }
+                
+                // Show loading state
+                loadingSpinner.style.display = 'inline-block';
+                confirmButtonText.style.opacity = '0.5';
+                confirmPaymentBtn.disabled = true;
+                
+                // Get active amount
+                const activeAmount = document.querySelector('.amount-option.active').dataset.amount;
+                const amountInCents = parseInt(activeAmount) * 100;
+                
+                // Process payment
+                processPayment(amountInCents, cardholderName);
+            });
+        }
+        
+        async function processPayment(amountInCents, cardholderName) {
+            try {
+                // Get delivery method
+                const emailDelivery = document.getElementById('emailDelivery').checked;
+                const recipientEmail = document.getElementById('recipientEmail').value.trim();
+                
+                // Process card payment
+                const paymentResult = await stripeService.processCardPayment(
+                    amountInCents,
+                    'usd',
+                    {
+                        billingDetails: {
+                            name: cardholderName
+                        }
+                    }
+                );
+                
+                if (paymentResult.success) {
+                    // Hide payment modal
+                    const paymentModal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+                    paymentModal.hide();
+                    
+                    // Update success modal
+                    if (emailDelivery) {
+                        document.getElementById('successMessage').style.display = 'block';
+                        document.getElementById('printMessage').style.display = 'none';
+                        document.getElementById('recipientEmailConfirm').textContent = recipientEmail;
+                        document.getElementById('downloadPdfBtn').style.display = 'none';
+                        document.getElementById('returnHomeBtn').style.display = 'inline-block';
+                    } else {
+                        document.getElementById('successMessage').style.display = 'none';
+                        document.getElementById('printMessage').style.display = 'block';
+                        document.getElementById('downloadPdfBtn').style.display = 'inline-block';
+                        document.getElementById('returnHomeBtn').style.display = 'inline-block';
+                    }
+                    
+                    // Show success modal
+                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
+                    
+                    // Reset form
+                    resetGiftCardForm();
+                } else {
+                    window.notifications.error('Payment failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                window.notifications.error('Payment processing error: ' + error.message);
+            } finally {
+                // Reset loading state
+                const loadingSpinner = document.getElementById('loadingSpinner');
+                const confirmButtonText = document.getElementById('confirmButtonText');
+                const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+                
+                loadingSpinner.style.display = 'none';
+                confirmButtonText.style.opacity = '1';
+                confirmPaymentBtn.disabled = false;
+            }
+        }
+        
+        function resetGiftCardForm() {
+            // Reset form inputs
+            document.getElementById('recipientName').value = '';
+            document.getElementById('recipientEmail').value = '';
+            document.getElementById('senderName').value = '';
+            document.getElementById('giftMessage').value = '';
+            document.getElementById('messageCount').textContent = '0';
+            document.getElementById('emailDelivery').checked = true;
+            document.getElementById('sendNow').checked = true;
+            document.getElementById('datePicker').style.display = 'none';
+            document.getElementById('emailContainer').style.display = 'block';
+            
+            // Reset preview
+            document.getElementById('previewRecipient').textContent = 'For: Gift Recipient';
+            
+            // Reset design selection
+            const designOptions = document.querySelectorAll('.design-option');
+            designOptions.forEach((opt, index) => {
+                if (index === 0) {
+                    opt.classList.add('active');
+                } else {
+                    opt.classList.remove('active');
+                }
+            });
+            
+            // Reset amount selection
+            const amountOptions = document.querySelectorAll('.amount-option');
+            amountOptions.forEach((opt, index) => {
+                if (index === 0) {
+                    opt.classList.add('active');
+                } else {
+                    opt.classList.remove('active');
+                }
+            });
+            
+            // Reset preview image
+            document.getElementById('previewImage').src = document.querySelector('.design-option.active img').src;
+        }
+        
+        // Initialize download PDF button
+        document.getElementById('downloadPdfBtn').addEventListener('click', function() {
+            // In a real app, this would generate and download a PDF
+            // For demo purposes, we'll just show a notification
+            window.notifications.success('Gift card PDF downloaded successfully');
+            
+            // Close the modal
+            const successModal = bootstrap.Modal.getInstance(document.getElementById('successModal'));
+            successModal.hide();
+        });
+    </script>
+</body>
+</html>
