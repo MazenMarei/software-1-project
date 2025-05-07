@@ -1,0 +1,190 @@
+/* Authentication styles for ArtShelf - Reduced version with Bootstrap integration */
+
+/* Auth Container and Layout */
+.auth-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.auth-form-container {
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: var(--white);
+  overflow-y: auto;
+  padding: 2.5rem;
+}
+
+.auth-showcase {
+  width: 55%;
+  height: 100%;
+  position: relative;
+}
+
+/* Showcase Styles */
+.showcase-gallery {
+  height: 100%;
+  width: 100%;
+}
+
+.showcase-image {
+  height: 100%;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  background-image: url("../images/pexels-photo.jpeg");
+}
+
+.showcase-image::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5));
+}
+
+.showcase-info {
+  position: absolute;
+  bottom: 3rem;
+  left: 3rem;
+  color: white;
+  max-width: 80%;
+  animation: fadeIn 1s ease-out, slideInUp 1s ease-out;
+}
+
+.showcase-info h3 {
+  font-size: 2.5rem;
+  color: white;
+  margin-bottom: 0.75rem;
+}
+
+.showcase-info p {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Auth Tabs */
+.auth-tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.auth-tab {
+  padding: 0.5rem 1.5rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-weight: 500;
+  color: var(--secondary-text, #666);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.auth-tab.active {
+  color: var(--accent, #007bff);
+  border-bottom-color: var(--accent, #007bff);
+}
+
+.auth-tab:hover {
+  color: var(--accent, #007bff);
+}
+
+/* Auth Forms */
+.auth-form {
+  display: none;
+}
+
+.auth-form.active {
+  display: block;
+  animation: fadeIn 0.5s ease;
+}
+
+/* Password Input */
+.password-input {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+  color: var(--accent, #007bff);
+}
+
+.forgot-password {
+  color: var(--accent, #007bff);
+  font-weight: 500;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .auth-form-container {
+    width: 55%;
+  }
+
+  .auth-showcase {
+    width: 45%;
+  }
+
+  .showcase-info h3 {
+    font-size: 2rem;
+  }
+
+  .showcase-info p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .auth-container {
+    flex-direction: column;
+  }
+
+  .auth-form-container {
+    width: 100%;
+    height: 100%;
+    padding: 1.5rem;
+  }
+
+  .auth-showcase {
+    display: none;
+  }
+}
