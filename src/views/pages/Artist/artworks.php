@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="/assets/css/artist.dashboard.css" />
   <link rel="stylesheet" href="/assets/css/admin.dashboard.css" />
 
   <!-- DataTables CSS -->
@@ -25,15 +26,15 @@
 </head>
 
 <body>
-  <!-- Admin Sidebar -->
-  <?php require_once VIEWS . 'components/admin_sidebar.php'; ?>
+  <!-- Artist Sidebar -->
+  <?php require_once VIEWS . 'components/artist_sidebar.php'; ?>
 
   <!-- Main Content -->
   <main class="admin-content">
     <!-- Admin Header -->
     <?php
     $pageTitle = 'Manage Artworks';
-    require_once VIEWS . 'components/admin_header.php';
+    require_once VIEWS . 'components/artist_header.php';
     ?>
 
     <!-- Display error/success messages -->
@@ -139,9 +140,8 @@
             <tr>
               <th>Image</th>
               <th>Title</th>
-              <th>Artist</th>
-              <th>Category</th>
               <th>Price</th>
+              <th>Category</th>
               <th>Status</th>
               <th>Date Added</th>
               <th width="120">Actions</th>
@@ -163,19 +163,8 @@
                       style="width: 80px; height: 60px; object-fit: cover;">
                   </td>
                   <td><?php echo htmlspecialchars($artwork['title']); ?></td>
-                  <td>
-                    <div class="d-flex align-items-center">
-                      <img
-                        src="/uploads/profiles/<?php echo htmlspecialchars($artwork['profilePic']); ?>"
-                        alt="Artist"
-                        class="rounded-circle me-2"
-                        width="30"
-                        height="30">
-                      <?php echo htmlspecialchars($artwork['Fname'] . ' ' . $artwork['Lname']); ?>
-                    </div>
-                  </td>
-                  <td><?php echo htmlspecialchars($artwork['category']); ?></td>
                   <td>$<?php echo ($artwork['price']); ?></td>
+                  <td><?php echo htmlspecialchars($artwork['category']); ?></td>
                   <td>
                     <span class="status-badge <?php echo strtolower($artwork['status']); ?>">
                       <?php echo $artwork['status']; ?>
@@ -191,44 +180,16 @@
                         data-id="<?php echo $artwork['artworkID']; ?>">
                         <i class="fas fa-eye"></i>
                       </button>
-                      <?php if ($artwork['status'] === 'Pending'): ?>
-                        <button
-                          type="button"
-                          class="btn btn-outline-success approve-btn"
-                          data-id="<?php echo $artwork['artworkID']; ?>"
-                          data-bs-toggle="modal"
-                          onclick="approvalFun(this)"
-                          data-bs-target="#approvalModal">
-                          <i class="fas fa-check"></i>
-                        </button>
+                      <?php if ($artwork['status'] === 'Accepted'): ?>
                         <button
                           type="button"
                           class="btn btn-outline-danger reject-btn"
                           onclick="rejectionFun(this)"
                           data-id="<?php echo $artwork['artworkID']; ?>"
                           data-bs-toggle="modal"
+                          data-name="<?php echo htmlspecialchars($artwork['title']); ?>"
                           data-bs-target="#rejectionModal">
-                          <i class="fas fa-times"></i>
-                        </button>
-                      <?php elseif ($artwork['status'] === 'Accepted'): ?>
-                        <button
-                          type="button"
-                          class="btn btn-outline-danger reject-btn"
-                          onclick="rejectionFun(this)"
-                          data-id="<?php echo $artwork['artworkID']; ?>"
-                          data-bs-toggle="modal"
-                          data-bs-target="#rejectionModal">
-                          <i class="fa-solid fa-ban"></i>
-                        </button>
-                      <?php elseif ($artwork['status'] === 'Rejected') : ?>
-                        <button
-                          type="button"
-                          class="btn btn-outline-success approve-btn"
-                          data-id="<?php echo $artwork['artworkID']; ?>"
-                          data-bs-toggle="modal"
-                          onclick="approvalFun(this)"
-                          data-bs-target="#approvalModal">
-                          <i class="fa-solid fa-lock-open"></i>
+                          <i class="fa-solid fa-trash"></i>
                         </button>
                       <?php endif; ?>
                     </div>
@@ -317,103 +278,32 @@
       </div>
     </div>
 
-
-    <!-- Approval Modal -->
-    <div class=" modal fade" id="approvalModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog  modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="approvalModalTitle">Approve Artwork</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <form action="/admin/update-artwork-status" method="POST">
-            <div class="modal-body">
-              <p>Are you sure you want to approve this artwork? <br>It will be visible to all users.</p>
-              <input type="hidden" name="id" id="approvalItemId">
-              <input type="hidden" name="status" value="Accepted">
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-success">Approve</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
     <!-- Rejection Modal -->
     <div class="modal fade" id="rejectionModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog  modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="rejectionModalTitle">Reject Item</h5>
+            <h5 class="modal-title" id="rejectionModalTitle">Delete Artwork</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <form action="/admin/update-artwork-status" method="POST">
+          <form action="/artist/delete-artwork" method="POST">
             <div class="modal-body">
-              <p>Are you sure you want to reject <strong id="rejectionItemName"></strong>?</p>
-              <div class="mb-3">
-                <label for="rejectionReason" class="form-label">Reason for Rejection</label>
-                <textarea class="form-control" id="rejectionReason" name="reason" rows="3" required></textarea>
-                <div class="form-text">This reason will be sent to the submitter.</div>
-              </div>
+              <p>Are you sure you want to Delete <strong id="rejectionItemName"></strong>?</p>
+
               <input type="hidden" name="id" id="rejectionItemId">
-              <input type="hidden" name="status" value="Rejected">
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-danger">Reject</button>
+              <button type="submit" class="btn btn-danger">Delete</button>
             </div>
           </form>
         </div>
       </div>
     </div>
 
-    <!-- Rejection Modal -->
-    <div
-      class="modal fade"
-      id="rejectionModal"
-      tabindex="-1"
-      aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Reject Artwork</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="rejectionForm" action="/admin/update-artwork-status" method="POST">
-              <div class="mb-3">
-                <label for="rejectionReason" class="form-label">Rejection Reason</label>
-                <textarea
-                  class="form-control"
-                  id="rejectionReason"
-                  name="reason"
-                  rows="4"
-                  required></textarea>
-                <div class="form-text">
-                  This reason will be shared with the artist.
-                </div>
-              </div>
-              <input type="hidden" id="rejectionItemId" name="id" value="">
-              <input type="hidden" name="status" value="Rejected">
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-danger">Reject</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Admin Footer -->
-    <footer class="border-top mt-5 pt-4 text-muted small">
-      <p>&copy; <?php echo date('Y'); ?> ArtShelf Admin Dashboard. All rights reserved.</p>
+    <!-- Artist Footer -->
+    <footer class="artist-footer">
+      <p>&copy; 2025 ArtShelf Artist Dashboard. All rights reserved.</p>
     </footer>
   </main>
 

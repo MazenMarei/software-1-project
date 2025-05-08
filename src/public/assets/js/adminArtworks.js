@@ -54,30 +54,30 @@ function initViewToggle() {
   });
 }
 
-// Initialize modals
-function initModals() {
-  // Approval modal
-  if (elements.modals.approval) {
-    elements.modals.approval.addEventListener("show.bs.modal", (event) => {
-      const button = event.relatedTarget;
-      if (button && button.hasAttribute("data-id")) {
-        const artworkId = button.getAttribute("data-id");
-        elements.inputs.approvalArtworkId.value = artworkId;
-      }
-    });
-  }
+// // Initialize modals
+// function initModals() {
+//   // Approval modal
+//   if (elements.modals.approval) {
+//     elements.modals.approval.addEventListener("show.bs.modal", (event) => {
+//       const button = event.relatedTarget;
+//       if (button && button.hasAttribute("data-id")) {
+//         const artworkId = button.getAttribute("data-id");
+//         elements.inputs.approvalArtworkId.value = artworkId;
+//       }
+//     });
+//   }
 
-  // Rejection modal
-  if (elements.modals.rejection) {
-    elements.modals.rejection.addEventListener("show.bs.modal", (event) => {
-      const button = event.relatedTarget;
-      if (button && button.hasAttribute("data-id")) {
-        const artworkId = button.getAttribute("data-id");
-        elements.inputs.rejectionArtworkId.value = artworkId;
-      }
-    });
-  }
-}
+//   // Rejection modal
+//   if (elements.modals.rejection) {
+//     elements.modals.rejection.addEventListener("show.bs.modal", (event) => {
+//       const button = event.relatedTarget;
+//       if (button && button.hasAttribute("data-id")) {
+//         const artworkId = button.getAttribute("data-id");
+//         elements.inputs.rejectionArtworkId.value = artworkId;
+//       }
+//     });
+//   }
+// }
 
 // Initialize form submissions
 function initFormSubmissions() {
@@ -364,10 +364,13 @@ function updateArtworkDetailsModal(artwork, artworkId, detailsModal) {
 
 // Initialize everything when DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
-  initViewToggle();
-  initModals();
-  initFormSubmissions();
-  initFilterFunctionality();
-  initExportFunctionality();
+  // initViewToggle();
+  // initModals();
+  // initFormSubmissions();
+  // initFilterFunctionality();
+  // initExportFunctionality();
   initArtworkDetails();
 });
+
+
+

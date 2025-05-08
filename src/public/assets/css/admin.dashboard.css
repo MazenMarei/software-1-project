@@ -158,25 +158,15 @@
   color: var(--primary-text-dark);
 }
 
-.admin-table {
-  width: 100%;
-}
-
 .admin-table th {
   font-weight: 500;
   color: var(--primary-text-dark);
   padding: var(--space-md);
-  border-bottom: 2px solid var(--secondary-bg);
 }
 
 .admin-table td {
   padding: var(--space-md);
-  border-bottom: 1px solid var(--secondary-bg);
   color: var (--secondary-text);
-}
-
-.admin-table tr:last-child td {
-  border-bottom: none;
 }
 
 .status-badge {
@@ -192,7 +182,7 @@
   color: #856404;
 }
 
-.status-badge.approved,
+.status-badge.accepted,
 .status-badge.completed {
   background-color: #d4edda;
   color: #155724;
@@ -223,6 +213,70 @@
   margin-top: var(--space-xxl);
   padding-top: var(--space-lg);
   border-top: 1px solid var(--secondary-bg);
+  color: var(--secondary-text);
+  font-size: 0.9rem;
+}
+
+.small-avatar {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.profile-section {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+}
+
+.profile-section-title {
+  font-family: var(--heading-font);
+  font-size: 1.5rem;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--secondary-bg);
+}
+
+.profile-avatar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--space-xl);
+}
+
+.profile-avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: var(--space-md);
+  border: 5px solid var(--secondary-bg);
+}
+
+.activity-item {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--secondary-bg);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-icon {
+  background-color: var(--secondary-bg);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+}
+
+.activity-time {
   color: var(--secondary-text);
   font-size: 0.9rem;
 }

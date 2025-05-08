@@ -6,11 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Dashboard | ArtShelf</title>
     <!-- Bootstrap CSS -->
-    <link href="../../public/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link
+        href="../../assets/css/bootstrap.min.css"
+        rel="stylesheet" />
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="../../public/assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/main.css" />
+    <link rel="stylesheet" href="../../assets/css/admin.dashboard.css" />
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="../../public/assets/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/all.min.css" />
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,68 +21,95 @@
 </head>
 
 <body>
-    <!-- Header/Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="/customer/dashboard">
-                <img src="../../public/assets/images/artshelf-logo.png" alt="ArtShelf Logo" height="40">
+            <a class="navbar-brand" href="dashboard.html">
+                <img src="../../assets/images/artshelf-logo.png" alt="ArtShelf Logo" height="40">
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="/customer/dashboard">Home</a>
+                        <a class="nav-link active" href="dashboard.html">Discover</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/customer/discover">Discover</a>
+                        <a class="nav-link" href="artists.html">Artists</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/customer/collections">Collections</a>
+                        <a class="nav-link" href="collections.html">Collections</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/customer/fairs">Art Fairs</a>
+                        <a class="nav-link" href="fairs.html">Art Fairs</a>
                     </li>
                 </ul>
-                <div class="d-flex align-items-center">
-                    <div class="dropdown me-3">
-                        <button class="btn position-relative" type="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-bell"></i>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                3
-                                <span class="visually-hidden">unread notifications</span>
-                            </span>
+                <div class="navbar-right d-flex align-items-center">
+                    <div class="search-container me-3">
+                        <button class="btn-search">
+                            <i class="fa fa-search"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
-                            <li>
-                                <h6 class="dropdown-header">Notifications</h6>
-                            </li>
-                            <li><a class="dropdown-item" href="#">New artwork from artists you follow</a></li>
-                            <li><a class="dropdown-item" href="#">Special collection released today</a></li>
-                            <li><a class="dropdown-item" href="#">Your order has been shipped</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item text-center" href="/customer/notifications">View all</a></li>
-                        </ul>
+                        <div class="search-dropdown">
+                            <form class="search-form">
+                                <input type="text" class="form-control" placeholder="Search artworks, artists...">
+                                <button type="submit" class="btn-search-submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="dropdown me-3">
+                        <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="far fa-heart"></i>
+                            <span class="badge bg-accent">3</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header">Favorites</h6>
+                            <div class="favorites-preview">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-center" href="favorites.html">View All Favorites</a>
+                        </div>
+                    </div>
+                    <div class="dropdown me-3">
+                        <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-shopping-cart"></i>
+                            <span class="badge bg-accent">1</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header">Shopping Cart</h6>
+                            <div class="cart-preview">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-center" href="cart.html">View Cart</a>
+                        </div>
                     </div>
                     <div class="dropdown">
-                        <button class="btn btn-outline-primary rounded-pill d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span class="me-2">
-                                <?php echo isset($_SESSION['user']['email']) ? explode('@', $_SESSION['user']['email'])[0] : 'Account'; ?>
-                            </span>
-                            <i class="fas fa-user-circle"></i>
+                        <button class="btn btn-icon profile-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Profile Picture" class="profile-picture">
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="/customer/profile">My Profile</a></li>
-                            <li><a class="dropdown-item" href="/customer/favorites">Favorites</a></li>
-                            <li><a class="dropdown-item" href="/customer/orders">Order History</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
-                        </ul>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header">John Smith</h6>
+                            <a class="dropdown-item" href="profile.html">
+                                <i class="fa fa-user me-2"></i> My Profile
+                            </a>
+                            <a class="dropdown-item" href="orders.html">
+                                <i class="fa fa-shopping-bag me-2"></i> My Orders
+                            </a>
+                            <a class="dropdown-item" href="following.html">
+                                <i class="fa fa-users me-2"></i> Following
+                            </a>
+                            <a class="dropdown-item" href="settings.html">
+                                <i class="fa fa-cog me-2"></i> Settings
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" href="#" onclick="window.auth.logout(); return false;">
+                                <i class="fa fa-sign-out-alt me-2"></i> Logout
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -87,279 +117,211 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="container py-5">
-        <!-- Display errors/success messages -->
-        <?php require_once VIEWS . 'components/error_display.php'; ?>
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <h1 class="hero-title">Discover Extraordinary Art</h1>
+                            <p class="hero-subtitle">Find and collect unique artworks from emerging and established artists worldwide.</p>
+                            <div class="hero-buttons">
+                                <a href="#featured" class="btn btn-primary btn-lg">Explore Artworks</a>
+                                <a href="#advisor" class="btn btn-outline-primary btn-lg ms-3">Get Art Advice</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image" style="background-image: url('https://images.pexels.com/photos/1674049/pexels-photo-1674049.jpeg?auto=compress&cs=tinysrgb&w=1600');">
+                <div class="overlay"></div>
+            </div>
+        </section>
 
-        <div class="row mb-5">
-            <div class="col-md-8">
-                <h1 class="display-4 mb-4">Welcome back, <?php echo isset($_SESSION['user']['first_name']) ? $_SESSION['user']['first_name'] : 'Art Lover'; ?>!</h1>
-                <p class="lead text-muted">Discover curated artworks handpicked for your collection.</p>
-            </div>
-            <div class="col-md-4 text-md-end">
-                <div class="d-flex justify-content-md-end align-items-center">
-                    <a href="/customer/cart" class="btn btn-outline-accent position-relative me-3">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-accent">
-                            2
-                        </span>
-                    </a>
-                    <button class="btn btn-primary rounded-pill">
-                        <i class="fas fa-search me-2"></i> Find Art
-                    </button>
+        <!-- Featured Section -->
+        <section id="featured" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Featured Artworks</h2>
+                    <a href="artworks.html" class="btn btn-link">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="row artwork-grid" id="featuredArtworks">
+                    <!-- Will be populated by JavaScript -->
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Weekly Featured Collection -->
-        <section class="mb-5">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>This Week's Featured Collection</h2>
-                <a href="/customer/collections/featured" class="text-decoration-none">View all <i class="fas fa-arrow-right ms-2"></i></a>
+        <!-- Collections Section -->
+        <section class="section bg-secondary">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Weekly Collections</h2>
+                    <a href="collections.html" class="btn btn-link">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="row collections-slider" id="weeklyCollections">
+                    <!-- Will be populated by JavaScript -->
+                </div>
             </div>
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-3">
-                    <div class="card h-100">
-                        <img src="https://via.placeholder.com/300x400" class="card-img-top" alt="Artwork">
-                        <div class="card-body">
-                            <h5 class="card-title">Summer Breeze</h5>
-                            <p class="card-text text-muted">Jane Doe</p>
-                            <p class="card-text fw-bold">$1,200</p>
-                        </div>
-                        <div class="card-footer bg-white border-0 d-flex justify-content-between">
-                            <button class="btn btn-sm btn-outline-primary"><i class="far fa-heart"></i> Save</button>
-                            <button class="btn btn-sm btn-primary">View</button>
+        </section>
+
+        <!-- Artists Section -->
+        <section class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Featured Artists</h2>
+                    <a href="artists.html" class="btn btn-link">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="row artists-grid" id="featuredArtists">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- View in Room Feature -->
+        <section class="section bg-secondary">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="feature-content">
+                            <h2 class="feature-title">View Art in Your Space</h2>
+                            <p class="feature-description">Our innovative "View in Room" feature lets you visualize how artwork will look on your walls before you purchase. Simply upload a photo of your room and try different pieces to find the perfect match.</p>
+                            <a href="view-in-room.html" class="btn btn-primary">Try It Now</a>
                         </div>
                     </div>
-                </div>
-                <!-- Additional artwork cards would go here -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="card h-100">
-                        <img src="https://via.placeholder.com/300x400" class="card-img-top" alt="Artwork">
-                        <div class="card-body">
-                            <h5 class="card-title">Urban Landscape</h5>
-                            <p class="card-text text-muted">John Smith</p>
-                            <p class="card-text fw-bold">$950</p>
-                        </div>
-                        <div class="card-footer bg-white border-0 d-flex justify-content-between">
-                            <button class="btn btn-sm btn-outline-primary"><i class="far fa-heart"></i> Save</button>
-                            <button class="btn btn-sm btn-primary">View</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="card h-100">
-                        <img src="https://via.placeholder.com/300x400" class="card-img-top" alt="Artwork">
-                        <div class="card-body">
-                            <h5 class="card-title">Abstract Thoughts</h5>
-                            <p class="card-text text-muted">Maria Garcia</p>
-                            <p class="card-text fw-bold">$1,500</p>
-                        </div>
-                        <div class="card-footer bg-white border-0 d-flex justify-content-between">
-                            <button class="btn btn-sm btn-outline-primary"><i class="far fa-heart"></i> Save</button>
-                            <button class="btn btn-sm btn-primary">View</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="card h-100">
-                        <img src="https://via.placeholder.com/300x400" class="card-img-top" alt="Artwork">
-                        <div class="card-body">
-                            <h5 class="card-title">Nature's Whisper</h5>
-                            <p class="card-text text-muted">Robert Chen</p>
-                            <p class="card-text fw-bold">$2,100</p>
-                        </div>
-                        <div class="card-footer bg-white border-0 d-flex justify-content-between">
-                            <button class="btn btn-sm btn-outline-primary"><i class="far fa-heart"></i> Save</button>
-                            <button class="btn btn-sm btn-primary">View</button>
+                    <div class="col-lg-6">
+                        <div class="feature-image">
+                            <img src="https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="View in Room feature" class="img-fluid rounded-lg shadow-lg">
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Artists You Follow -->
-        <section class="mb-5">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Artists You Follow</h2>
-                <a href="/customer/following" class="text-decoration-none">View all <i class="fas fa-arrow-right ms-2"></i></a>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-3">
-                    <div class="card h-100 text-center">
-                        <div class="position-relative">
-                            <img src="https://via.placeholder.com/150" class="rounded-circle mt-4" width="100" height="100" alt="Artist">
-                            <span class="position-absolute top-0 end-0 p-2">
-                                <i class="fas fa-certificate text-primary"></i>
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">Jane Doe</h5>
-                            <p class="card-text text-muted">Abstract Expressionism</p>
-                            <p class="card-text"><small>125 Artworks • 3.2k Followers</small></p>
-                            <button class="btn btn-sm btn-outline-primary rounded-pill">Following</button>
+        <!-- Art Advisor Section -->
+        <section id="advisor" class="section">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 order-lg-2">
+                        <div class="feature-content">
+                            <h2 class="feature-title">Personalized Art Advisory</h2>
+                            <p class="feature-description">Not sure where to start? Our expert art advisors will help you find pieces that match your style, space, and budget. Complete a quick questionnaire and receive personalized recommendations.</p>
+                            <a href="art-advisor.html" class="btn btn-primary">Get Art Advice</a>
                         </div>
                     </div>
-                </div>
-                <!-- More artist cards would go here -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="card h-100 text-center">
-                        <div class="position-relative">
-                            <img src="https://via.placeholder.com/150" class="rounded-circle mt-4" width="100" height="100" alt="Artist">
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">John Smith</h5>
-                            <p class="card-text text-muted">Contemporary Realism</p>
-                            <p class="card-text"><small>87 Artworks • 2.1k Followers</small></p>
-                            <button class="btn btn-sm btn-outline-primary rounded-pill">Following</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="card h-100 text-center">
-                        <div class="position-relative">
-                            <img src="https://via.placeholder.com/150" class="rounded-circle mt-4" width="100" height="100" alt="Artist">
-                            <span class="position-absolute top-0 end-0 p-2">
-                                <i class="fas fa-certificate text-primary"></i>
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">Maria Garcia</h5>
-                            <p class="card-text text-muted">Minimalism</p>
-                            <p class="card-text"><small>54 Artworks • 4.7k Followers</small></p>
-                            <button class="btn btn-sm btn-outline-primary rounded-pill">Following</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="card h-100 border-dashed">
-                        <div class="card-body d-flex flex-column justify-content-center align-items-center h-100">
-                            <i class="fas fa-search fa-2x mb-3 text-muted"></i>
-                            <h5>Discover New Artists</h5>
-                            <p class="text-muted text-center">Find more artists based on your preferences</p>
-                            <a href="/customer/discover/artists" class="btn btn-primary mt-2">Explore</a>
+                    <div class="col-lg-6 order-lg-1">
+                        <div class="feature-image">
+                            <img src="https://images.pexels.com/photos/7578989/pexels-photo-7578989.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Art Advisory service" class="img-fluid rounded-lg shadow-lg">
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Art Advisor -->
-        <section class="bg-light p-4 rounded-lg mb-5">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h3>Need help finding the perfect piece?</h3>
-                    <p class="mb-md-0">Our art advisors can help you discover artwork tailored to your space and style preferences.</p>
+        <!-- Gift Cards Section -->
+        <section class="section bg-secondary">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Give the Gift of Art</h2>
                 </div>
-                <div class="col-md-4 text-md-end">
-                    <a href="/customer/art-advisor" class="btn btn-outline-dark">Consult an Art Advisor</a>
-                </div>
-            </div>
-        </section>
-
-        <!-- Recently Viewed -->
-        <section>
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Recently Viewed</h2>
-                <a href="/customer/history" class="text-decoration-none">View all <i class="fas fa-arrow-right ms-2"></i></a>
-            </div>
-            <div class="row g-4">
-                <!-- Recently viewed artwork cards would go here -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="card h-100">
-                        <img src="https://via.placeholder.com/300x400" class="card-img-top" alt="Artwork">
-                        <div class="card-body">
-                            <h5 class="card-title">Moonlit River</h5>
-                            <p class="card-text text-muted">Sarah Johnson</p>
-                            <p class="card-text fw-bold">$890</p>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="gift-card-content">
+                            <p class="lead">ArtShelf gift cards are the perfect present for art lovers. Choose from four elegant designs and denominations of $50, $100, $200, or $350.</p>
+                            <ul class="gift-card-features">
+                                <li><i class="fas fa-check text-accent"></i> Never expires</li>
+                                <li><i class="fas fa-check text-accent"></i> Digital delivery</li>
+                                <li><i class="fas fa-check text-accent"></i> Personalized message</li>
+                                <li><i class="fas fa-check text-accent"></i> Redeemable for any artwork</li>
+                            </ul>
+                            <a href="gift-cards.html" class="btn btn-primary">Purchase Gift Card</a>
                         </div>
-                        <div class="card-footer bg-white border-0 d-flex justify-content-between">
-                            <button class="btn btn-sm btn-outline-primary"><i class="far fa-heart"></i> Save</button>
-                            <button class="btn btn-sm btn-primary">View</button>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="gift-card-showcase">
+                            <div class="gift-card">
+                                <img src="https://images.pexels.com/photos/1092364/pexels-photo-1092364.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="ArtShelf Gift Card" class="img-fluid rounded-lg shadow-md">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <!-- More recently viewed items would go here -->
             </div>
         </section>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-light py-5 mt-5">
+    <footer class="footer">
         <div class="container">
-            <div class="row g-4">
+            <div class="row">
                 <div class="col-lg-4">
-                    <img src="../../public/assets/images/artshelf-logo.png" alt="ArtShelf Logo" height="40" class="mb-4">
-                    <p>Discover, buy, and sell exceptional art from around the world.</p>
-                    <div class="social-links mt-3">
-                        <a href="#" class="me-2"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="me-2"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="me-2"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="me-2"><i class="fab fa-pinterest-p"></i></a>
+                    <div class="footer-logo">
+                        <img src="../../assets/images/artshelf-logo.png" alt="ArtShelf Logo" height="40">
+                    </div>
+                    <p class="footer-description">Discover, buy, and sell extraordinary art from artists around the world.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-pinterest-p"></i></a>
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-4">
-                    <h5>Explore</h5>
-                    <ul class="nav flex-column">
-                        <li class="nav-item"><a href="#" class="nav-link px-0 text-muted">New Arrivals</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link px-0 text-muted">Collections</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link px-0 text-muted">Artists</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link px-0 text-muted">Art Fairs</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-4">
-                    <h5>About</h5>
-                    <ul class="nav flex-column">
-                        <li class="nav-item"><a href="#" class="nav-link px-0 text-muted">Our Story</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link px-0 text-muted">Team</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link px-0 text-muted">Careers</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link px-0 text-muted">Press</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-4">
-                    <h5>Support</h5>
-                    <ul class="nav flex-column">
-                        <li class="nav-item"><a href="#" class="nav-link px-0 text-muted">FAQs</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link px-0 text-muted">Contact Us</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link px-0 text-muted">Shipping</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link px-0 text-muted">Returns</a></li>
+                <div class="col-lg-2">
+                    <h5 class="footer-heading">Explore</h5>
+                    <ul class="footer-links">
+                        <li><a href="artworks.html">Artworks</a></li>
+                        <li><a href="artists.html">Artists</a></li>
+                        <li><a href="collections.html">Collections</a></li>
+                        <li><a href="fairs.html">Art Fairs</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-2">
-                    <h5>Legal</h5>
-                    <ul class="nav flex-column">
-                        <li class="nav-item"><a href="#" class="nav-link px-0 text-muted">Terms</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link px-0 text-muted">Privacy</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link px-0 text-muted">Cookies</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link px-0 text-muted">Accessibility</a></li>
+                    <h5 class="footer-heading">Account</h5>
+                    <ul class="footer-links">
+                        <li><a href="profile.html">My Profile</a></li>
+                        <li><a href="favorites.html">Favorites</a></li>
+                        <li><a href="orders.html">Orders</a></li>
+                        <li><a href="settings.html">Settings</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h5 class="footer-heading">Support</h5>
+                    <ul class="footer-links">
+                        <li><a href="../help/faq.html">FAQ</a></li>
+                        <li><a href="../help/contact.html">Contact Us</a></li>
+                        <li><a href="../help/shipping.html">Shipping</a></li>
+                        <li><a href="../help/returns.html">Returns</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h5 class="footer-heading">Legal</h5>
+                    <ul class="footer-links">
+                        <li><a href="../legal/terms.html">Terms of Service</a></li>
+                        <li><a href="../legal/privacy.html">Privacy Policy</a></li>
+                        <li><a href="../legal/copyright.html">Copyright</a></li>
                     </ul>
                 </div>
             </div>
-            <hr class="my-4">
-            <div class="row">
-                <div class="col-md-6">
-                    <p class="text-muted">&copy; 2025 ArtShelf. All rights reserved.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <p class="text-muted">
-                        <img src="https://via.placeholder.com/30x20" alt="Visa" class="me-2">
-                        <img src="https://via.placeholder.com/30x20" alt="Mastercard" class="me-2">
-                        <img src="https://via.placeholder.com/30x20" alt="American Express" class="me-2">
-                        <img src="https://via.placeholder.com/30x20" alt="PayPal">
-                    </p>
+            <div class="footer-bottom">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <p class="copyright">&copy; 2023 ArtShelf. All rights reserved.</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="payment-methods">
+                            <span>Secured by Stripe</span>
+                            <img src="../../assets/images/payment-methods.png" alt="Payment Methods" height="24">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- Popper.js (required for Bootstrap dropdowns) -->
-    <script src="./assets/js/popper.min.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="./assets/js/bootstrap.min.js"></script>
-    <!-- jQuery -->
-    <script src="./assets/js/jquery-3.7.1.min.js"></script>
-    <!-- Custom JS -->
-    <script src="../assets/js/main.js"></script>
+    <!-- Bootstrap JS Bundle with Popper -->
+
+    <!-- Stripe.js -->
+    <!-- Custom Scripts -->
+
 </body>
 
 </html>

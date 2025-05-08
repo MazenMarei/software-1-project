@@ -54,40 +54,74 @@ class Artist extends User
      * @param array $data Profile data to update
      * @return bool Success status
      */
-    public function updateArtistProfile($data)
+    public function updateProfile($data)
     {
         try {
-            // First update the user table
-            $userUpdateSuccess = parent::updateProfile($data);
-
-            if (!$userUpdateSuccess) {
+            $excut = parent::updateProfile($data);
+            if (!$excut) {
                 return false;
             }
+            $artistSql = "UPDATE artist SET ";
+            if (isset($data['address']) && !empty($data['address'])) {
+                $artistSql .= "address = :address, ";
+            }
+            if (isset($data['bio']) && !empty($data['bio'])) {
+                $artistSql .= "Bio = :bio, ";
+            }
+            if (isset($data['BDate']) && !empty($data['BDate'])) {
+                $artistSql .= "BDate = :BDate, ";
+            }
+            if (isset($data['phone']) && !empty($data['phone'])) {
+                $artistSql .= "phone = :phone, ";
+            }
 
-            // Then update the artist table
-            $sql = "UPDATE artist SET 
-                phone = :phone, 
-                Bio = :bio, 
-                address = :address,
-                BDate = :bDate
-                WHERE artistID = :id";
-
-            $stmt = Database::getInstance()->getConnection()->prepare($sql);
-            $stmt->bindParam(':phone', $data['phone'], \PDO::PARAM_STR);
-            $stmt->bindParam(':bio', $data['bio'], \PDO::PARAM_STR);
-            $stmt->bindParam(':address', $data['address'], \PDO::PARAM_STR);
-            $stmt->bindParam(':bDate', $data['bDate'], \PDO::PARAM_STR);
-            $stmt->bindParam(':id', $this->userID, \PDO::PARAM_INT);
-
-            if ($stmt->execute()) {
-                $this->phone = $data['phone'];
-                $this->bio = $data['bio'];
-                $this->address = $data['address'];
-                $this->bDate = $data['bDate'];
+            if ($artistSql !== "UPDATE artist SET ") {
+                $artistSql = rtrim($artistSql, ', ') . " WHERE artistID = :id";
+                $stmt2 = Database::getInstance()->getConnection()->prepare($artistSql);
+            } else {
                 return true;
             }
-            return false;
+
+            $stmt2 = Database::getInstance()->getConnection()->prepare($artistSql);
+            if (isset($data['address']) && !empty($data['address'])) {
+                $stmt2->bindParam(':address', $data['address'], \PDO::PARAM_STR);
+            }
+            if (isset($data['bio']) && !empty($data['bio'])) {
+                $stmt2->bindParam(':bio', $data['bio'], \PDO::PARAM_STR);
+            }
+            if (isset($data['BDate']) && !empty($data['BDate'])) {
+                $stmt2->bindParam(':BDate', $data['BDate'], \PDO::PARAM_STR);
+            }
+            if (isset($data['phone']) && !empty($data['phone'])) {
+                $stmt2->bindParam(':phone', $data['phone'], \PDO::PARAM_STR);
+            }
+
+            $stmt2->bindParam(':id', $this->userID, \PDO::PARAM_INT);
+
+            $execute2 = $stmt2->execute();
+            if ($execute2) {
+                if (isset($data['address']) && !empty($data['address'])) {
+                    $this->address = $data['address'];
+                }
+                if (isset($data['bio']) && !empty($data['bio'])) {
+                    $this->bio = $data['bio'];
+                }
+                if (isset($data['BDate']) && !empty($data['BDate'])) {
+                    $this->bDate = $data['BDate'];
+                }
+                if (isset($data['phone']) && !empty($data['phone'])) {
+                    $this->phone = $data['phone'];
+                }
+            }
+            if ($execute2) {
+                $_SESSION['success'] = "Profile has been updated successfully";
+                return true;
+            } else {
+                $_SESSION['error'] = "Failed to update profil e " . $_SESSION['error'];
+                return false;
+            }
         } catch (\Throwable $th) {
+            $_SESSION['error'] =  $th->getMessage();
             return false;
         }
     }
@@ -225,6 +259,30 @@ class Artist extends User
         return $artist->getArtistById($user->getUserID());
     }
 
+    public function deleteArtwork($artworkId)
+    {
+        try {
+            $artwork = Artwork::getArtworkById($artworkId);
+            if (!$artwork) {
+                return false;
+            }
+            if ($artwork['artistID'] !== $this->getUserID()) {
+                $_SESSION['error'] = "You are not authorized to delete this artwork.";
+                return false;
+            }
+
+            $success = Artwork::deleteArtwork($artworkId);
+            if ($success) {
+                $_SESSION['success'] = "Artwork deleted successfully.";
+                return true;
+            } else {
+                $_SESSION['error'] = "Failed to delete artwork.";
+                return false;
+            }
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
     // Getters
     public function getArtistID()
     {
@@ -280,5 +338,20 @@ class Artist extends User
     public function setBDate($bDate)
     {
         $this->bDate = $bDate;
+    }
+
+
+    public function getReviews()
+    {
+        try {
+            $sql = "SELECT   r.rating FROM  review r JOIN   artistreview ar ON r.reviewID = ar.reviewID WHERE ar.artistID = :artistID";
+            $stmt = Database::getInstance()->getConnection()->prepare($sql);
+            $stmt->bindParam(':artistID', $this->userID, \PDO::PARAM_INT);
+            $stmt->execute();
+
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Throwable $th) {
+            return [];
+        }
     }
 }

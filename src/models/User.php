@@ -140,36 +140,88 @@ class User
     public function updateProfile($data)
     {
         try {
-            $sql = "UPDATE user SET 
-                Fname = :firstName, 
-                Lname = :lastName, 
-                Email = :email, 
-                profilePic = :profilePic,
-                emailNotification = :emailNotification
-                WHERE userID = :id";
+            $sql = "UPDATE user SET ";
+            if (isset($data['email'])) {
+                if ((new Gust())->userExistsByEmail($data['email']) && $data['email'] !== $this->email) {
+                    $_SESSION['error'] = 'Email already exists';
+                    return false;
+                }
+                $sql .= "Email = :email, ";
+            }
+            if (isset($data['firstName'])) {
+                $sql .= "Fname = :firstName, ";
+            }
+            if (isset($data['lastName'])) {
+                $sql .= "Lname = :lastName, ";
+            }
+
+            if (isset($data['emailNotification'])) {
+                $sql .= "emailNotification = :emailNotification, ";
+            }
+            if (isset($data['profilePic'])) {
+                $sql .= "profilePic = :profilePic, ";
+            }
+
+            $sql = rtrim($sql, ', ') . " WHERE userID = :id";
 
             $stmt = Database::getInstance()->getConnection()->prepare($sql);
-            $stmt->bindParam(':firstName', $data['firstName'], \PDO::PARAM_STR);
-            $stmt->bindParam(':lastName', $data['lastName'], \PDO::PARAM_STR);
-            $stmt->bindParam(':email', $data['email'], \PDO::PARAM_STR);
-            $stmt->bindParam(':profilePic', $data['profilePic'], \PDO::PARAM_STR);
-            $stmt->bindParam(':emailNotification', $data['emailNotification'], \PDO::PARAM_BOOL);
+            if (isset($data['profilePic'])) {
+                $stmt->bindParam(':profilePic', $data['profilePic'], \PDO::PARAM_STR);
+            }
+            if (isset($data['firstName'])) {
+                $stmt->bindParam(':firstName', $data['firstName'], \PDO::PARAM_STR);
+            }
+            if (isset($data['lastName'])) {
+                $stmt->bindParam(':lastName', $data['lastName'], \PDO::PARAM_STR);
+            }
+            if (isset($data['email'])) {
+                $stmt->bindParam(':email', $data['email'], \PDO::PARAM_STR);
+            }
+            if (isset($data['emailNotification'])) {
+                $stmt->bindParam(':emailNotification', $data['emailNotification'], \PDO::PARAM_BOOL);
+            }
             $stmt->bindParam(':id', $this->userID, \PDO::PARAM_INT);
 
             if ($stmt->execute()) {
-                $this->firstName = $data['firstName'];
-                $this->lastName = $data['lastName'];
-                $this->email = $data['email'];
-                $this->profilePic = $data['profilePic'];
-                $this->emailNotification = $data['emailNotification'];
+                if (isset($data['firstName'])) {
+                    $this->firstName = $data['firstName'];
+                }
+                if (isset($data['lastName'])) {
+                    $this->lastName = $data['lastName'];
+                }
+                if (isset($data['email'])) {
+                    $this->email = $data['email'];
+                }
+
+                if (isset($data['emailNotification'])) {
+                    $this->emailNotification = $data['emailNotification'];
+                }
+                if (isset($data['profilePic'])) {
+                    $this->profilePic = $data['profilePic'];
+                }
                 return true;
             }
+            $_SESSION['error'] = "Failed to update profile4";
             return false;
+        } catch (\Throwable $th) {
+            $_SESSION['error'] = "Failed to update profile5" . $th->getMessage();
+            return false;
+        }
+    }
+    public function checkPassword($password)
+    {
+        try {
+            $sql = "SELECT password FROM user WHERE userID = :id";
+            $stmt = Database::getInstance()->getConnection()->prepare($sql);
+            $stmt->bindParam(':id', $this->userID, \PDO::PARAM_INT);
+            $stmt->execute();
+
+            $userData = $stmt->fetch(\PDO::FETCH_ASSOC);
+            return password_verify($password, $userData['password']);
         } catch (\Throwable $th) {
             return false;
         }
     }
-
     public function changePassword($currentPassword, $newPassword)
     {
         try {
@@ -181,6 +233,7 @@ class User
 
             $userData = $stmt->fetch(\PDO::FETCH_ASSOC);
             if (!password_verify($currentPassword, $userData['password'])) {
+                $_SESSION['error'] = 'Current password is incorrect.';
                 return false;
             }
 

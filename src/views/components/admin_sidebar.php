@@ -60,23 +60,6 @@
                 Offers
             </a>
         </li>
-        <li class="admin-nav-item">
-            <a href="/admin/reports" class="admin-nav-link <?php echo ($_SERVER['REQUEST_URI'] === '/admin/reports') ? 'active' : ''; ?>">
-                <i class="fas fa-chart-bar"></i>
-                Reports
-            </a>
-        </li>
-        <li class="admin-nav-item">
-            <a href="/admin/settings" class="admin-nav-link <?php echo ($_SERVER['REQUEST_URI'] === '/admin/settings') ? 'active' : ''; ?>">
-                <i class="fas fa-cog"></i>
-                Settings
-            </a>
-        </li>
-        <li class="admin-nav-item mt-4">
-            <a href="/logout" class="admin-nav-link text-danger">
-                <i class="fas fa-sign-out-alt"></i>
-                Logout
-            </a>
-        </li>
+   
     </ul>
 </aside>

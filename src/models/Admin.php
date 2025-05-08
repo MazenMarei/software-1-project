@@ -119,6 +119,19 @@ class Admin extends User
         }
     }
 
+    public function getAllArtworks()
+    {
+        try {
+            $sql = "SELECT a.*, u.Fname, u.Lname, u.profilePic FROM artwork a
+                    JOIN user u ON a.artistID = u.userID";
+            $stmt = Database::getInstance()->getConnection()->prepare($sql);
+            $stmt->execute();
+
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Throwable $th) {
+            return [];
+        }
+    }
     /**
      * Get pending local fairs for approval
      * 
@@ -158,6 +171,11 @@ class Admin extends User
             $stmt->bindParam(':id', $userId, \PDO::PARAM_INT);
             $stmt->execute();
 
+
+            if ($stmt->rowCount() === 0) {
+                Database::getInstance()->getConnection()->rollBack();
+                return false;
+            }
             // If there's a reason, add a notification
             if ($reason && $status === 'Rejected') {
                 $message = "Your account registration was rejected. Reason: $reason";
@@ -224,7 +242,6 @@ class Admin extends User
             return false;
         }
     }
-
     /**
      * Create a special collection
      * 
@@ -397,6 +414,45 @@ class Admin extends User
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Throwable $th) {
             error_log('Error in getAllArtists: ' . $th->getMessage());
+            return [];
+        }
+    }
+
+
+    /**
+     * Get all customers
+     * 
+     * @param string $status Optional status filter
+     * @return array List of all customers
+     */
+    public function getAllCustomers($status = null)
+    {
+        try {
+            $sql = "SELECT u.* FROM user u
+                    WHERE u.role = :role";
+
+            // Add status filter if provided
+            if ($status !== null) {
+                $sql .= " AND u.status = :status";
+            }
+
+            // Single ORDER BY with valid column
+            $sql .= " ORDER BY u.registerDate DESC";
+
+            $stmt = Database::getInstance()->getConnection()->prepare($sql);
+
+            // Always bind role parameter
+            $stmt->bindValue(':role', 'customer', \PDO::PARAM_STR);
+
+            // Conditionally bind status
+            if ($status !== null) {
+                $stmt->bindValue(':status', $status, \PDO::PARAM_STR);
+            }
+
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Throwable $th) {
+            error_log('Error in getAllCustomers: ' . $th->getMessage());
             return [];
         }
     }
