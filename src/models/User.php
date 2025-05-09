@@ -256,13 +256,12 @@ class User
      * @param int $limit Number of notifications to retrieve
      * @return array Notifications
      */
-    public function getNotifications($limit = 10)
+    public function getNotifications()
     {
         try {
-            $sql = "SELECT * FROM notification WHERE userid = :userID ORDER BY datesent DESC LIMIT :limit";
+            $sql = "SELECT * FROM notification WHERE userid = :userID ORDER BY datesent DESC";
             $stmt = Database::getInstance()->getConnection()->prepare($sql);
             $stmt->bindParam(':userID', $this->userID, \PDO::PARAM_INT);
-            $stmt->bindParam(':limit', $limit, \PDO::PARAM_INT);
             $stmt->execute();
 
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);

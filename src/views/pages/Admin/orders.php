@@ -25,39 +25,44 @@
 </head>
 
 <body>
-    <!-- Artist Sidebar -->
-    <?php require_once VIEWS . "components/artist_sidebar.php"; ?>
+    <!-- Admin Sidebar -->
+    <?php require_once VIEWS . 'components/admin_sideBar.php'; ?>
+
     <!-- Main Content -->
-    <main class="artist-content">
-        <?php $pageTitle = "Artist Dashboard";
-        require_once VIEWS . "components/artist_header.php"; ?>
+    <main class="admin-content">
+        <?php
+        // Set page title for admin header
+        $pageTitle = 'Admin Logs';
+        // Include admin header component
+        require_once VIEWS . 'components/admin_header.php';
+        ?>
 
         <?php require_once VIEWS . 'components/error_display.php'; ?>
 
         <!-- statistics -->
         <div class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="stat-value" id="stats-artworks"><?php echo $totalOrders; ?></div>
+                <div class="stat-label">Total Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-palette"></i>
+                </div>
+                <div class="stat-value" id="stats-sales"><?php echo $totalItems; ?></div>
+                <div class="stat-label">Total Artworks</div>
+            </div>
             <div class="stat-card">
                 <div class="stat-icon">
                     <i class="fas fa-dollar-sign"></i>
                 </div>
-                <div class="stat-value" id="stats-earnings">$ <?php echo $artist->getBalance(); ?></div>
-                <div class="stat-label">Balance </div>
+                <div class="stat-value" id="stats-earnings">$ <?php echo $totalPrice ?></div>
+                <div class="stat-label">Total Revenue</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fa-solid fa-clock"></i>
-                </div>
-                <div class="stat-value" id="stats-artworks">0</div>
-                <div class="stat-label">Pending Withdraws</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fa-solid fa-circle-check"></i>
-                </div>
-                <div class="stat-value" id="stats-sales">0</div>
-                <div class="stat-label">Accepted Withdraws</div>
-            </div>
-
         </div>
 
         <!-- Include error display component -->
@@ -65,7 +70,7 @@
 
         <div class="withdrawal-history-container mt-4">
             <h2 class="fs-1 mb-1">Selling History</h2>
-            <p class="text-muted mb-4">View your sold Artworks</p>
+            <p class="text-muted mb-4">All the Selling Logs in the site</p>
 
             <div class="table-container">
                 <div class="table-header">
@@ -74,10 +79,11 @@
                     <table class="table table-hover search-table" id="artworksTable">
                         <thead>
                             <tr>
-                                <th>Artwok</th>
+                                <th>Order ID</th>
                                 <th>User</th>
-                                <th>Price</th>
-                                <th>Selling Date</th>
+                                <th>Total Price</th>
+                                <th>Total Items</th>
+                                <th>Order Date</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -90,39 +96,41 @@
                                 <?php foreach ($orders as $order): ?>
                                     <tr>
                                         <td>
-                                            <div class="d-flex align-items-center">
-
-                                                <div class="d-flex align-items-center">
-                                                    <img src="/uploads/artworks/<?php echo $order['images']; ?>" alt="Artwork Image" class="img-thumbnail me-4" style="width: 170px; height: 120px; object-fit: cover;" />
-                                                    <div>
-                                                        <div class="fw-bold d-none d-md-flex"><?= htmlspecialchars($order['title']) ?></div>
-                                                    </div>
+                                            <div class="my-3">
+                                                <h3> <?php echo $order['orderID']; ?></h3>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center my-2">
+                                                <img src="/uploads/profiles/<?php echo $order['customerPic']; ?>" alt="Customer Avatar" class="small-avatar me-3" />
+                                                <div>
+                                                    <div class="fw-bold"><?= htmlspecialchars($order['Fname'] . ' ' . $order['Lname']) ?></div>
+                                                    <small class="text-muted"><?= htmlspecialchars($order['username'])   ?></small>
                                                 </div>
+                                            </div>
+                                        </td>
 
+                                        <td class="text-center">
+                                            <div class="d-flex align-items-center my-4">
+                                                <span class="fw-bold">$<?php echo number_format($order['totalPrice'], 2); ?></span>
+                                            </div>
                                         </td>
                                         <td class="text-center">
                                             <div class="d-flex align-items-center my-4">
-                                                <img src="/uploads/profiles/<?php echo $order["customerProfilePic"]; ?>" alt="Customer Avatar" class="small-avatar me-3" />
-                                                <div>
-                                                    <div class="fw-bold"><?= htmlspecialchars($order['customerUsername']) ?></div>
-                                                </div>
+                                                <span class="fw-bold"><?php echo $order['totalItems']; ?></span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex align-items-center my-4">
+                                                <span class="fw-bold"><?php echo $order['orderDate']; ?></span>
                                             </div>
                                         </td>
                                         <td>
-                                            <div class="d-flex align-items-center mt-5">
-                                                <div class="fw-bold">$<?php echo $order['price']; ?></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex align-items-center mt-5">
-                                                <div class="fw-bold"><?php echo $order['orderDate']; ?></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="status-badge mt-5 <?php echo $order["status"]; ?>">
+                                            <span class="status-badge my-4 <?php echo $order['orderStatus']; ?>">
                                                 <?php echo $order['orderStatus']; ?>
                                             </span>
                                         </td>
+
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>

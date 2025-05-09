@@ -214,20 +214,24 @@
 
           <!-- credit card -->
           <div class="profile-section">
-            <h2 class="profile-section-title">Credit Card Information</h2>
-            <form id="passwordForm" action="/artist/changePassword" method="POST" novalidate>
+            <h2 class="profile-section-title">Payment Information</h2>
+            <form id="paymentForm" action="/artist/updatePayment" method="POST" novalidate>
               <div class="row mb-4">
                 <div class="col-md-12">
                   <div class="mb-3">
-                    <label for="currentPassword" class="form-label">Card Number</label>
+                    <label for="cardNumber" class="form-label">Card Number</label>
                     <input
-                      type="password"
+                      type="text"
                       class="form-control"
-                      id="currentPassword"
-                      name="currentPassword"
+                      id="cardNumber"
+                      name="cardNumber"
+                      pattern="^\d{4}-\d{4}-\d{4}-\d{4}$"
+                      value="<?php echo (!$payment) ? "" : $payment->getCardNumber(); ?>"
+                      maxlength="19"
+                      minlength="19"
                       required />
                     <div class="invalid-feedback">
-                      Please enter your Card Number
+                      Please enter a valid card number (format: 1234-5678-9012-3456)
                     </div>
                   </div>
                 </div>
@@ -235,48 +239,58 @@
               <div class="row mb-4">
                 <div class="col-md-4">
                   <div class="mb-3">
-                    <label for="newPassword" class="form-label">CVV</label>
+                    <label for="cvvNumber" class="form-label">CVV</label>
                     <input
-                      type="password"
+                      type="text"
                       class="form-control"
-                      id="newPassword"
-                      name="newPassword"
+                      id="cvvNumber"
+                      name="cvvNumber"
+                      maxlength="3"
+                      minlength="3"
+                      value="<?php (!$payment) ? "" : $payment->getCvv(); ?>"
                       required
-                      pattern="(?=.*[A-Z])(?=.*[0-9]).{8,}" />
+                      pattern="^\d{3}$" />
                     <div class="invalid-feedback" id="newPasswordFeedback">
-                      Password must be at least 8 characters with at least one uppercase letter and one number
+                      Please enter a valid CVV number
                     </div>
                   </div>
                 </div>
 
                 <div class="col-md-4">
                   <div class="mb-3">
-                    <label for="confirmPassword" class="form-label">Exp Month</label>
+                    <label for="expMonth" class="form-label">Exp Month</label>
                     <input
                       type="number"
                       min="1"
                       max="12"
                       step="1"
                       class="form-control"
-                      id="confirmPassword"
-                      name="confirmPassword"
+                      id="expMonth"
+                      name="expMonth"
+                      maxlength="2"
+                      value="<?php echo (!$payment) ? "" : $payment->getExpiryMonth(); ?>"
+                      minlength="2"
+                      pattern="^\d{2}$"
                       required />
                     <div class="invalid-feedback">
-                      Passwords do not match
+                      Please enter a valid expiration month
                     </div>
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="mb-3">
-                    <label for="confirmPassword" class="form-label">Exp Year</label>
+                    <label for="expYear" class="form-label">Exp Year</label>
                     <input
                       type="number"
                       class="form-control"
-                      id="confirmPassword"
-                      name="confirmPassword"
+                      id="expYear"
+                      name="expYear"
+                      min="<?php echo date('Y'); ?>"
+                      max="<?php echo date('Y') + 20; ?>"
+                      value="<?php echo (!$payment) ? "" : $payment->getExpiryYear(); ?>"
                       required />
                     <div class="invalid-feedback">
-                      Passwords do not match
+                      Please enter a valid expiration year
                     </div>
                   </div>
                 </div>
@@ -478,6 +492,53 @@
         }
 
         $("#passwordStrengthText").text(feedback);
+      }
+    });
+
+
+    // Form validation for profile and payment forms
+    function validateForm(form) {
+      form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      });
+    }
+    const profileForm = document.getElementById('profileForm');
+    const paymentForm = document.getElementById('paymentForm');
+    validateForm(profileForm);
+    validateForm(paymentForm);
+
+    /// make the card number input accept only numbers and dashes
+    $("#cardNumber").on("input", function() {
+      this.value = this.value.replace(/[^0-9-]/g, '');
+      this.value = this.value.replace(/(\d{4})(?=\d)/g, '$1-');
+    });
+    // make the cvv input accept only numbers
+    $("#cvvNumber").on("input", function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
+    });
+    // make the phone input accept only numbers and dashes 
+    $("#phone").on("input", function() {
+      this.value = this.value.replace(/[^0-9-]/g, '');
+    });
+
+    /// valiate exp month and year
+    $("#expMonth").on("input", function() {
+      if (new Date().getMonth() + 1 > this.value && new Date().getFullYear() == $("#expYear").val()) {
+        this.setCustomValidity("Expiration month is in the past");
+      } else {
+        this.setCustomValidity("");
+      }
+    });
+
+    $("#expYear").on("input", function() {
+      if (new Date().getFullYear() > this.value) {
+        this.setCustomValidity("Expiration year is in the past");
+      } else {
+        this.setCustomValidity("");
       }
     });
   </script>

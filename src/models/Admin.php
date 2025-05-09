@@ -68,6 +68,41 @@ class Admin extends User
         }
     }
 
+    public function getWithdrawRequests()
+    {
+        try {
+            $sql = "SELECT 
+            t.transactionID,
+            t.amount,
+            t.date AS transactionDate,
+            t.type,
+            t.status,
+            a.artistID,
+            u.Fname AS artistFirstName,
+            u.Lname AS artistLastName,
+            u.Email AS artistEmail,
+            u.profilePic AS artistProfilePic,
+            a.Balance AS artistBalance,
+            a.phone AS artistPhone
+        FROM 
+            transaction t
+        JOIN 
+            artisttransaction at ON t.transactionID = at.transactionID
+        JOIN 
+            artist a ON at.artistID = a.artistID
+        JOIN 
+            user u ON a.artistID = u.userID
+        ORDER BY 
+            t.date DESC;";
+            $stmt = Database::getInstance()->getConnection()->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Throwable $th) {
+            $_SESSION['error'] = 'Error fetching withdraw requests: ' . $th->getMessage();
+            return [];
+        }
+    }
+
     /**
      * Verify an admin's secure code
      * 

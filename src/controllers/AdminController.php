@@ -7,6 +7,7 @@ use App\models\User;
 use App\models\Artwork;
 use App\core\Database;
 use App\models\Gust;
+use App\models\Order;
 
 class AdminController
 {
@@ -296,6 +297,27 @@ class AdminController
         exit;
     }
 
+    public function withdrawals() {
+        $admin = Admin::getCurrentAdmin();
+        if (!$admin) {
+            $_SESSION['error'] = 'You must be logged in as an admin to access this page';
+            header('Location: /index');
+            exit;
+        }
+
+        // Get all withdrawals from the database
+        $trnasactions = $admin->getWithdrawRequests() ?? [];
+        $totalWithdrawals = count($trnasactions);
+        $accepted = count(array_filter($trnasactions, function ($withdrawal) {
+            return $withdrawal['status'] === 'accepted';
+        }));
+        $pending = count(array_filter($trnasactions, function ($withdrawal) {
+            return $withdrawal['status'] === 'pending';
+        }));
+
+        require_once VIEWS . 'pages/Admin/withdrawals.php';
+    }
+
     public function approveArtist()
     {
         if (!isset($_POST['id'])) {
@@ -507,7 +529,28 @@ class AdminController
         }
     }
 
+    public function orders()
+    {
+        $admin = Admin::getCurrentAdmin();
+        if (!$admin) {
+            $_SESSION['error'] = 'You must be logged in as an admin to access this page';
+            header('Location: /index');
+            exit;
+        }
 
+        // Get all orders from the database
+        $orders = Order::getAllOrders() ?? [];
+        $totalOrders = count($orders);
+        $totalItems = array_reduce($orders, function ($carry, $order) {
+            return $carry + $order['totalItems'];
+        }, 0);
+        $totalPrice = array_reduce($orders, function ($carry, $order) {
+            return $carry + $order['totalPrice'];
+        }, 0);
+
+
+        require_once VIEWS . 'pages/Admin/orders.php';
+    }
     /**
      * Get all artworks from the database with artist information and pagination
      * 

@@ -7,27 +7,21 @@ use App\core\Database;
 class Transaction
 {
     private $transactionID;
-    private $userID;
     private $amount;
     private $date;
     private $type;
     private $status;
 
-    public function __construct($userID, $amount, $type, $status = 'pending')
+    public function __construct($amount, $type, $status = 'pending', $date = null)
     {
-        $this->userID = $userID;
         $this->amount = $amount;
         $this->type = $type;
         $this->status = $status;
-        $this->date = date('Y-m-d H:i:s');
+        $this->date = $date ?? date('Y-m-d');
     }
     public function getTransactionID()
     {
         return $this->transactionID;
-    }
-    public function getUserID()
-    {
-        return $this->userID;
     }
     public function getAmount()
     {
@@ -49,15 +43,17 @@ class Transaction
     public function createTransaction()
     {
         try {
-            $sql = "INSERT INTO transactions (userID, amount, type, date, status) VALUES (:userID, :amount, :type, :date, :status)";
+            $sql = "INSERT INTO transaction ( amount, type, date, status) VALUES (:amount, :type, :date, :status)";
             $stmt = Database::getInstance()->getConnection()->prepare($sql);
-            $stmt->bindParam(':userID', $this->userID);
             $stmt->bindParam(':amount', $this->amount);
             $stmt->bindParam(':type', $this->type);
             $stmt->bindParam(':date', $this->date);
             $stmt->bindParam(':status', $this->status);
-            return $stmt->execute();
+            $stmt->execute();
+            $this->transactionID = Database::getInstance()->getConnection()->lastInsertId();
+            return $this->transactionID;
         } catch (\PDOException $e) {
+            $_SESSION['error'] =  $e->getMessage();
             return false;
         }
     }

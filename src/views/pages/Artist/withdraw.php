@@ -65,25 +65,14 @@
 
             <!-- Include error display component -->
             <?php require_once VIEWS . 'components/error_display.php'; ?>
-
-            <form id="withdrawForm" class="needs-validation stat-card" action="/artist/withdraw" method="POST">
-                <div class="mb-3">
-                    <label for="amount" class="form-label fw-medium">Amount</label>
-                    <input type="number" class="form-control form-control-lg" id="amount" name="amount"
-                        step="1" value="<?php echo $artist->getBalance(); ?>"
-                        placeholder="Enter amount to withdraw" required min="1">
-                    <div class="invalid-feedback">
-                        Please enter a valid amount.
-                    </div>
-
-
-                </div>
-                <button type="submit" class="btn btn-primary btn-lg" <?php echo $artist->getBalance() > 30 ? "" : "disabled"; ?>>Request Withdrawal</button>
+            <div class="stat-card">
+                <button type="submit" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#<?php echo (!$payment) ?  "addPaymentMethodModal" :  "withdrawalRequestModal"; ?>" <?php echo $artist->getBalance() > 30 ? "" : "disabled"; ?>>Request Withdrawal</button>
                 <div class="mt-3">
                     <p class="text-muted">Note: Minimum withdrawal amount is $30.</p>
                     <p class="text-muted">Normal withdrawal takes 1 week to be accepted <strong>You can request an urgent withdrawal with $5 fees.</strong></p>
                 </div>
-            </form>
+            </div>
+            <!-- </form> -->
         </div>
 
         <div class="withdrawal-history-container mt-4">
@@ -127,6 +116,67 @@
             </div>
         </div>
 
+        <!-- withdrawal request model -->
+        <div class="modal fade" id="withdrawalRequestModal" tabindex="-1" aria-labelledby="withdrawalRequestModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form id="withdrawForm" class="needs-validation" action="/artist/withdraw" method="POST">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="withdrawalRequestModalLabel">Withdrawal Request</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="amount" class="form-label fw-medium">Amount</label>
+                                <input type="number" class="form-control form-control-lg" id="amount" name="amount"
+                                    step="1" min="30" max="<?php echo $artist->getBalance(); ?>" value="<?php echo $artist->getBalance(); ?>"
+                                    placeholder="Enter amount to withdraw" required>
+                                <div class="invalid-feedback">
+                                    Please enter a valid amount.
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <select class="form-select form-select-lg" id="withdrawalType" name="withdrawalType" required>
+                                    <option value="">Select withdrawal type</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Please select a withdrawal type.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <p>Note: Minimum withdrawal amount is $30.</p>
+                                <p><strong>Site used the saved payment method for this request.</strong></p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="withdrawalRequestModalConfirm">OK</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- must add a payment method to withdraw funds model  -->
+        <div class="modal fade" id="addPaymentMethodModal" tabindex="-1" aria-labelledby="addPaymentMethodModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addPaymentMethodModalLabel">Add Payment Method</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-danger">You need to add a payment method to withdraw funds.</p>
+                        <a href="/artist/profile#paymentForm" class="btn btn-primary">Add Payment Method</a>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
     </main>
     <!-- Popper.js (required for Bootstrap dropdowns) -->
     <script src="../../assets/js/popper.min.js"></script>

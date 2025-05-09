@@ -179,10 +179,11 @@ class Artist extends User
         }
     }
 
-    public function getSoldArtworks() {
+    public function getSoldArtworks()
+    {
         try {
             $db = Database::getInstance()->getConnection();
-            
+
             $sql = "SELECT 
                         a.*,
                         o.orderID,
@@ -202,15 +203,55 @@ class Artist extends User
                     JOIN user u ON c.customerID = u.userID
                     WHERE a.artistID = :artistId
                     AND t.status = 'accepted'";
-            
+
             $stmt = $db->prepare($sql);
             $stmt->bindValue(':artistId', $this->userID, \PDO::PARAM_INT);
             $stmt->execute();
             $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             return $data;
-            
         } catch (\PDOException $e) {
-           var_dump($e->getMessage());
+            var_dump($e->getMessage());
+            return false;
+        }
+    }
+    public function getPaymentMethod()
+    {
+        try {
+            $paymentMethod = ArtistPayments::getPaymentMethodByArtistId($this->userID);
+            if (!$paymentMethod) {
+                return false;
+            }
+            return $paymentMethod;
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+
+
+
+    public function addPaymentMethod($data)
+    {
+        try {
+
+            $payment = new ArtistPayments($this->userID, $data['cardNumber'], $data['expMonth'], $data['expYear'], $data['cvv']);
+            return $payment->save();
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+    public function updatePayement($data)
+    {
+        try {
+            /// check if there is a payment method
+            $paymentMethod = $this->getPaymentMethod();
+            if (!$paymentMethod) {
+                return $this->addPaymentMethod($data);
+            } else {
+                $payment = new ArtistPayments($this->userID, $data['cardNumber'], $data['expMonth'], $data['expYear'], $data['cvv']);
+                return $payment->updatePaymentMethod($this->userID, $data);
+            }
+        } catch (\Throwable $th) {
+            $_SESSION['error'] =  $th->getMessage();
             return false;
         }
     }
@@ -405,7 +446,41 @@ class Artist extends User
         $this->bDate = $bDate;
     }
 
+    public function withdrawRequest($amount, $type)
+    {
+        try {
+            $amount = $type == "urgent" ? $amount - 5 : $amount;
+            $transaction = new Transaction($amount, "withdraw", $type == "urgent" ? "Accepted" : "pending", $type == "urgent" ? date('Y-m-d') : date('Y-m-d', strtotime('+7 days')));
+            $transactionId =  $transaction->createTransaction();
+            if (!$transactionId) {
+                return false;
+            }
+            $sql = "INSERT INTO artisttransaction (artistID, transactionID) VALUES (:artistID, :transactionID)";
+            $stmt = Database::getInstance()->getConnection()->prepare($sql);
+            $stmt->bindParam(':artistID', $this->userID, \PDO::PARAM_INT);
+            $stmt->bindParam(':transactionID', $transactionId, \PDO::PARAM_INT);
+            $success = $stmt->execute();
+            if (!$success) {
+                $_SESSION['error'] = "Failed to create transaction record.";
+                return false;
+            }
+            // Deduct the amount from the artist's balance
+            $sql = "UPDATE artist SET Balance = Balance - :amount WHERE artistID = :artistID";
+            $stmt = Database::getInstance()->getConnection()->prepare($sql);
+            $stmt->bindParam(':amount', $amount, \PDO::PARAM_STR);
 
+            $stmt->bindParam(':artistID', $this->userID, \PDO::PARAM_INT);
+            $success = $stmt->execute();
+            if (!$success) {
+                $_SESSION['error'] = "Failed to update artist balance.";
+                return false;
+            }
+            return true;
+        } catch (\Throwable $th) {
+            $_SESSION['error'] =  $th->getMessage();
+            return false;
+        }
+    }
     public function getReviews()
     {
         try {

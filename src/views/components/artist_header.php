@@ -20,6 +20,12 @@
             <li>
                 <hr class="dropdown-divider">
             </li>
+            <li>
+                <a class="dropdown-item" href="/artist/notifications"><i class="fa-solid fa-envelope me-2"></i> Notifications</a>
+            </li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
             <li><a class="dropdown-item text-danger" href="/logout">
                     <i class="fas fa-sign-out-alt me-2"></i> Logout
                 </a></li>

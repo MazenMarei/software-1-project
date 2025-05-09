@@ -123,7 +123,38 @@
 
         <!-- Chart.js -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+        <script>
+                    // Initialize sales chart
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        const salesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: <?php echo json_encode($salesData['labels']); ?>,
+                datasets: [{
+                    label: 'Sales',
+                    data: <?php echo json_encode($salesData['data']); ?>,
+                    borderColor: '#C5A992',
+                    tension: 0.4,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+        </script>
     </body>
 
     </html>

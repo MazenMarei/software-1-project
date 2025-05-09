@@ -27,7 +27,7 @@ class ArtistController
         $totalEarnings = array_reduce($artworks, function ($carry, $artwork) {
             return $carry + ($artwork['status'] === 'sold' ? $artwork['price'] : 0);
         }, 0);
-
+        $salesData = $this->getSalesChartData();
 
         require_once VIEWS . 'pages/Artist/index.php';
     }
@@ -47,7 +47,7 @@ class ArtistController
     public function profile()
     {
         $artist = Artist::getCurrentArtist();
-
+        $payment = $artist->getPaymentMethod();
 
         require_once VIEWS . 'pages\Artist\profile.php';
     }
@@ -381,6 +381,82 @@ class ArtistController
         require_once VIEWS . 'pages\Artist\edit-artwork.php';
     }
 
+    public function updatePayment()
+    {
+        if (!isset($_POST['expYear']) || !isset($_POST['expMonth']) || !isset($_POST['cardNumber']) || !isset($_POST['cvvNumber'])) {
+            $_SESSION['error'] = 'Invalid request';
+            header('Location: /artist/profile');
+            exit;
+        }
+        $expYear = $_POST['expYear'];
+        $expMonth = $_POST['expMonth'];
+        $cardNumber = str_replace("-", "", $_POST['cardNumber']);
+        $cvvNumber = $_POST['cvvNumber'];
+
+        if (empty($expYear) || empty($expMonth) || empty($cardNumber) || empty($cvvNumber)) {
+            $_SESSION['error'] = 'All fields are required';
+            header('Location: /artist/profile');
+            exit;
+        }
+        if (!is_numeric($cardNumber) || strlen($cardNumber) != 16) {
+            $_SESSION['error'] = 'Card number must be a 16-digit number';
+            header('Location: /artist/profile');
+            exit;
+        }
+
+        if (!is_numeric($cvvNumber) || strlen($cvvNumber) != 3) {
+            $_SESSION['error'] = 'CVV number must be a 3-digit number';
+            header('Location: /artist/profile');
+            exit;
+        }
+        if (!is_numeric($expYear) || strlen($expYear) != 4) {
+            $_SESSION['error'] = 'Expiration year must be a 4-digit number';
+            header('Location: /artist/profile');
+            exit;
+        }
+        if (!is_numeric($expMonth) || strlen($expMonth) > 2) {
+            $_SESSION['error'] = 'Expiration month must be a 2-digit number';
+            header('Location: /artist/profile');
+            exit;
+        }
+        if ($expMonth < 1 || $expMonth > 12) {
+            $_SESSION['error'] = 'Expiration month must be between 01 and 12';
+            header('Location: /artist/profile');
+            exit;
+        }
+        if ($expYear < date('Y')) {
+            $_SESSION['error'] = 'Expiration year must be greater than or equal to the current year';
+            header('Location: /artist/profile');
+            exit;
+        }
+        if ($expYear == date('Y') && $expMonth < date('m')) {
+            $_SESSION['error'] = 'Expiration month must be greater than or equal to the current month';
+            header('Location: /artist/profile');
+            exit;
+        }
+        $artist = Artist::getCurrentArtist();
+
+        if (!$artist) {
+            $_SESSION['error'] = 'You must be logged in as an artist to perform this action';
+            header('Location: /index');
+            exit;
+        }
+
+        $success = $artist->updatePayement([
+            'expYear' => $expYear,
+            'expMonth' => $expMonth,
+            'cardNumber' => $cardNumber,
+            'cvv' => $cvvNumber,
+        ]);
+
+        if ($success) {
+            $_SESSION['success'] = "Payment information has been updated successfully";
+        } else {
+            $_SESSION['error'] = "Failed to update payment information: " . $_SESSION['error'];
+        }
+        header('Location: /artist/profile');
+    }
+
     public function updateArtwork()
     {
         if (!isset($_POST['id']) || !isset($_POST['title']) || !isset($_POST['description']) || !isset($_POST['price']) || !isset($_POST['category'])) {
@@ -510,6 +586,52 @@ class ArtistController
         require_once VIEWS . 'pages\Artist\collections.php';
     }
 
+    private function getSalesChartData($period = 'week')
+    {
+        $db = Database::getInstance()->getConnection();
+        $labels = [];
+        $data = [];
+
+        // Check if order table has any records
+        $checkOrdersSql = "SELECT COUNT(*) as count FROM `order`";
+        $checkOrdersStmt = $db->prepare($checkOrdersSql);
+        $checkOrdersStmt->execute();
+        $orderCount = $checkOrdersStmt->fetch(\PDO::FETCH_ASSOC)['count'] ?? 0;
+
+        // If order table is empty, return default empty data
+        if ($orderCount == 0) {
+            return [
+                'labels' => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                'data' => [0, 0, 0, 0, 0, 0, 0]
+            ];
+        }
+
+        if ($period === 'week') {
+            // Get sales for each day of the current week
+            $startOfWeek = date('Y-m-d', strtotime('monday this week'));
+
+            for ($i = 0; $i < 7; $i++) {
+                $day = date('Y-m-d', strtotime($startOfWeek . " +$i days"));
+                $dayLabel = date('D', strtotime($day));
+
+                $sql = "SELECT COALESCE(SUM(totalPrice), 0) as total FROM `order` WHERE DATE(orderDate) = :day";
+                $stmt = $db->prepare($sql);
+                $stmt->bindParam(':day', $day, \PDO::PARAM_STR);
+                $stmt->execute();
+
+                $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+                $total = $result['total'] ? floatval($result['total']) : 0;
+
+                $labels[] = $dayLabel;
+                $data[] = $total;
+            }
+        }
+        return [
+            'labels' => $labels,
+            'data' => $data
+        ];
+    }
+
     public function withdraw()
     {
         $artist = Artist::getCurrentArtist();
@@ -526,6 +648,7 @@ class ArtistController
         $acceptedWithdraw = count(array_filter($trnasactions, function ($transaction) {
             return $transaction['status'] === 'accepted';
         }));
+        $payment = $artist->getPaymentMethod();
         require_once VIEWS . 'pages\Artist\withdraw.php';
     }
 
@@ -538,12 +661,24 @@ class ArtistController
             header('Location: /index');
             exit;
         }
-        
+
         $followers = $artist->getFollowers();
         $totalFollowers = count($followers);
         require_once VIEWS . 'pages\Artist\followers.php';
     }
 
+    public function notifications()
+    {
+        $artist = Artist::getCurrentArtist();
+        if (!$artist) {
+            $_SESSION['error'] = 'You must be logged in as an artist to perform this action';
+            header('Location: /index');
+            exit;
+        }
+        $notifications = $artist->getNotifications();
+        $totalNotifications = count($notifications);
+        require_once VIEWS . 'pages\Artist\notifications.php';
+    }
 
     public function sellingHistory()
     {
@@ -557,6 +692,53 @@ class ArtistController
         require_once VIEWS . 'pages\Artist\selling-history.php';
     }
 
+    public function withdrawRequst() {
+        if(!isset($_POST['amount']) || !isset($_POST['withdrawalType'])) {
+            $_SESSION['error'] = 'Invalid request';
+            header('Location: /artist/withdraw');
+            exit;
+        }
+        $amount = $_POST['amount'];
+        $withdrawalType = $_POST['withdrawalType'];
+        $artist = Artist::getCurrentArtist();
+        if (!$artist) {
+            $_SESSION['error'] = 'You must be logged in as an artist to perform this action';
+            header('Location: /index');
+            exit;
+        }
+
+        if($amount <= 0) {
+            $_SESSION['error'] = 'Amount must be greater than 0';
+            header('Location: /artist/withdraw');
+            exit;
+        }
+
+        if($amount > $artist->getBalance()) {
+            $_SESSION['error'] = 'Amount must be less than or equal to your balance';
+            header('Location: /artist/withdraw');
+            exit;
+        }
+
+        if($amount < 30) {
+            $_SESSION['error'] = 'Minimum withdrawal amount is 30$';
+            header('Location: /artist/withdraw');
+            exit;
+        }
+
+        if($withdrawalType != 'urgent' && $withdrawalType != 'normal') {
+            $_SESSION['error'] = 'Invalid withdrawal type';
+            header('Location: /artist/withdraw');
+            exit;
+        }
+
+        $success = $artist->withdrawRequest($amount, $withdrawalType);
+        if($success) {
+            $_SESSION['success'] = 'Withdrawal request has been sent successfully';
+        } else {
+            $_SESSION['error'] = 'Failed to send withdrawal request ' . $_SESSION['error'];
+        }
+        header('Location: /artist/withdraw');
+    }
     public function newArtwork()
     {
         $artist = Artist::getCurrentArtist();
@@ -568,5 +750,17 @@ class ArtistController
         $categories = Artwork::getCategories();
 
         require_once VIEWS . 'pages\Artist\new-artwork.php';
+    }
+
+
+    public function fairs() {
+        $artist = Artist::getCurrentArtist();
+        if (!$artist) {
+            $_SESSION['error'] = 'You must be logged in as an artist to perform this action';
+            header('Location: /index');
+            exit;
+        }
+        
+        require_once VIEWS . 'pages\Artist\fairs.php';
     }
 }
