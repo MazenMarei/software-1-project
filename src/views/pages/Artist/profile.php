@@ -211,6 +211,82 @@
               </button>
             </form>
           </div>
+
+          <!-- credit card -->
+          <div class="profile-section">
+            <h2 class="profile-section-title">Credit Card Information</h2>
+            <form id="passwordForm" action="/artist/changePassword" method="POST" novalidate>
+              <div class="row mb-4">
+                <div class="col-md-12">
+                  <div class="mb-3">
+                    <label for="currentPassword" class="form-label">Card Number</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="currentPassword"
+                      name="currentPassword"
+                      required />
+                    <div class="invalid-feedback">
+                      Please enter your Card Number
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row mb-4">
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="newPassword" class="form-label">CVV</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="newPassword"
+                      name="newPassword"
+                      required
+                      pattern="(?=.*[A-Z])(?=.*[0-9]).{8,}" />
+                    <div class="invalid-feedback" id="newPasswordFeedback">
+                      Password must be at least 8 characters with at least one uppercase letter and one number
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Exp Month</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="12"
+                      step="1"
+                      class="form-control"
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      required />
+                    <div class="invalid-feedback">
+                      Passwords do not match
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Exp Year</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      required />
+                    <div class="invalid-feedback">
+                      Passwords do not match
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              <button type="submit" class="btn btn-primary">
+                Save Card
+              </button>
+            </form>
+          </div>
         </div>
 
         <!-- Sidebar Content -->
@@ -349,7 +425,7 @@
           };
           reader.readAsDataURL(file);
 
-   
+
         }
       });
 
