@@ -181,7 +181,7 @@
                       <?php echo $artwork['status']; ?>
                     </span>
                   </td>
-                  <td><?php echo date('M d, Y', strtotime($artwork['createDate'])); ?></td>
+                  <td><?php echo date('Y-m-d', strtotime($artwork['createDate'])); ?></td>
                   <td>
                     <div class="btn-group btn-group-sm">
                       <button

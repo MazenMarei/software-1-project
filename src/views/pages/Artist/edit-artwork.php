@@ -43,7 +43,7 @@
 
         <!-- Artwork Form -->
         <div class="form-container" id="artwork-form-container">
-            <form id="new-artwork-form" class="needs-validation" novalidate action="/artist/add-artwork" method="POST" enctype="multipart/form-data">
+            <form id="new-artwork-form" class="needs-validation" novalidate action="/artist/edit-artwork" method="POST" enctype="multipart/form-data">
                 <!-- Basic Information -->
                 <div class="form-section">
                     <h3 class="form-section-title">Basic Information</h3>
@@ -53,10 +53,15 @@
                                 Artwork Title <span class="text-danger">*</span>
                             </label>
                             <input
+                                type="hidden"
+                                name="id"
+                                value="<?php echo $id ; ?>" />
+                            <input
                                 type="text"
                                 class="form-control"
                                 id="artwork-title"
                                 name="title"
+                                value="<?php echo $artwork->getTitle(); ?>"
                                 required
                                 placeholder="Enter the title of your artwork" />
                         </div>
@@ -67,7 +72,7 @@
                             <select class="form-select" id="artwork-category" required name="category">
                                 <option value="" selected disabled>Select a category</option>
                                 <?php foreach ($categories as $category) : ?>
-                                    <option value="<?php echo $category; ?>"><?php echo $category; ?></option>
+                                    <option value="<?php echo $category; ?>" <?php echo ($category == $artwork->getCategory()) ? 'selected' : ''; ?>><?php echo $category; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -87,7 +92,8 @@
                             required
 
                             name="description"
-                            placeholder="Describe your artwork in detail..."></textarea>
+                            placeholder="Describe your artwork in detail..."><?php echo $artwork->getDescription(); ?>
+                        </textarea>
                     </div>
                 </div>
 
@@ -103,7 +109,7 @@
                         <div class="row">
                             <div class="row">
                                 <div class="col-9 col-md-3 mb-3">
-                                    <img src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png" alt="artwor k preview" id="profileAvatar" class="img-thumbnail rounded" />
+                                    <img src="/uploads/artworks/<?php echo $artwork->getImages(); ?>" alt="artwork preview" id="profileAvatar" class="img-thumbnail rounded" />
                                 </div>
                             </div>
                             <div class="row">
@@ -147,6 +153,7 @@
                                 id="artwork-medium"
                                 name="medium"
                                 required
+                                value="<?php echo $artwork->getMedium(); ?>"
                                 placeholder="e.g., Oil on canvas, Acrylic, Digital print" />
                         </div>
 
@@ -159,20 +166,7 @@
                                     title="Provide the dimensions of your artwork (height x width x depth, if applicable)."></i>
                             </label>
                             <div class="dimension-inputs">
-                                <div class="dimension-input-group">
-                                    <label for="artwork-height" class="form-label">Height</label>
-                                    <span class="text-danger">*</span>
-                                    <input
-                                        type="number"
-                                        step="0.1"
-                                        min="0"
-                                        class="form-control"
-                                        id="artwork-height"
-                                        required
-                                        name="height"
-                                        placeholder="Height" />
-                                    <span class="dimension-unit">in</span>
-                                </div>
+
                                 <div class="dimension-input-group">
                                     <label for="artwork-width" class="form-label">Width</label>
                                     <span class="text-danger">*</span>
@@ -184,7 +178,23 @@
                                         required
                                         id="artwork-width"
                                         name="width"
+                                        value="<?php echo $artwork->getDimensions()['width']; ?>"
                                         placeholder="Width" />
+                                    <span class="dimension-unit">in</span>
+                                </div>
+                                <div class="dimension-input-group">
+                                    <label for="artwork-height" class="form-label">Height</label>
+                                    <span class="text-danger">*</span>
+                                    <input
+                                        type="number"
+                                        step="0.1"
+                                        min="0"
+                                        class="form-control"
+                                        id="artwork-height"
+                                        required
+                                        value="<?php echo $artwork->getDimensions()['height']; ?>"
+                                        name="height"
+                                        placeholder="Height" />
                                     <span class="dimension-unit">in</span>
                                 </div>
                                 <div class="dimension-input-group">
@@ -196,6 +206,7 @@
                                         class="form-control"
                                         id="artwork-depth"
                                         name="depth"
+                                        value="<?php echo $artwork->getDimensions()['depth'] ?? ""; ?>"
                                         placeholder="Depth" />
                                     <span class="dimension-unit">in</span>
                                 </div>
@@ -217,6 +228,7 @@
                                         name="price"
                                         id="artwork-price"
                                         required
+                                        value="<?php echo $artwork->getPrice(); ?>"
                                         placeholder="Enter price" />
                                 </div>
                                 <small class="text-muted">

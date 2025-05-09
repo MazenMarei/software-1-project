@@ -11,7 +11,7 @@ use App\models\Artist;
 class ArtistController
 {
 
-    public function dashboard($id = null)
+    public function dashboard()
     {
         $artist = Artist::getCurrentArtist();
         $artworks = $artist->getArtworks();
@@ -276,12 +276,12 @@ class ArtistController
         $image = $_FILES['image']['name'];
 
         if ($_FILES['image']['error'] !== UPLOAD_ERR_OK) {
-            $_SESSION['error'] = 'Invalid image upload';
+            $_SESSION['error'] = 'Invalid image upload ' . $_FILES['image']['error'];
             header('Location: /artist/artworks');
             exit;
         }
 
-        if (empty($title) || empty($description) || empty($price) || empty($category) || empty($image) || empty($medium) || empty($height) || empty($width) || empty($depth)) {
+        if (empty($title) || empty($description) || empty($price) || empty($category) || empty($image) || empty($medium) || empty($height) || empty($width)) {
             $_SESSION['error'] = 'All fields are required';
             header('Location: /artist/artworks');
             exit;
@@ -293,7 +293,7 @@ class ArtistController
             exit;
         }
 
-        if (!is_numeric($height) || $height <= 0 || !is_numeric($width) || $width <= 0 || !is_numeric($depth) || $depth <= 0) {
+        if (!is_numeric($height) || $height <= 0 || !is_numeric($width) || $width <= 0) {
             $_SESSION['error'] = 'Dimensions must be positive numbers';
             header('Location: /artist/artworks');
             exit;
@@ -326,9 +326,9 @@ class ArtistController
             'title'       => $title,
             'description' => $description,
             'price'       => $price,
-            'images'      => $image,
+            'images'      => $newFileName,
             'medium'      => $medium,
-            'dimensions'  => $height . 'x' . $width . 'x' . $depth . ' in',
+            'dimensions'  => $height . 'x' . $width . (!empty($depth) ? 'x' . $depth : '') . ' in',
             'category'    => $category,
         ]);
 
@@ -347,6 +347,214 @@ class ArtistController
         }
         header('Location: /artist/artworks');
         exit;
+    }
+
+    public function editArtwork()
+    {
+        $id = $_GET['id'] ?? null;
+        if (!isset($id)) {
+            $_SESSION['error'] = 'Invalid request';
+            header('Location: /artist/artworks');
+            exit;
+        }
+
+        $artwork = Artwork::getArtworkById($id);
+        if (!$artwork) {
+            $_SESSION['error'] = 'Artwork not found';
+            header('Location: /artist/artworks');
+            exit;
+        }
+
+        $artist = Artist::getCurrentArtist();
+        if (!$artist) {
+            $_SESSION['error'] = 'You must be logged in as an artist to perform this action';
+            header('Location: /index');
+            exit;
+        }
+        if ($artist->getUserID() != $artwork->getArtistID()) {
+            $_SESSION['error'] = 'You do not have permission to edit this artwork';
+            header('Location: /artist/artworks');
+            exit;
+        }
+        $categories = Artwork::getCategories();
+
+        require_once VIEWS . 'pages\Artist\edit-artwork.php';
+    }
+
+    public function updateArtwork()
+    {
+        if (!isset($_POST['id']) || !isset($_POST['title']) || !isset($_POST['description']) || !isset($_POST['price']) || !isset($_POST['category'])) {
+            $_SESSION['error'] = 'Invalid request';
+            header('Location: /artist/artworks');
+            exit;
+        }
+
+        $id = $_POST['id'];
+        $title = $_POST['title'];
+        $description = $_POST['description'];
+        $price = $_POST['price'];
+        $category = $_POST['category'];
+        $medium = $_POST['medium'];
+        $height = $_POST['height'];
+        $width = $_POST['width'];
+        $depth = $_POST['depth'] ?? "";
+        $image = $_FILES['image']['name'] ?? null;
+        $newFileName = null;
+
+        if (empty($id) || empty($title) || empty($description) || empty($price) || empty($category) || empty($medium) || empty($height) || empty($width)) {
+            $_SESSION['error'] = 'All fields are required';
+            header('Location: /artist/artworks');
+            exit;
+        }
+        $oldArtwork = Artwork::getArtworkById($id);
+        if (!$oldArtwork) {
+            $_SESSION['error'] = 'Artwork not found';
+            header('Location: /artist/artworks');
+            exit;
+        }
+        $artist = Artist::getCurrentArtist();
+        if (!$artist) {
+            $_SESSION['error'] = 'You must be logged in as an artist to perform this action';
+            header('Location: /index');
+            exit;
+        }
+
+        if ($artist->getUserID() != $oldArtwork->getArtistID()) {
+            $_SESSION['error'] = 'You do not have permission to edit this artwork';
+            header('Location: /artist/artworks');
+            exit;
+        }
+
+        if (!is_numeric($price) || $price <= 0) {
+            $_SESSION['error'] = 'Price must be a positive number';
+            header('Location: /artist/artworks');
+            exit;
+        }
+
+        if (!is_numeric($height) || $height <= 0 || !is_numeric($width) || $width <= 0) {
+            $_SESSION['error'] = 'Dimensions must be positive numbers';
+            header('Location: /artist/artworks');
+            exit;
+        }
+
+        if ($image && $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+            $_SESSION['error'] = 'Invalid image upload ' . $_FILES['image']['error'];
+            header('Location: /artist/artworks');
+            exit;
+        } else {
+            // Validate file type
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg', 'image/webp'];
+            $fileType = strtolower($_FILES['image']['type']);
+            if ($image && !in_array($fileType, $allowedTypes)) {
+                $_SESSION['error'] = 'Only JPG, JPEG, PNG, Webp and GIF files are allowed';
+                header('Location: /artist/artworks');
+                exit;
+            }
+            // Generate unique filename
+            $newFileName = uniqid('artwork_') . '.' . pathinfo($image, PATHINFO_EXTENSION);
+            $uploadPath = UPLOADS . 'artworks' . DS . $newFileName;
+
+            // Check if directory exists and is writable
+            $directory = UPLOADS . 'artworks/';
+            if ($image && !is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
+            if ($image && !is_writable($directory)) {
+                $_SESSION['error'] = "Upload directory is not writable";
+                header('Location: /artist/artworks');
+                exit;
+            }
+
+            $fileTmpName = $_FILES['image']['tmp_name'];
+            if ($image && !move_uploaded_file($fileTmpName, $uploadPath)) {
+                $_SESSION['error'] = "Failed to upload artwork image. Check file permissions.";
+                header('Location: /artist/artworks');
+                exit;
+            }
+        }
+        $oldPath = UPLOADS . 'artworks' . DS . $oldArtwork->getImages();
+        $success = $oldArtwork->updateArtwork([
+            'title'       => $title,
+            'description' => $description,
+            'price'       => $price,
+            'images'      => $image ? $newFileName : $oldArtwork->getImages(),
+            'medium'      => $medium,
+            'dimensions'  => $height . 'x' . $width . (!empty($depth) ? 'x' . $depth : '') . ' in',
+            'category'    => $category,
+            'ArtworkID'   => $id,
+        ]);
+        if ($success) {
+            // Delete old image if a new one was uploaded
+            if ($image) {
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
+            }
+        } else {
+            $_SESSION['error'] = "Failed to update artwork: " . $_SESSION['error'];
+        }
+        header('Location: /artist/artworks');
+        exit;
+    }
+
+    public function collections()
+    {
+        $artist = Artist::getCurrentArtist();
+        if (!$artist) {
+            $_SESSION['error'] = 'You must be logged in as an artist to perform this action';
+            header('Location: /index');
+            exit;
+        }
+        $collections = $artist->getCollections();
+
+        require_once VIEWS . 'pages\Artist\collections.php';
+    }
+
+    public function withdraw()
+    {
+        $artist = Artist::getCurrentArtist();
+        if (!$artist) {
+            $_SESSION['error'] = 'You must be logged in as an artist to perform this action';
+            header('Location: /index');
+            exit;
+        }
+
+        $trnasactions = $artist->getAllTransactions();
+        $pendingWithdrawals = count(array_filter($trnasactions, function ($transaction) {
+            return $transaction['status'] === 'pending';
+        }));
+        $acceptedWithdraw = count(array_filter($trnasactions, function ($transaction) {
+            return $transaction['status'] === 'accepted';
+        }));
+        require_once VIEWS . 'pages\Artist\withdraw.php';
+    }
+
+
+    public function followers()
+    {
+        $artist = Artist::getCurrentArtist();
+        if (!$artist) {
+            $_SESSION['error'] = 'You must be logged in as an artist to perform this action';
+            header('Location: /index');
+            exit;
+        }
+        
+        $followers = $artist->getFollowers();
+        $totalFollowers = count($followers);
+        require_once VIEWS . 'pages\Artist\followers.php';
+    }
+
+
+    public function sellingHistory()
+    {
+        $artist = Artist::getCurrentArtist();
+        if (!$artist) {
+            $_SESSION['error'] = 'You must be logged in as an artist to perform this action';
+            header('Location: /index');
+            exit;
+        }
+        $orders = $artist->getSoldArtworks();
+        require_once VIEWS . 'pages\Artist\selling-history.php';
     }
 
     public function newArtwork()

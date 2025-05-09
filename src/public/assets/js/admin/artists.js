@@ -3,10 +3,12 @@
  */
 $(document).ready(function () {
   // Initialize DataTable for artists
-  let columnIndex =
-    document.querySelectorAll(".search-table tr th")[4].innerText === "Status"
+  const SortColumn = document.querySelectorAll(".search-table tr th")[4]; // Default sort column index
+  let columnIndex = SortColumn
+    ? SortColumn.innerText === "Status"
       ? 4
-      : 5;
+      : 5
+    : 0;
 
   const artistsTable = $(".search-table").DataTable({
     responsive: true,
@@ -20,7 +22,7 @@ $(document).ready(function () {
       infoFiltered: "(filtered from _MAX_ total items)",
     },
     columnDefs: [
-      { orderable: false, targets: [0, 6] }, // Disable sorting for image and actions columns
+      { orderable: false, targets: SortColumn > 0 ? [0, 6] : undefined }, // Disable sorting for image and actions columns
     ],
   });
 
@@ -97,17 +99,34 @@ $(document).ready(function () {
 
   window.showDetails = function (element) {
     const id = $(element).data("id");
-    const name = $(element).data("name");
+    const title = $(element).data("title");
+    const image = $(element).data("image");
+    const description = $(element).data("description");
+    const category = $(element).data("category");
+    const status = $(element).data("status");
+    const price = $(element).data("price");
+    const medium = $(element).data("medium");
+    const dimensions = $(element).data("dimensions");
+    const date = $(element).data("date");
 
-    $("#showDetailsArtistId").val(id);
-    $("#showDetailsArtistName").text(name);
+    $("#modal-artwork-title").text(title);
+    $("#modal-artwork-description").text(description);
+    $("#modal-artwork-price").text("$ " + price);
+    $("#modal-artwork-image").attr("src", "/uploads/artworks/" + image);
 
-    const showDetailsModal = new bootstrap.Modal(
+    $("#modal-artwork-status").text(status);
+    $("#modal-artwork-category").text(category);
+    $("#modal-artwork-medium").text(medium);
+    $("#modal-artwork-dimensions").text(dimensions);
+    $("#modal-artwork-date").text(date);
+    $("#modal-edit-btn").on("click", function () {
+      window.location.href = "/artist/edit-artwork?id=" + id;
+    });
+    const showArtworkDetailsModal = new bootstrap.Modal(
       document.getElementById("showDetailsModal")
     );
-    showDetailsModal.show();
+    showArtworkDetailsModal.show();
   };
-
   // When any modal is hidden
   $(".modal").on("hidden.bs.modal", function () {
     // Make sure the backdrop is removed

@@ -126,26 +126,91 @@ class Artist extends User
         }
     }
 
-    /**
-     * Update artist balance
-     * 
-     * @param float $amount Amount to add to balance (use negative for withdrawal)
-     * @return bool Success status
-     */
-    public function updateBalance($amount)
+    public function getAllTransactions()
     {
         try {
-            $sql = "UPDATE artist SET Balance = Balance + :amount WHERE artistID = :id";
+            $sql = "SELECT * FROM artisttransaction WHERE artistID = :artistID";
             $stmt = Database::getInstance()->getConnection()->prepare($sql);
-            $stmt->bindParam(':amount', $amount, \PDO::PARAM_STR);
-            $stmt->bindParam(':id', $this->userID, \PDO::PARAM_INT);
-
-            if ($stmt->execute()) {
-                $this->balance += $amount;
-                return true;
+            $stmt->bindParam(':artistID', $this->userID, \PDO::PARAM_INT);
+            $stmt->execute();
+            $artistTransactions = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            if (!$artistTransactions || count($artistTransactions) == 0) {
+                return [];
             }
-            return false;
+
+            $Transactions = [];
+            foreach ($artistTransactions as $artistTransaction) {
+                $transaction = Transaction::getTransactionById($artistTransaction['transactionID']);
+                if ($transaction) {
+                    array_push($Transactions, $transaction);
+                }
+            }
+
+            return $Transactions;
         } catch (\Throwable $th) {
+            return [];
+        }
+    }
+
+
+    public function getFollowers()
+    {
+        try {
+            $db = Database::getInstance()->getConnection();
+
+            $sql = "SELECT u.userID, u.Fname, u.username, u.Lname, u.profilePic, u.Email FROM following f JOIN user u ON f.customerID = u.userID WHERE f.artistID = :artistID";
+
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':artistID', $this->userID, \PDO::PARAM_INT);
+            $stmt->execute();
+            $followers = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            if (!$followers || count($followers) == 0) {
+                return [];
+            }
+            $users = [];
+            foreach ($followers as $key => $value) {
+                $user = new User($value['Fname'], $value['Lname'], $value['Email'], 'customer', $value["username"], $value['profilePic']);
+                array_push($users, $user);
+            }
+            return $users;
+        } catch (\PDOException $e) {
+            error_log("Error fetching artist followers: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function getSoldArtworks() {
+        try {
+            $db = Database::getInstance()->getConnection();
+            
+            $sql = "SELECT 
+                        a.*,
+                        o.orderID,
+                        o.orderDate,
+                        o.totalPrice,
+                        t.transactionID,
+                        o.orderStatus,
+                        c.customerID,
+                        u.profilePic AS customerProfilePic,
+                        u.username AS customerUsername,
+                        u.Email AS customerEmail
+                    FROM artwork a
+                    JOIN order_artwork oa ON a.artworkID = oa.artworkID
+                    JOIN `order` o ON oa.orderID = o.orderID
+                    JOIN transaction t ON o.transactionID = t.transactionID
+                    JOIN customer c ON o.customerID = c.customerID
+                    JOIN user u ON c.customerID = u.userID
+                    WHERE a.artistID = :artistId
+                    AND t.status = 'accepted'";
+            
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(':artistId', $this->userID, \PDO::PARAM_INT);
+            $stmt->execute();
+            $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            return $data;
+            
+        } catch (\PDOException $e) {
+           var_dump($e->getMessage());
             return false;
         }
     }

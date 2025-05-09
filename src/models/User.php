@@ -21,6 +21,7 @@ class User
 
     public function __construct($firstName = null, $lastName = null, $email = null, $role = null, $username = null, $profilePic = null)
     {
+
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->email = $email;
@@ -29,7 +30,6 @@ class User
         $this->profilePic = $profilePic;
         $this->emailNotification = true;
         $this->registerDate = date('Y-m-d');
-        $this->status = $role === 'customer' ? 'Accepted' : 'Pending';
     }
 
     /**

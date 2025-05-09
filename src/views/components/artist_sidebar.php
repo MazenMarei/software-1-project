@@ -4,8 +4,7 @@
         <img
           src="../../assets/images/artshelf-logo.png"
           alt="ArtShelf Logo"
-          height="40"
-        />
+          height="40" />
       </div>
       <ul class="artist-nav">
         <li class="artist-nav-item">
@@ -27,31 +26,31 @@
           </a>
         </li>
         <li class="artist-nav-item">
-          <a href="collections.html" class="artist-nav-link <?php echo ($_SERVER['REQUEST_URI'] === '/artist/collections') ? 'active' : ''; ?>">
+          <a href="/artist/collections" class="artist-nav-link <?php echo ($_SERVER['REQUEST_URI'] === '/artist/collections') ? 'active' : ''; ?>">
             <i class="fas fa-layer-group"></i>
             My Collections
           </a>
         </li>
         <li class="artist-nav-item">
-          <a href="sales.html" class="artist-nav-link <?php echo ($_SERVER['REQUEST_URI'] === '/artist/sales') ? 'active' : ''; ?>">
+          <a href="/artist/selling-history" class="artist-nav-link <?php echo ($_SERVER['REQUEST_URI'] === '/artist/selling-history') ? 'active' : ''; ?>">
             <i class="fas fa-shopping-cart"></i>
-            Sales
+            Selling History
           </a>
         </li>
         <li class="artist-nav-item">
-          <a href="earnings.html" class="artist-nav-link <?php echo ($_SERVER['REQUEST_URI'] === '/artist/earnings') ? 'active' : ''; ?>">
+          <a href="/artist/withdraw" class="artist-nav-link <?php echo ($_SERVER['REQUEST_URI'] === '/artist/withdraw') ? 'active' : ''; ?>">
             <i class="fas fa-money-bill-wave"></i>
-            Earnings
+            Withdraw
           </a>
         </li>
         <li class="artist-nav-item">
-          <a href="reviews.html" class="artist-nav-link <?php echo ($_SERVER['REQUEST_URI'] === '/artist/reviews') ? 'active' : ''; ?>">
-            <i class="fas fa-star"></i>
-            Reviews
+          <a href="/artist/followers" class="artist-nav-link <?php echo ($_SERVER['REQUEST_URI'] === '/artist/followers') ? 'active' : ''; ?>">
+            <i class="fa-solid fa-users"></i>
+            Followers
           </a>
         </li>
         <li class="artist-nav-item">
-          <a href="fairs.html" class="artist-nav-link <?php echo ($_SERVER['REQUEST_URI'] === '/artist/fairs') ? 'active' : ''; ?>">
+          <a href="/artist/fairs" class="artist-nav-link <?php echo ($_SERVER['REQUEST_URI'] === '/artist/fairs') ? 'active' : ''; ?>">
             <i class="fas fa-map-marker-alt"></i>
             Art Fairs
           </a>

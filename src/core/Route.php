@@ -44,7 +44,6 @@ class Route
     {
         // Strip query parameters from the path
         $path = parse_url($path, PHP_URL_PATH);
-
         // Remove leading slash for comparison with route patterns
         $path = ltrim($path, '/');
 
