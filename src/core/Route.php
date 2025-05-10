@@ -85,15 +85,15 @@ class Route
                         $next = self::handleMiddleware($middleware, $next);
                         return $next($path);
                     } else {
-                        throw new \Exception("Action not found: " . $action);
+                        require_once VIEWS . DS . 'errors' . DS . '404.php';
                     }
                 } else {
-                    throw new \Exception("Controller not found: " . $controller);
+                    require_once VIEWS . DS . 'errors' . DS . '404.php';
                 }
             }
         }
 
-        throw new \Exception("No route found for $method $path");
+        require_once VIEWS . DS . 'errors' . DS . '404.php';
     }
 
 

@@ -60,7 +60,8 @@ $(document).ready(function () {
 
     $("#approvalItemId").val(id);
     $("#approvalItemName").text(name);
-
+    console.log(name , id);
+    
     const approvalModal = new bootstrap.Modal(
       document.getElementById("approvalModal")
     );

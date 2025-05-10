@@ -65,6 +65,7 @@
 
             <!-- Include error display component -->
             <?php require_once VIEWS . 'components/error_display.php'; ?>
+            <!-- Withdrawal Form -->
             <div class="stat-card">
                 <button type="submit" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#<?php echo (!$payment) ?  "addPaymentMethodModal" :  "withdrawalRequestModal"; ?>" <?php echo $artist->getBalance() > 30 ? "" : "disabled"; ?>>Request Withdrawal</button>
                 <div class="mt-3">

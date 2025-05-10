@@ -188,7 +188,18 @@
                         type="button"
                         onclick="showDetails(this)"
                         class="btn btn-outline-primary view-artwork-btn"
-                        data-id="<?php echo $artwork['artworkID']; ?>">
+                        data-id="<?php echo $artwork['artworkID']; ?>"
+                        data-id="<?php echo $artwork['artworkID']; ?>"
+                        data-image="/artworks/<?php echo htmlspecialchars($artwork['images']); ?>"
+                        data-title="<?php echo htmlspecialchars($artwork['title']); ?>"
+                        data-price="<?php echo htmlspecialchars($artwork['price']); ?>"
+                        data-description="<?php echo htmlspecialchars($artwork['description']); ?>"
+                        data-status="<?php echo htmlspecialchars($artwork['status']); ?>"
+                        data-category="<?php echo htmlspecialchars($artwork['category']); ?>"
+                        data-medium="<?php echo htmlspecialchars($artwork['medium']); ?>"
+                        data-dimensions="<?php echo htmlspecialchars($artwork['dimensions']); ?>"
+                        data-date="<?php echo htmlspecialchars($artwork['createDate']); ?>">
+
                         <i class="fas fa-eye"></i>
                       </button>
                       <?php if ($artwork['status'] === 'Pending'): ?>
@@ -269,7 +280,7 @@
                   src=""
                   alt="Artwork Image"
                   id="modal-artwork-image"
-                  class="modal-artwork-image" />
+                  class="modal-artwork-image img-fluid" />
               </div>
               <div class="col-md-6">
                 <h3 id="modal-artwork-title"></h3>
@@ -295,10 +306,6 @@
                   <strong>Created:</strong>
                   <span id="modal-artwork-date"></span>
                 </div>
-                <div class="mb-3">
-                  <strong>Views:</strong>
-                  <span id="modal-artwork-views"></span>
-                </div>
               </div>
             </div>
           </div>
@@ -308,9 +315,6 @@
               class="btn btn-secondary"
               data-bs-dismiss="modal">
               Close
-            </button>
-            <button type="button" class="btn btn-primary" id="modal-edit-btn">
-              Edit Artwork
             </button>
           </div>
         </div>

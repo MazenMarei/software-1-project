@@ -25,8 +25,8 @@
 </head>
 
 <body>
-    <!-- Artist Sidebar -->
-    <?php require_once VIEWS . 'components/artist_sidebar.php'; ?>
+    <!-- Admin Sidebar -->
+    <?php require_once VIEWS . 'components/admin_sidebar.php'; ?>
 
 
 
@@ -35,7 +35,7 @@
         <!-- Admin Header -->
         <?php
         $pageTitle = 'Manage Art Fairs';
-        require_once VIEWS . 'components/artist_header.php';
+        require_once VIEWS . 'components/admin_header.php';
         ?>
 
         <!-- Display error/success messages -->
@@ -97,12 +97,7 @@
                 </form>
             </div>
         </div>
-        <!-- local fair listing        -->
-        <div class="row  flex-row-reverse mb-3">
-            <div class="col-md-6 col-lg-4 justify-content-end d-flex">
-                <button data-bs-toggle="modal" data-bs-target="#registerModal" class="btn btn-primary">Register New Art Fair</button>
-            </div>
-        </div>
+
 
         <div class="table-container">
             <div class="table-header">
@@ -155,18 +150,28 @@
                                     </td>
                                     <td>
                                         <div class="my-3">
-                                            <span class="status-badge <?php echo htmlspecialchars($fair->getStatus()); ?>">
-                                                <?php echo htmlspecialchars($fair->getStatus()); ?>
+                                            <span class="status-badge <?php echo strtolower($fair->getStatus()); ?>">
+                                                <?php echo $fair->getStatus(); ?>
                                             </span>
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="my-3">
-                                            <?php echo date('Y-m-d', strtotime($fair->getStartDate())); ?>
-                                        </div>
+                                        <div class="my-3"><?php echo date('Y-m-d', strtotime($fair->getStartDate())); ?></div>
                                     </td>
                                     <td>
                                         <div class="btn-group btn-group-sm my-2">
+                                            <?php if ($fair->getStatus() == 'pending' || $fair->getStatus() == 'rejected'): ?>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-outline-success approve-btn"
+                                                    onclick="approvalFun(this)"
+                                                    data-id="<?php echo $fair->getId(); ?>"
+                                                    data-bs-toggle="modal"
+                                                    data-name="<?php echo htmlspecialchars($fair->getName()); ?>"
+                                                    data-bs-target="#approveModal">
+                                                    <i class="fa-solid fa-check"></i>
+                                                </button>
+                                            <?php endif; ?>
                                             <button
                                                 type="button"
                                                 onclick="showDetails(this)"
@@ -181,16 +186,18 @@
                                                 data-date="<?php echo htmlspecialchars($fair->getStartDate()); ?>">
                                                 <i class="fas fa-eye"></i>
                                             </button>
-                                            <button
-                                                type="button"
-                                                class="btn btn-outline-danger reject-btn"
-                                                onclick="rejectionFun(this)"
-                                                data-id="<?php echo $fair->getId(); ?>"
-                                                data-bs-toggle="modal"
-                                                data-name="<?php echo htmlspecialchars($fair->getName()); ?>"
-                                                data-bs-target="#rejectionModal">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
+                                            <?php if ($fair->getStatus() == 'pending' || $fair->getStatus() == 'accepted'): ?>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-outline-danger reject-btn"
+                                                    onclick="rejectionFun(this)"
+                                                    data-id="<?php echo $fair->getId(); ?>"
+                                                    data-bs-toggle="modal"
+                                                    data-name="<?php echo htmlspecialchars($fair->getName()); ?>"
+                                                    data-bs-target="#rejectionModal">
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                </button>
+                                            <?php endif; ?>
                                         </div>
                                     </td>
                                 </tr>
@@ -203,79 +210,6 @@
         </div>
 
 
-        <!-- registering model -->
-        <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="registerModalLabel">Register New Art Fair</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="registerArtFairForm" method="POST" action="/artist/register-fair" enctype="multipart/form-data">
-                            <div class="mb-3">
-                                <label for="fairName" class="form-label">Fair Name</label>
-                                <input type="text" class="form-control" id="fairName" name="fairName" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">
-                                    Location
-                                    <i class="fas fa-info-circle tooltip-icon" data-bs-toggle="tooltip" title="Provide the location of the art fair."></i>
-                                </label>
-
-                                <div class="row">
-                                    <div class="col">
-                                        <select name="fairGovernment" id="fairLocation" class="form-select" required>
-                                            <option value="">Select Government</option>
-                                            <?php foreach ($governments as $government): ?>
-                                                <option value="<?php echo htmlspecialchars($government); ?>">
-                                                    <?php echo htmlspecialchars($government); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                    <div class="col">
-                                        <input type="text" class="form-control" id="fairLocationDetails" name="fairLocationDetails" placeholder="Enter location details (e.g., venue name, address)" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="fairDate" class="form-label">Date</label>
-                                <input type="date" class="form-control" id="fairDate" name="fairDate" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="fairImage" class="form-label">Fair Image</label>
-                                <div class="row">
-                                    <div class="row">
-                                        <div class="col-9 col-md-3 mb-3">
-                                            <img src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png" alt="artwor k preview" id="profileAvatar" class="img-thumbnail rounded">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            <label for="avatarUpload" class="btn btn-outline-primary">
-                                                Upload Artwork
-                                            </label>
-                                            <input type="file" id="avatarUpload" name="fairImage" style="display: none" accept="image/*" required="">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="fairDescription" class="form-label">Description</label>
-                                <textarea class="form-control" id="fairDescription" name="fairDescription"></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Register Fair</button>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
         <!-- Rejection Modal -->
         <div class="modal fade" id="rejectionModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog  modal-dialog-centered">
@@ -284,21 +218,47 @@
                         <h5 class="modal-title" id="rejectionModalTitle">Delete Artwork</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="/artist/delete-fair" method="POST">
+                    <form action="/admin/updateFairStatus" method="POST">
                         <div class="modal-body">
-                            <p>Are you sure you want to Delete <strong id="rejectionItemName"></strong>?</p>
+                            <p>Are you sure you want to Reject <strong id="rejectionItemName"></strong>?</p>
+
+                            <textarea name="reason" id="rejectionItemReason" rows="4" class="form-control" placeholder="Enter rejection reason"></textarea>
 
                             <input type="hidden" name="id" id="rejectionItemId">
+                            <input type="hidden" name="status" value="rejected">
                         </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-danger">Delete</button>
+                            <button type="submit" class="btn btn-danger">Reject</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+        <!-- Approve Modal -->
+        <div class="modal fade" id="approveModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog  modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="approveModalTitle">Approve Artwork</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="/admin/updateFairStatus" method="POST">
+                        <div class="modal-body">
+                            <p>Are you sure you want to Approve <strong id="approvalItemName"></strong>?</p>
 
+                            <input type="hidden" name="id" id="approveItemId">
+                            <input type="hidden" name="status" value="accepted">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success">Approve</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
         <!-- artfair Details Modal -->
         <div
             class="modal fade"

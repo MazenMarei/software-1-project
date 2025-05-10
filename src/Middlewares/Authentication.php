@@ -2,6 +2,7 @@
 
 namespace App\Middlewares;
 
+use App\models\User;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
@@ -21,7 +22,7 @@ class Authentication
         // Check if the user is authenticated
         if (!isset($_SESSION['Token'])) {
             $_SESSION['error'] = 'Please log in to access this page';
-            header('Location: /index');
+            $this->redirectLogin();
             exit;
         }
 
@@ -30,6 +31,12 @@ class Authentication
         try {
             // Decode the token to get the user information
             $decodedToken = JWT::decode($token, new Key(SECRET_KEY, 'HS256'));
+            // Check if the token is valid
+            if (!$decodedToken) {
+                $_SESSION['error'] = 'Invalid token. Please log in again.';
+                $this->redirectLogin();
+                exit;
+            }
 
             // Set user data for the current request if not already set
             if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
@@ -43,8 +50,18 @@ class Authentication
             // If roles are specified, check if the user has the required role
             if (!empty($roles) && !in_array($_SESSION['user']['role'], $roles)) {
                 $_SESSION['error'] = 'You do not have permission to access this page';
-                header('Location: /index');
+                $this->redirectLogin();
                 exit;
+            }
+
+            $user = User::getCurrentUser();
+            if (!$user) {
+                $_SESSION['error'] = 'User not found. Please log in again.';
+                exit;
+            }
+            if ($user->getStatus() == 'Rejected') {
+                $this->redirectLogin();
+                $_SESSION['error'] = 'Your account is Rejected. Please contact support.';
             }
 
             $response = $next($request);
@@ -55,6 +72,22 @@ class Authentication
             unset($_SESSION['user']);
 
             $_SESSION['error'] = 'Authentication error: ' . $e->getMessage() . '. Please log in again.';
+            $this->redirectLogin();
+            exit;
+        }
+    }
+
+    public function redirectLogin()
+    {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        session_unset();
+
+        if ($_SERVER['REQUEST_URI'] == '/index') {
+            $_SESSION['error'] = 'Please log in to access this page';
+        } else {
             header('Location: /index');
             exit;
         }

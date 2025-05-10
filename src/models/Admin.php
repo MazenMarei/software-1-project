@@ -329,6 +329,7 @@ class Admin extends User
 
             return $stmt->execute();
         } catch (\Throwable $th) {
+            $_SESSION['error'] = 'Error adding notification: ' . $th->getMessage();
             return false;
         }
     }
@@ -454,6 +455,41 @@ class Admin extends User
     }
 
 
+    public function updateFairStatus($fairId, $status, $reason = '')
+    {
+
+        try {
+            $update = ArtFair::updateArtFairStatusById($fairId, $status);
+            $_SESSION['success'] = "AArtist ID " . $update->getArtistID();
+            if (!$update) {
+                return false;
+            }
+            if ($reason && $status === 'rejected') {
+                $message = "Your local fair registration was rejected. Reason: $reason";
+                if ($update->getArtistID() !== null) {
+                    $this->addNotification($update->getArtistID(), $message);
+                }
+            } elseif ($status === 'accepted') {
+                $message = "Your local fair has been approved. Welcome to ArtShelf!";
+                if ($update->getArtistID() !== null) {
+                    $this->addNotification($update->getArtistID(), $message);
+                }
+            }
+            return true;
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+
+
+    public function getAllCollections() {
+        try {
+       
+        } catch (\Throwable $th) {
+            return [];
+        }
+    }
+
     /**
      * Get all customers
      * 
@@ -488,6 +524,17 @@ class Admin extends User
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Throwable $th) {
             error_log('Error in getAllCustomers: ' . $th->getMessage());
+            return [];
+        }
+    }
+
+
+    public function getAllLocalFairs()
+    {
+        try {
+            return ArtFair::getAllArtFairs();
+        } catch (\Throwable $th) {
+            $_SESSION['error'] = 'Error fetching local fairs: ' . $th->getMessage();
             return [];
         }
     }

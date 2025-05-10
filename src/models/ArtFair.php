@@ -58,7 +58,7 @@ class ArtFair
         $this->image = $data['image'] ?? null;
         $this->id = $data['eventID'] ?? null;
         $this->artistID = $data['artistID'] ?? null;
-        $this->status = $data['status'] ?? 'Pending';
+        $this->status = $data['status'] ?? 'pending';
     }
 
     public function createArtFair()
@@ -149,12 +149,60 @@ class ArtFair
                 'startDate' => $data['date'],
                 'description' => $data['description'],
                 'image' => $data['images'],
-                'status' => $data['status']
+                'status' => $data['status'],
+                'artistID' => $data['artistID']
             ]);
         } catch (\PDOException $e) {
             $_SESSION['error'] = "Error fetching art fair: " . $e->getMessage();
             return false;
         }
+    }
+
+
+    public static function getAllArtFairs()
+    {
+        try {
+            $sql = "SELECT * FROM localfair";
+            $stmt = Database::getInstance()->getConnection()->prepare($sql);
+            $stmt->execute();
+            $localFairs  = [];
+            while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                $localFair = new ArtFair([
+                    'eventID' => $row['eventID'],
+                    'name' => $row['name'],
+                    'location' => $row['location'],
+                    'startDate' => $row['date'],
+                    'description' => $row['description'],
+                    'image' => $row['images'],
+                    'status' => $row['status']
+                ]);
+                array_push($localFairs, $localFair);
+            }
+            return $localFairs;
+        } catch (\PDOException $e) {
+            throw new \Exception("Error fetching all art fairs: " . $e->getMessage());
+        }
+    }
+
+    public static function updateArtFairStatusById($id, $status)
+    {
+        try {
+            $sql = "UPDATE localfair SET status = :status WHERE eventID = :id";
+            $stmt = Database::getInstance()->getConnection()->prepare($sql);
+            $stmt->bindParam(':status', $status);
+            $stmt->bindParam(':id', $id);
+            $stmt->execute();
+
+            return self::getArtFairById($id);
+        } catch (\PDOException $e) {
+            $_SESSION['error'] = "Error updating art fair status: " . $e->getMessage();
+            return false;
+        }
+    }
+
+    public function getArtistID()
+    {
+        return $this->artistID;
     }
 
     public function getStatus()

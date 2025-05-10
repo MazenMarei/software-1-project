@@ -83,10 +83,15 @@ class User
             }
 
             // Check if user's account is active/approved
-            if ($user['status'] !== 'Accepted') {
+            if ($user['status'] == 'Pennding') {
                 return [
                     'status' => false,
                     'message' => 'Your account is pending approval. Please wait for admin verification.'
+                ];
+            } else if ($user['status'] == 'Rejected') {
+                return [
+                    'status' => false,
+                    'message' => 'Your account has been rejected by admin.'
                 ];
             }
 

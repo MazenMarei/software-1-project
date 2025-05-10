@@ -584,8 +584,92 @@ class ArtistController
             exit;
         }
         $collections = $artist->getCollections();
-
+        $artworks = $artist->getArtworks();
+        $categories = Artwork::getCategories();
+        $usedArtworks = count(array_reduce($collections, function ($carry, $collection) {
+            return array_merge($carry, $collection->getCollectionArtworks());
+        }, []));
         require_once VIEWS . 'pages\Artist\collections.php';
+    }
+
+    public function createCollection()
+    {
+        if (!isset($_POST['selectedArtworks']) || !isset($_POST['collectionTitle']) || !isset($_POST['collectionDescription']) || !isset($_FILES['coverImage'])) {
+            $_SESSION['error'] = 'Invalid request';
+            header('Location: /artist/collections');
+            exit;
+        }
+        $selectedArtworks = $_POST['selectedArtworks'];
+        $collectionName = $_POST['collectionTitle'];
+        $collectionDescription = $_POST['collectionDescription'];
+        $coverImage = $_FILES['coverImage'];
+
+        if (empty($selectedArtworks) || empty($collectionName) || empty($collectionDescription) || empty($coverImage)) {
+            $_SESSION['error'] = 'All fields are required';
+            header('Location: /artist/collections');
+            exit;
+        }
+        if ($coverImage['error'] !== UPLOAD_ERR_OK) {
+            $_SESSION['error'] = 'Invalid image upload ' . $coverImage['error'];
+            header('Location: /artist/collections');
+            exit;
+        }
+
+        $upload = App::handleUploadImage($coverImage, 'collections');
+        if (!$upload) {
+            $_SESSION['error'] = "Failed to upload cover image " . $_SESSION['error'];
+            header('Location: /artist/collections');
+            exit;
+        }
+
+        $artist = Artist::getCurrentArtist();
+        if (!$artist) {
+            $_SESSION['error'] = 'You must be logged in as an artist to perform this action';
+            header('Location: /index');
+            exit;
+        }
+
+        $collection = $artist->createCollection([
+            'name' => $collectionName,
+            'description' => $collectionDescription,
+            'coverImage' => $upload,
+            'artworks' => $selectedArtworks
+        ]);
+
+        if ($collection) {
+            $_SESSION['success'] = "Collection has been created successfully";
+        } else {
+            $_SESSION['error'] = "Failed to create collection: " . $_SESSION['error'];
+        }
+        header('Location: /artist/collections');
+    }
+
+    public function deleteCollection()
+    {
+        if (!isset($_POST['id'])) {
+            $_SESSION['error'] = 'Invalid request';
+            header('Location: /artist/collections');
+            exit;
+        }
+
+        $collectionId = $_POST['id'];
+        $artist = Artist::getCurrentArtist();
+        if (!$artist) {
+            $_SESSION['error'] = 'You must be logged in as an artist to perform this action';
+            header('Location: /index');
+            exit;
+        }
+
+        $success = $artist->deleteCollectionByID($collectionId);
+
+        if ($success) {
+            $_SESSION['success'] = "Collection has been deleted successfully";
+        } else {
+            $_SESSION['error'] = "Failed to delete collection";
+        }
+
+        header('Location: /artist/collections');
+        exit;
     }
 
     private function getSalesChartData($period = 'week')
@@ -691,6 +775,9 @@ class ArtistController
             exit;
         }
         $orders = $artist->getSoldArtworks();
+        $totalGainedMoney = array_reduce($orders, function ($carry, $order) {
+            return $carry + $order['price'];
+        }, 0);
         require_once VIEWS . 'pages\Artist\selling-history.php';
     }
 

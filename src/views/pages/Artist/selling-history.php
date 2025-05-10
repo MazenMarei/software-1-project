@@ -45,17 +45,17 @@
             </div>
             <div class="stat-card">
                 <div class="stat-icon">
-                    <i class="fa-solid fa-clock"></i>
+                    <i class="fas fa-dollar-sign"></i>
                 </div>
-                <div class="stat-value" id="stats-artworks">0</div>
-                <div class="stat-label">Pending Withdraws</div>
+                <div class="stat-value" id="stats-artworks">$ <?php echo $totalGainedMoney; ?></div>
+                <div class="stat-label">Total Sales</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">
-                    <i class="fa-solid fa-circle-check"></i>
+                    <i class="fas fa-shopping-cart"></i>
                 </div>
-                <div class="stat-value" id="stats-sales">0</div>
-                <div class="stat-label">Accepted Withdraws</div>
+                <div class="stat-value" id="stats-sales"><?php echo count($orders); ?></div>
+                <div class="stat-label">Total orders</div>
             </div>
 
         </div>
@@ -93,7 +93,7 @@
                                             <div class="d-flex align-items-center">
 
                                                 <div class="d-flex align-items-center">
-                                                    <img src="/uploads/artworks/<?php echo $order['images']; ?>" alt="Artwork Image" class="img-thumbnail me-4" style="width: 170px; height: 120px; object-fit: cover;"/>
+                                                    <img src="/uploads/artworks/<?php echo $order['images']; ?>" alt="Artwork Image" class="img-thumbnail me-4" style="width: 170px; height: 120px; object-fit: cover;" />
                                                     <div>
                                                         <div class="fw-bold d-none d-md-flex"><?= htmlspecialchars($order['title']) ?></div>
                                                     </div>

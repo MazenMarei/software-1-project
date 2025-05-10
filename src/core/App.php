@@ -80,6 +80,8 @@ class App
         Route::post('/artist/withdraw', ArtistController::class, 'withdrawRequst', [[Authentication::class, 'artist']]);
         Route::post('/artist/register-fair', ArtistController::class, 'registerFair', [[Authentication::class, 'artist']]);
         Route::post('/artist/delete-fair', ArtistController::class, 'deleteFair', [[Authentication::class, 'artist']]);
+        Route::post('/artist/create-collection', ArtistController::class, 'createCollection', [[Authentication::class, 'artist']]);
+        Route::post('/artist/delete-collection', ArtistController::class, 'deleteCollection', [[Authentication::class, 'artist']]);
 
         Route::get('/customer/dashboard', AuthController::class, 'customerDashboard', [[Authentication::class, 'customer']]);
 
@@ -90,6 +92,7 @@ class App
         Route::post("/admin/profilePicUpdate",  AdminController::class, 'profilePicUpdate', [[Authentication::class, 'admin']]);
         Route::post("/admin/profileUpdate",  AdminController::class, 'profileUpdate', [[Authentication::class, 'admin']]);
         Route::post("/admin/changePassword",  AdminController::class, 'changePassword', [[Authentication::class, 'admin']]);
+        Route::post("/admin/updateFairStatus",  AdminController::class, 'updateFairStatus', [[Authentication::class, 'admin']]);
 
         Route::get('/admin/artworks', AdminController::class, 'artworks', [[Authentication::class, 'admin']]);
         Route::get('/admin/withdrawals', AdminController::class, 'withdrawals', [[Authentication::class, 'admin']]);

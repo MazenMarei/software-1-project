@@ -293,12 +293,7 @@ class Artist extends User
     public function getCollections()
     {
         try {
-            $sql = "SELECT * FROM artcollection WHERE atristID = :artistID";
-            $stmt = Database::getInstance()->getConnection()->prepare($sql);
-            $stmt->bindParam(':artistID', $this->userID, \PDO::PARAM_INT);
-            $stmt->execute();
-
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            return Collection::getCollectionsByArtistId($this->userID);
         } catch (\Throwable $th) {
             return [];
         }
@@ -370,6 +365,31 @@ class Artist extends User
             return false;
         }
     }
+
+    public function deleteCollectionByID($collectionId)
+    {
+        try {
+            $collection = Collection::getCollectionById($collectionId);
+            if (!$collection) {
+                return false;
+            }
+            if ($collection->getArtistID() !== $this->getUserID()) {
+                $_SESSION['error'] = "You are not authorized to delete this collection.";
+                return false;
+            }
+            $success = $collection->deleteCollection();
+            if ($success) {
+                $_SESSION['success'] = "Collection deleted successfully.";
+                return true;
+            } else {
+                $_SESSION['error'] = "Failed to delete collection.";
+                return false;
+            }
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+
     // Getters
     public function getArtistID()
     {
@@ -511,6 +531,34 @@ class Artist extends User
             return $artFair->deleteArtFair($id);
         } catch (\Throwable $th) {
             $_SESSION['error'] = "Failed to delete art fair: " . $th->getMessage();
+            return false;
+        }
+    }
+
+    public function createCollection($data)
+    {
+        try {
+            $collection = new Collection([
+                'name' => $data['name'],
+                'description' => $data['description'],
+                'coverImage' => $data['coverImage'],
+                'artistID' => $this->userID,
+            ]);
+            $success = $collection->createCollection();
+            if (!$success) {
+                return false;
+            }
+            $artworks = explode(',', $data['artworks']) ?? [];
+            foreach ($artworks as $artworkId) {
+                $artworkId = trim($artworkId);
+                if (empty($artworkId)) {
+                    continue;
+                }
+                $collection->addArtworkToCollection($artworkId);
+            }
+            return true;
+        } catch (\Throwable $th) {
+            $_SESSION['error'] =  $th->getMessage();
             return false;
         }
     }

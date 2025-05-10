@@ -101,7 +101,7 @@
                 <div class="col-lg-6">
                     <a
                         id="create-collection-btn"
-                        href="/artist/new-collection"
+                        href="/artist/collections"
                         class="btn btn-outline-primary w-100 mb-4">
                         <i class="fas fa-folder-plus me-2"></i>Create New Collection
                     </a>

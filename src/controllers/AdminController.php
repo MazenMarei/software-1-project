@@ -6,6 +6,8 @@ use App\models\Admin;
 use App\models\User;
 use App\models\Artwork;
 use App\core\Database;
+use App\models\ArtFair;
+use App\models\Collection;
 use App\models\Gust;
 use App\models\Order;
 
@@ -297,7 +299,8 @@ class AdminController
         exit;
     }
 
-    public function withdrawals() {
+    public function withdrawals()
+    {
         $admin = Admin::getCurrentAdmin();
         if (!$admin) {
             $_SESSION['error'] = 'You must be logged in as an admin to access this page';
@@ -873,5 +876,85 @@ class AdminController
 
         header('Location: /admin/profile');
         exit;
+    }
+
+    public function fairs()
+    {
+        $admin = Admin::getCurrentAdmin();
+        if (!$admin) {
+            $_SESSION['error'] = 'You must be logged in as an admin to access this page';
+            header('Location: /index');
+            exit;
+        }
+
+        // Get all fairs from the database
+        $fairs = $admin->getAllLocalFairs();
+        $totalFairs = count($fairs);
+        $acceptedFairs  = count(array_filter($fairs, function ($fair) {
+            return $fair->getStatus() === 'accepted';
+        }));
+        $pendingFairs  = count(array_filter($fairs, function ($fair) {
+            return $fair->getStatus() === 'pending';
+        }));
+        $governments     = ArtFair::getGoverments();
+
+
+        require_once VIEWS . 'pages/Admin/fairs.php';
+    }
+
+
+    public function updateFairStatus()
+    {
+        if (!isset($_POST['id']) || !isset($_POST['status'])) {
+            $_SESSION['error'] = 'Invalid request';
+            header('Location: /admin/fairs');
+            exit;
+        }
+
+        $id = $_POST['id'];
+        $status = $_POST['status'];
+        $reason = $_POST['reason'] ?? 'No reason provided';
+        $admin = Admin::getCurrentAdmin();
+        if (!$admin) {
+            $_SESSION['error'] = 'You must be logged in as an admin to perform this action';
+            header('Location: /index');
+            exit;
+        }
+        $statusValid = ['accepted', 'rejected', 'pending'];
+        if (!in_array($status, $statusValid)) {
+            $_SESSION['error'] = 'Invalid status ';
+            header('Location: /admin/fairs');
+            exit;
+        }
+        $success = false;
+        $success = $admin->updateFairStatus($id, $status, $reason);
+
+        if ($success) {
+            $_SESSION['success'] = "Fair Status has been updated successfully";
+        } else {
+            $_SESSION['error'] = "Fair Status Failed to update";
+        }
+
+        header('Location: /admin/fairs');
+        exit;
+    }
+
+    public function collections()
+    {
+
+        $admin = Admin::getCurrentAdmin();
+        $artworks = $admin->getAllArtworks();
+        $categories = Artwork::getCategories();
+        $collection = Collection::getCollectionById("1");
+        if ($collection) {
+            $selectedArtworks = $collection->fetchCollectionsArtworks();
+            $selectedArtworks = [];
+            foreach ($selectedArtworks as $artwork) {
+                array_push($selectedArtworks, $artwork->getArtworkID());
+            }
+        }
+
+
+        require_once VIEWS . 'pages/Admin/collections.php';
     }
 }
