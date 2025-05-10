@@ -305,25 +305,6 @@ class Artist extends User
     }
 
     /**
-     * Get artist's local fairs
-     * 
-     * @return array Local fairs
-     */
-    public function getLocalFairs()
-    {
-        try {
-            $sql = "SELECT * FROM localfair WHERE atristID = :artistID";
-            $stmt = Database::getInstance()->getConnection()->prepare($sql);
-            $stmt->bindParam(':artistID', $this->userID, \PDO::PARAM_INT);
-            $stmt->execute();
-
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\Throwable $th) {
-            return [];
-        }
-    }
-
-    /**
      * Get artist's transactions
      * 
      * @return array Transactions
@@ -492,6 +473,45 @@ class Artist extends User
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Throwable $th) {
             return [];
+        }
+    }
+
+    public function registerArtFair($data)
+    {
+        try {
+            $artFair = new ArtFair($data['name'], $data['location'], $data['startDate'], $data['description'], $data['image']);
+            $artFair->createArtFair();
+            return true;
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+
+    public function getArtFairs()
+    {
+        try {
+            $localFairs = ArtFair::getFairsByArtistId($this->userID);
+            if (!$localFairs || count($localFairs) == 0) {
+                return [];
+            }
+            return $localFairs;
+        } catch (\Throwable $th) {
+            return [];
+        }
+    }
+
+    public function deleteArtFair($id)
+    {
+        try {
+            $artFair = ArtFair::getArtFairById($id);
+            if (!$artFair) {
+                $_SESSION['error'] = "Art fair not found.";
+                return false;
+            }
+            return $artFair->deleteArtFair($id);
+        } catch (\Throwable $th) {
+            $_SESSION['error'] = "Failed to delete art fair: " . $th->getMessage();
+            return false;
         }
     }
 }

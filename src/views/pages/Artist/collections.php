@@ -2,9 +2,9 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Collections | ArtShelf Admin</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add New Artwork | ArtShelf</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
     <!-- Custom CSS -->
@@ -27,16 +27,25 @@
 <body>
     <!-- Artist Sidebar -->
     <?php require_once VIEWS . 'components/artist_sidebar.php'; ?>
-    <!-- Main Content -->
-    <main class="admin-content">
 
-        <?php $pageTitle = "Manage Collections";
-        require_once VIEWS . 'components/artist_header.php'; ?>
+
+
+    <!-- Main Content -->
+    <main class="artist-content">
+        <!-- Admin Header -->
+        <?php
+        $pageTitle = 'Manage Collections';
+        require_once VIEWS . 'components/artist_header.php';
+        ?>
+
+        <!-- Display error/success messages -->
         <?php require_once VIEWS . 'components/error_display.php'; ?>
 
 
 
-        <!-- Collections Grid View -->
+
+
+        <!-- collection grid view -->
         <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2 class="table-title">Collections</h2>
@@ -48,7 +57,8 @@
             </div>
 
             <div id="gridView" class="collection-grid">
-  
+                <!-- Grid items will be populated by JavaScript -->
+                <!-- Example grid item for reference -->
                 <div class="collection-card">
                     <div class="collection-image">
                         <img src="https://images.pexels.com/photos/1266808/pexels-photo-1266808.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Abstract Art Collection">
@@ -100,131 +110,203 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Collection Details Modal -->
-        <div class="modal fade" id="collectionDetailsModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Collection Details</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" id="collectionDetailsContent">
-                        <!-- Will be populated by JavaScript -->
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="editCollectionBtn">Edit Collection</button>
-                    </div>
+            <!-- List View -->
+            <div id="listView" class="table-container" style="display: none;">
+                <div class="table-responsive">
+                    <table class="admin-table" id="collectionsTable">
+                        <thead>
+                            <tr>
+                                <th>Collection</th>
+                                <th>Type</th>
+                                <th>Artworks</th>
+                                <th>Views</th>
+                                <th>Created</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="collectionsTableBody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
+            </div>
+
+            <div class="pagination-container">
+                <nav aria-label="Collection pagination">
+                    <ul class="pagination" id="collectionPagination">
+                        <!-- Will be populated by JavaScript -->
+                    </ul>
+                </nav>
             </div>
         </div>
 
-        <!-- Add/Edit Collection Modal -->
-        <div class="modal fade" id="editCollectionModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <!-- registering model -->
+        <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editModalTitle">Add Collection</h5>
+                        <h5 class="modal-title" id="registerModalLabel">Register New Art Fair</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="collectionForm">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="collectionTitle" class="form-label">Title</label>
-                                    <input type="text" class="form-control" id="collectionTitle" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="collectionType" class="form-label">Type</label>
-                                    <select class="form-select" id="collectionType" required>
-                                        <option value="regular">Regular</option>
-                                        <option value="featured">Featured</option>
-                                        <option value="seasonal">Seasonal</option>
-                                        <option value="curated">Curated</option>
-                                        <option value="thematic">Thematic</option>
-                                    </select>
-                                </div>
+                        <form id="registerArtFairForm" method="POST" action="/artist/register-fair" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="fairName" class="form-label">Fair Name</label>
+                                <input type="text" class="form-control" id="fairName" name="fairName" required>
                             </div>
                             <div class="mb-3">
-                                <label for="collectionDescription" class="form-label">Description</label>
-                                <textarea class="form-control" id="collectionDescription" rows="3" required></textarea>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="collectionImage" class="form-label">Cover Image</label>
-                                    <input type="file" class="form-control" id="collectionImage">
-                                    <div class="form-text">Recommended size: 1200 x 800 pixels</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="collectionStatus" class="form-label">Status</label>
-                                    <select class="form-select" id="collectionStatus" required>
-                                        <option value="published">Published</option>
-                                        <option value="draft">Draft</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Featured Options</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="collectionFeatured">
-                                    <label class="form-check-label" for="collectionFeatured">
-                                        Display in featured collections
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="collectionHomepage">
-                                    <label class="form-check-label" for="collectionHomepage">
-                                        Show on homepage
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Manage Artworks</label>
-                                <div class="d-flex mb-2">
-                                    <input type="text" class="form-control" id="artworkSearch" placeholder="Search artworks...">
-                                    <button type="button" class="btn btn-outline-primary ms-2" id="searchArtworksBtn">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
+                                <label class="form-label">
+                                    Location
+                                    <i class="fas fa-info-circle tooltip-icon" data-bs-toggle="tooltip" title="Provide the location of the art fair."></i>
+                                </label>
+
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="card">
-                                            <div class="card-header">Available Artworks</div>
-                                            <div class="card-body" style="height: 200px; overflow-y: auto;">
-                                                <ul class="list-group" id="availableArtworks">
-                                                    <!-- Will be populated by JavaScript -->
-                                                </ul>
-                                            </div>
+                                    <div class="col">
+                                        <select name="fairGovernment" id="fairLocation" class="form-select" required>
+                                            <option value="">Select Government</option>
+                                            <?php foreach ($governments as $government): ?>
+                                                <option value="<?php echo htmlspecialchars($government); ?>">
+                                                    <?php echo htmlspecialchars($government); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" class="form-control" id="fairLocationDetails" name="fairLocationDetails" placeholder="Enter location details (e.g., venue name, address)" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fairDate" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="fairDate" name="fairDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fairImage" class="form-label">Fair Image</label>
+                                <div class="row">
+                                    <div class="row">
+                                        <div class="col-9 col-md-3 mb-3">
+                                            <img src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png" alt="artwor k preview" id="profileAvatar" class="img-thumbnail rounded">
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="card">
-                                            <div class="card-header">Selected Artworks</div>
-                                            <div class="card-body" style="height: 200px; overflow-y: auto;">
-                                                <ul class="list-group" id="selectedArtworks">
-                                                    <!-- Will be populated by JavaScript -->
-                                                </ul>
-                                            </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <label for="avatarUpload" class="btn btn-outline-primary">
+                                                Upload Artwork
+                                            </label>
+                                            <input type="file" id="avatarUpload" name="fairImage" style="display: none" accept="image/*" required="">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <input type="hidden" id="collectionId">
+                            <div class="mb-3">
+                                <label for="fairDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="fairDescription" name="fairDescription"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Register Fair</button>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="saveCollectionBtn">Save Collection</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Admin Footer -->
-        <footer class="admin-footer">
-            <p>&copy; 2025 ArtShelf Admin Dashboard. All rights reserved.</p>
+
+        <!-- Rejection Modal -->
+        <div class="modal fade" id="rejectionModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog  modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="rejectionModalTitle">Delete Artwork</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="/artist/delete-fair" method="POST">
+                        <div class="modal-body">
+                            <p>Are you sure you want to Delete <strong id="rejectionItemName"></strong>?</p>
+
+                            <input type="hidden" name="id" id="rejectionItemId">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- artfair Details Modal -->
+        <div
+            class="modal fade"
+            id="showDetailsModal"
+            tabindex="-1"
+            aria-labelledby="artwork-detail-modal-label"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="artwork-detail-modal-label">
+                            Art Fair Details
+                        </h5>
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img
+                                    src=""
+                                    alt="Artwork Image"
+                                    id="modal-artwork-image"
+                                    class="modal-artwork-image img-fluid" />
+                            </div>
+                            <div class="col-md-6">
+                                <h3 id="modal-artwork-title"></h3>
+                                <p id="modal-artwork-description"></p>
+                                <div class="mb-3">
+                                    <strong>Status:</strong>
+                                    <span id="modal-artwork-status"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Government:</strong>
+                                    <span id="modal-artwork-category"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Location Description:</strong>
+                                    <span id="modal-artwork-medium"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Start Date:</strong>
+                                    <span id="modal-artwork-date"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <!-- Artist Footer -->
+        <footer class="artist-footer">
+            <p>&copy; 2025 ArtShelf Artist Dashboard. All rights reserved.</p>
         </footer>
     </main>
 
@@ -233,12 +315,15 @@
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Custom Scripts -->
-    <script src="../../js/config.js"></script>
-    <script src="../../js/main.js"></script>
-    <!-- <script src="../../js/auth.js"></script> -->
-    <script src="../../js/models/Artwork.js"></script>
-    <script src="../../js/services/ArtworkService.js"></script>
-    <script src="../../js/admin/collections.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+
+    <script src="../assets/js/admin.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/admin/artists.js"></script>
+
+
+
 </body>
 
 </html>

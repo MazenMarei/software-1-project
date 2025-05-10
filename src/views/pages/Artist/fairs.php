@@ -34,215 +34,317 @@
     <main class="artist-content">
         <!-- Admin Header -->
         <?php
-        $pageTitle = 'Manage Artworks';
+        $pageTitle = 'Manage Art Fairs';
         require_once VIEWS . 'components/artist_header.php';
         ?>
 
         <!-- Display error/success messages -->
         <?php require_once VIEWS . 'components/error_display.php'; ?>
 
-        <!-- Artwork Form -->
-        <div class="form-container" id="artwork-form-container">
-            <form id="new-artwork-form" class="needs-validation" novalidate action="/artist/add-artwork" method="POST" enctype="multipart/form-data">
-                <!-- Basic Information -->
-                <div class="form-section">
-                    <h3 class="form-section-title">Basic Information</h3>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="artwork-title" class="form-label">
-                                Artwork Title <span class="text-danger">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="artwork-title"
-                                name="title"
-                                required
-                                placeholder="Enter the title of your artwork" />
+
+        <!-- statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-house"></i>
+                </div>
+                <div class="stat-value" id="stats-earnings"><?php echo $totalFairs; ?></div>
+                <div class="stat-label">Total Fairs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+                <div class="stat-value" id="stats-artworks"><?php echo $pendingFairs; ?></div>
+                <div class="stat-label">Pending Fairs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="stat-value" id="stats-sales"><?php echo $acceptedFairs; ?></div>
+                <div class="stat-label">Accepted Fairs</div>
+            </div>
+
+        </div>
+        <!-- Filter Section -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <h2 class="h5 mb-0">Filter Fairs</h2>
+            </div>
+            <div class="card-body">
+                <form id="artworkFilterForm">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <label for="statusFilter" class="form-label">Status</label>
+                            <select class="form-select" id="statusFilter" name="status">
+                                <option value="">All Statuses</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Accepted">Accepted</option>
+                                <option value="Rejected">Rejected</option>
+                            </select>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="artwork-category" class="form-label">
-                                Category <span class="text-danger">*</span>
-                            </label>
-                            <select class="form-select" id="artwork-category" required name="category">
-                                <option value="" selected disabled>Select a category</option>
-                                <?php foreach ($categories as $category) : ?>
-                                    <option value="<?php echo $category; ?>"><?php echo $category; ?></option>
+                        <div class="col-md-3">
+                            <label for="categoryFilter" class="form-label">Category</label>
+                            <select class="form-select" id="categoryFilter" name="category">
+                                <option value="">All Government</option>
+                                <?php foreach ($governments as $government): ?>
+                                    <option value="<?php echo htmlspecialchars($government); ?>"><?php echo htmlspecialchars($government); ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="artwork-description" class="form-label">
-                            Description <span class="text-danger">*</span>
-                            <i
-                                class="fas fa-info-circle tooltip-icon"
-                                data-bs-toggle="tooltip"
-                                title="Provide a detailed description of your artwork, including inspiration, meaning, and techniques used."></i>
-                        </label>
-                        <textarea
-                            class="form-control"
-                            id="artwork-description"
-                            rows="4"
-                            required
+                </form>
+            </div>
+        </div>
+        <!-- local fair listing        -->
+        <div class="row  flex-row-reverse mb-3">
+            <div class="col-md-6 col-lg-4 justify-content-end d-flex">
+                <button data-bs-toggle="modal" data-bs-target="#registerModal" class="btn btn-primary">Register New Art Fair</button>
+            </div>
+        </div>
 
-                            name="description"
-                            placeholder="Describe your artwork in detail..."></textarea>
-                    </div>
+        <div class="table-container">
+            <div class="table-header">
+                <h3 class="table-title">Your Fairs</h3>
+                <div class="table-filters">
                 </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover search-table" id="artworksTable">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Title</th>
+                            <th>Location</th>
+                            <th>Goverment</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th width="120">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="artworksTableBody">
+                        <?php if (empty($fairs)): ?>
+                            <tr>
+                                <td colspan="8" class="text-center">No fairs found</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($fairs as $fair): ?>
+                                <tr>
+                                    <td>
+                                        <img
+                                            src="/uploads/localfairs/<?php echo htmlspecialchars($fair->getImage()); ?>"
+                                            alt="<?php echo htmlspecialchars($fair->getName()); ?>"
+                                            class="img-thumbnail"
+                                            style="width: 80px; height: 60px; object-fit: cover;">
+                                    </td>
+                                    <td><?php echo htmlspecialchars($fair->getName()); ?></td>
+                                    <td><?php echo (explode(',', $fair->getLocation())[1]); ?></td>
+                                    <td><?php echo (explode(',', $fair->getLocation())[0]); ?></td>
+                                    <td>
+                                        <span class="status-badge <?php echo strtolower($fair->getStatus()); ?>">
+                                            <?php echo $fair->getStatus(); ?>
+                                        </span>
+                                    </td>
+                                    <td><?php echo date('Y-m-d', strtotime($fair->getStartDate())); ?></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button
+                                                type="button"
+                                                onclick="showDetails(this)"
+                                                class="btn btn-outline-primary view-artwork-btn"
+                                                data-id="<?php echo $fair->getId(); ?>"
+                                                data-image="/localfairs/<?php echo htmlspecialchars($fair->getImage()); ?>"
+                                                data-title="<?php echo htmlspecialchars($fair->getName()); ?>"
+                                                data-description="<?php echo htmlspecialchars($fair->getDescription()); ?>"
+                                                data-status="<?php echo htmlspecialchars($fair->getStatus()); ?>"
+                                                data-category="<?php echo htmlspecialchars(explode(',', $fair->getLocation())[0]); ?>"
+                                                data-medium="<?php echo htmlspecialchars((explode(',', $fair->getLocation())[1])); ?>"
+                                                data-date="<?php echo htmlspecialchars($fair->getStartDate()); ?>">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="btn btn-outline-danger reject-btn"
+                                                onclick="rejectionFun(this)"
+                                                data-id="<?php echo $fair->getId(); ?>"
+                                                data-bs-toggle="modal"
+                                                data-name="<?php echo htmlspecialchars($fair->getName()); ?>"
+                                                data-bs-target="#rejectionModal">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
 
-                <!-- Images -->
-                <div class="form-section">
-                    <h3 class="form-section-title">
-                        Image <span class="text-danger">*</span>
-                        <i class="fas fa-info-circle tooltip-icon"
-                            data-bs-toggle="tooltip"
-                            title="Upload high-quality images of your artwork. The first image will be used as the main display image."></i>
-                    </h3>
-                    <div class="mb-3">
-                        <div class="row">
-                            <div class="row">
-                                <div class="col-9 col-md-3 mb-3">
-                                    <img src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png" alt="artwor k preview" id="profileAvatar" class="img-thumbnail rounded" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <label for="avatarUpload" class="btn btn-outline-primary">
-                                        Upload Artwork
-                                    </label>
-                                    <input
-                                        type="file"
-                                        id="avatarUpload"
-                                        name="image"
-                                        style="display: none"
-                                        accept="image/*" required />
-                                </div>
-                            </div>
-                        </div>
-                        <small class="text-muted d-block mt-2">
-                            Accepted formats: JPG, PNG, WEBP. Max size: 5MB.
-                        </small>
-                        <div class="invalid-feedback">
-                            Please upload an image of your artwork.
-                        </div>
+        </div>
+
+
+        <!-- registering model -->
+        <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="registerModalLabel">Register New Art Fair</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                </div>
-
-                <!-- Details -->
-                <div class="form-section">
-                    <h3 class="form-section-title">Artwork Details</h3>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="artwork-medium" class="form-label">
-                                Medium <span class="text-danger">*</span>
-                                <i
-                                    class="fas fa-info-circle tooltip-icon"
-                                    data-bs-toggle="tooltip"
-                                    title="Specify the materials used to create your artwork (e.g., Oil on canvas, Digital print, Bronze sculpture)."></i>
-                            </label>
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="artwork-medium"
-                                name="medium"
-                                required
-                                placeholder="e.g., Oil on canvas, Acrylic, Digital print" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">
-                                Dimensions
-                                <i
-                                    class="fas fa-info-circle tooltip-icon"
-                                    data-bs-toggle="tooltip"
-                                    title="Provide the dimensions of your artwork (height x width x depth, if applicable)."></i>
-                            </label>
-                            <div class="dimension-inputs">
-                                <div class="dimension-input-group">
-                                    <label for="artwork-height" class="form-label">Height</label>
-                                    <span class="text-danger">*</span>
-                                    <input
-                                        type="number"
-                                        step="0.1"
-                                        min="0"
-                                        class="form-control"
-                                        id="artwork-height"
-                                        required
-                                        name="height"
-                                        placeholder="Height" />
-                                    <span class="dimension-unit">in</span>
-                                </div>
-                                <div class="dimension-input-group">
-                                    <label for="artwork-width" class="form-label">Width</label>
-                                    <span class="text-danger">*</span>
-                                    <input
-                                        type="number"
-                                        step="0.1"
-                                        min="0"
-                                        class="form-control"
-                                        required
-                                        id="artwork-width"
-                                        name="width"
-                                        placeholder="Width" />
-                                    <span class="dimension-unit">in</span>
-                                </div>
-                                <div class="dimension-input-group">
-                                    <label for="artwork-depth" class="form-label">Depth (optional)</label>
-                                    <input
-                                        type="number"
-                                        step="0.1"
-                                        min="0"
-                                        class="form-control"
-                                        id="artwork-depth"
-                                        name="depth"
-                                        placeholder="Depth" />
-                                    <span class="dimension-unit">in</span>
-                                </div>
+                    <div class="modal-body">
+                        <form id="registerArtFairForm" method="POST" action="/artist/register-fair" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="fairName" class="form-label">Fair Name</label>
+                                <input type="text" class="form-control" id="fairName" name="fairName" required>
                             </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="artwork-price" class="form-label">
-                                    Price <span class="text-danger">*</span>
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    Location
+                                    <i class="fas fa-info-circle tooltip-icon" data-bs-toggle="tooltip" title="Provide the location of the art fair."></i>
                                 </label>
-                                <div class="price-input-group">
-                                    <span class="currency-symbol">$</span>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        min="1"
-                                        class="form-control"
-                                        name="price"
-                                        id="artwork-price"
-                                        required
-                                        placeholder="Enter price" />
+
+                                <div class="row">
+                                    <div class="col">
+                                        <select name="fairGovernment" id="fairLocation" class="form-select" required>
+                                            <option value="">Select Government</option>
+                                            <?php foreach ($governments as $government): ?>
+                                                <option value="<?php echo htmlspecialchars($government); ?>">
+                                                    <?php echo htmlspecialchars($government); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" class="form-control" id="fairLocationDetails" name="fairLocationDetails" placeholder="Enter location details (e.g., venue name, address)" required>
+                                    </div>
                                 </div>
-                                <small class="text-muted">
-                                    Enter the price in USD. We charge a 20% commission on each
-                                    sale.
-                                </small>
                             </div>
-                        </div>
-
-
+                            <div class="mb-3">
+                                <label for="fairDate" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="fairDate" name="fairDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fairImage" class="form-label">Fair Image</label>
+                                <div class="row">
+                                    <div class="row">
+                                        <div class="col-9 col-md-3 mb-3">
+                                            <img src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png" alt="artwor k preview" id="profileAvatar" class="img-thumbnail rounded">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <label for="avatarUpload" class="btn btn-outline-primary">
+                                                Upload Artwork
+                                            </label>
+                                            <input type="file" id="avatarUpload" name="fairImage" style="display: none" accept="image/*" required="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fairDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="fairDescription" name="fairDescription"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Register Fair</button>
+                        </form>
                     </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Form Actions -->
-                    <div class="form-actions">
+
+        <!-- Rejection Modal -->
+        <div class="modal fade" id="rejectionModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog  modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="rejectionModalTitle">Delete Artwork</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="/artist/delete-fair" method="POST">
+                        <div class="modal-body">
+                            <p>Are you sure you want to Delete <strong id="rejectionItemName"></strong>?</p>
+
+                            <input type="hidden" name="id" id="rejectionItemId">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- artfair Details Modal -->
+        <div
+            class="modal fade"
+            id="showDetailsModal"
+            tabindex="-1"
+            aria-labelledby="artwork-detail-modal-label"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="artwork-detail-modal-label">
+                            Art Fair Details
+                        </h5>
                         <button
                             type="button"
-                            class="btn btn-outline-secondary"
-                            onclick="window.location.href='/artist/artworks'">
-                            Cancel
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-paper-plane me-2"></i>Submit Artwork
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img
+                                    src=""
+                                    alt="Artwork Image"
+                                    id="modal-artwork-image"
+                                    class="modal-artwork-image img-fluid" />
+                            </div>
+                            <div class="col-md-6">
+                                <h3 id="modal-artwork-title"></h3>
+                                <p id="modal-artwork-description"></p>
+                                <div class="mb-3">
+                                    <strong>Status:</strong>
+                                    <span id="modal-artwork-status"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Government:</strong>
+                                    <span id="modal-artwork-category"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Location Description:</strong>
+                                    <span id="modal-artwork-medium"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Start Date:</strong>
+                                    <span id="modal-artwork-date"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                            Close
                         </button>
                     </div>
-            </form>
+                </div>
+            </div>
         </div>
+
+
+
 
         <!-- Artist Footer -->
         <footer class="artist-footer">
@@ -255,8 +357,12 @@
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Custom Scripts -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 
     <script src="../assets/js/admin.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/admin/artists.js"></script>
 
 
 

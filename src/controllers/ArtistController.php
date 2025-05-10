@@ -7,6 +7,8 @@ use App\models\User;
 use App\models\Artwork;
 use App\core\Database;
 use App\models\Artist;
+use App\models\ArtFair;
+use App\core\App;
 
 class ArtistController
 {
@@ -692,8 +694,9 @@ class ArtistController
         require_once VIEWS . 'pages\Artist\selling-history.php';
     }
 
-    public function withdrawRequst() {
-        if(!isset($_POST['amount']) || !isset($_POST['withdrawalType'])) {
+    public function withdrawRequst()
+    {
+        if (!isset($_POST['amount']) || !isset($_POST['withdrawalType'])) {
             $_SESSION['error'] = 'Invalid request';
             header('Location: /artist/withdraw');
             exit;
@@ -707,32 +710,32 @@ class ArtistController
             exit;
         }
 
-        if($amount <= 0) {
+        if ($amount <= 0) {
             $_SESSION['error'] = 'Amount must be greater than 0';
             header('Location: /artist/withdraw');
             exit;
         }
 
-        if($amount > $artist->getBalance()) {
+        if ($amount > $artist->getBalance()) {
             $_SESSION['error'] = 'Amount must be less than or equal to your balance';
             header('Location: /artist/withdraw');
             exit;
         }
 
-        if($amount < 30) {
+        if ($amount < 30) {
             $_SESSION['error'] = 'Minimum withdrawal amount is 30$';
             header('Location: /artist/withdraw');
             exit;
         }
 
-        if($withdrawalType != 'urgent' && $withdrawalType != 'normal') {
+        if ($withdrawalType != 'urgent' && $withdrawalType != 'normal') {
             $_SESSION['error'] = 'Invalid withdrawal type';
             header('Location: /artist/withdraw');
             exit;
         }
 
         $success = $artist->withdrawRequest($amount, $withdrawalType);
-        if($success) {
+        if ($success) {
             $_SESSION['success'] = 'Withdrawal request has been sent successfully';
         } else {
             $_SESSION['error'] = 'Failed to send withdrawal request ' . $_SESSION['error'];
@@ -753,14 +756,108 @@ class ArtistController
     }
 
 
-    public function fairs() {
+    public function fairs()
+    {
         $artist = Artist::getCurrentArtist();
         if (!$artist) {
             $_SESSION['error'] = 'You must be logged in as an artist to perform this action';
             header('Location: /index');
             exit;
         }
-        
+
+        $governments = ArtFair::getGoverments();
+        $fairs = $artist->getArtFairs();
+        $totalFairs = count($fairs);
+        $pendingFairs = count(array_filter($fairs, function ($fair) {
+            return $fair->getStatus() === 'pending';
+        }));
+        $acceptedFairs = count(array_filter($fairs, function ($fair) {
+            return $fair->getStatus() === 'accepted';
+        }));
         require_once VIEWS . 'pages\Artist\fairs.php';
+    }
+
+    public function registerFair()
+    {
+        if (!isset($_POST['fairName']) || !isset($_POST['fairGovernment']) || !isset($_POST['fairLocationDetails']) || !isset($_POST['fairDescription']) || !isset($_FILES['fairImage']) || !isset($_POST['fairDate'])) {
+            $_SESSION['error'] = 'Invalid request';
+            header('Location: /artist/fairs');
+            exit;
+        }
+
+        $fairName = $_POST['fairName'];
+        $fairGovernment = $_POST['fairGovernment'];
+        $fairLocationDetails = $_POST['fairLocationDetails'];
+        $fairDescription = $_POST['fairDescription'];
+        $fairImage = $_FILES['fairImage'];
+        $fairDate = $_POST['fairDate'];
+        if (empty($fairName) || empty($fairGovernment) || empty($fairLocationDetails) || empty($fairDescription) || $fairImage['error'] !== UPLOAD_ERR_OK || empty($fairDate)) {
+            $_SESSION['error'] = 'All fields are required';
+            header('Location: /artist/fairs');
+            exit;
+        }
+
+
+        $artist = Artist::getCurrentArtist();
+        if (!$artist) {
+            $_SESSION['error'] = 'You must be logged in as an artist to perform this action';
+            header('Location: /index');
+            exit;
+        }
+
+        $uploaded = App::handleUploadImage($fairImage, 'localfairs');
+
+        if (!$uploaded) {
+            $_SESSION['error'] = 'Failed to upload fair image';
+            header('Location: /artist/fairs');
+            exit;
+        }
+
+        $artfair = new ArtFair([
+            'name' => $fairName,
+            'location' => $fairGovernment . "," . $fairLocationDetails,
+            'description' => $fairDescription,
+            'image' => $uploaded,
+            'artistID' => $artist->getUserID(),
+            'startDate' => $fairDate,
+        ]);
+
+        $success = $artfair->createArtFair();
+
+        if ($success) {
+            $_SESSION['success'] = 'Art Fair registration has been sent successfully';
+        } else {
+            $_SESSION['error'] = 'Failed to create fair ' . $_SESSION['error'];
+        }
+        header('Location: /artist/fairs');
+        exit;
+    }
+
+    public function deleteFair()
+    {
+        if (!isset($_POST['id'])) {
+            $_SESSION['error'] = 'Invalid request';
+            header('Location: /artist/fairs');
+            exit;
+        }
+
+        $fairId = $_POST['id'];
+        $artist = Artist::getCurrentArtist();
+        if (!$artist) {
+            $_SESSION['error'] = 'You must be logged in as an artist to perform this action';
+            header('Location: /index');
+            exit;
+        }
+
+        $success = $artist->deleteArtFair($fairId);
+
+        if ($success) {
+            $_SESSION['success'] = "Art Fair has been deleted successfully";
+        } else {
+            $_SESSION['error'] = "Failed to delete Art Fair " . $_SESSION['error'];
+        }
+
+        header('Location: /artist/fairs');
+        exit;
     }
 }

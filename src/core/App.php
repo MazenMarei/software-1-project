@@ -2,6 +2,7 @@
 
 namespace App\core;
 
+
 use App\controllers\AuthController;
 use App\controllers\AdminController;
 use App\controllers\ArtistController;
@@ -77,6 +78,8 @@ class App
         Route::post('/artist/edit-artwork', ArtistController::class, 'updateArtwork', [[Authentication::class, 'artist']]);
         Route::post('/artist/updatePayment', ArtistController::class, 'updatePayment', [[Authentication::class, 'artist']]);
         Route::post('/artist/withdraw', ArtistController::class, 'withdrawRequst', [[Authentication::class, 'artist']]);
+        Route::post('/artist/register-fair', ArtistController::class, 'registerFair', [[Authentication::class, 'artist']]);
+        Route::post('/artist/delete-fair', ArtistController::class, 'deleteFair', [[Authentication::class, 'artist']]);
 
         Route::get('/customer/dashboard', AuthController::class, 'customerDashboard', [[Authentication::class, 'customer']]);
 
@@ -111,5 +114,48 @@ class App
     public function run()
     {
         Route::dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+    }
+
+    static function handleUploadImage($file, $path)
+    {
+        try {
+
+            $fileName = $file['name'];
+            $fileType = $file['type'];
+
+            // Validate file type
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg', 'image/webp'];
+            $fileType = strtolower($fileType);
+            if (!in_array($fileType, $allowedTypes)) {
+                $_SESSION['error'] = 'Only JPG, JPEG, PNG, Webp and GIF files are allowed';
+                return false;
+            }
+
+            // Generate unique filename
+            $newFileName = uniqid('artist_') . '.' . pathinfo($fileName, PATHINFO_EXTENSION);
+            $uploadPath = UPLOADS . $path . DS . $newFileName;
+
+            // Check if directory exists and is writable
+            $directory = UPLOADS . $path . DS;
+            if (!is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            if (!is_writable($directory)) {
+                $_SESSION['error'] = "Upload directory is not writable";
+                return false;
+            }
+
+            // Move uploaded file
+            $fileTmpName = $file['tmp_name'];
+            if (move_uploaded_file($fileTmpName, $uploadPath)) {
+                return $newFileName;
+            } else {
+                return false;
+            }
+        } catch (\Throwable $th) {
+            $_SESSION['error'] = "Error uploading file: " . $th->getMessage();
+            return false;
+        }
     }
 }

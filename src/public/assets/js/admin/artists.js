@@ -112,7 +112,7 @@ $(document).ready(function () {
     $("#modal-artwork-title").text(title);
     $("#modal-artwork-description").text(description);
     $("#modal-artwork-price").text("$ " + price);
-    $("#modal-artwork-image").attr("src", "/uploads/artworks/" + image);
+    $("#modal-artwork-image").attr("src", "/uploads/" + image);
 
     $("#modal-artwork-status").text(status);
     $("#modal-artwork-category").text(category);

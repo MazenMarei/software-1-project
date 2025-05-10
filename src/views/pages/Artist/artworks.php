@@ -178,7 +178,7 @@
                         onclick="showDetails(this)"
                         class="btn btn-outline-primary view-artwork-btn"
                         data-id="<?php echo $artwork['artworkID']; ?>"
-                        data-image="<?php echo htmlspecialchars($artwork['images']); ?>"
+                        data-image="/artworks/<?php echo htmlspecialchars($artwork['images']); ?>"
                         data-title="<?php echo htmlspecialchars($artwork['title']); ?>"
                         data-price="<?php echo htmlspecialchars($artwork['price']); ?>"
                         data-description="<?php echo htmlspecialchars($artwork['description']); ?>"
@@ -189,7 +189,6 @@
                         data-date="<?php echo htmlspecialchars($artwork['createDate']); ?>">
                         <i class="fas fa-eye"></i>
                       </button>
-                      <?php if ($artwork['status'] === 'Accepted'): ?>
                         <button
                           type="button"
                           class="btn btn-outline-danger reject-btn"
@@ -200,7 +199,6 @@
                           data-bs-target="#rejectionModal">
                           <i class="fa-solid fa-trash"></i>
                         </button>
-                      <?php endif; ?>
                     </div>
                   </td>
                 </tr>
