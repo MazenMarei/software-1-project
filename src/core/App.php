@@ -93,14 +93,11 @@ class App
         Route::post("/admin/profileUpdate",  AdminController::class, 'profileUpdate', [[Authentication::class, 'admin']]);
         Route::post("/admin/changePassword",  AdminController::class, 'changePassword', [[Authentication::class, 'admin']]);
         Route::post("/admin/updateFairStatus",  AdminController::class, 'updateFairStatus', [[Authentication::class, 'admin']]);
+        Route::post("/admin/special-collections",  AdminController::class, 'updateSpecialCollections', [[Authentication::class, 'admin']]);
+        Route::post("/admin/updateOffer",  AdminController::class, 'updateOffer', [[Authentication::class, 'admin']]);
 
         Route::get('/admin/artworks', AdminController::class, 'artworks', [[Authentication::class, 'admin']]);
         Route::get('/admin/withdrawals', AdminController::class, 'withdrawals', [[Authentication::class, 'admin']]);
-
-
-
-
-
         Route::get('/admin/artists', AdminController::class, 'artists', [[Authentication::class, 'admin']]);
         Route::get('/admin/customers', AdminController::class, 'customers', [[Authentication::class, 'admin']]);
         Route::get('/admin/collections', AdminController::class, 'collections', [[Authentication::class, 'admin']]);
@@ -112,6 +109,7 @@ class App
         Route::get('/admin/settings', AdminController::class, 'settings', [[Authentication::class, 'admin']]);
         Route::get('/admin/profile', AdminController::class, 'profile', [[Authentication::class, 'admin']]);
         Route::get('/admin/orders', AdminController::class, 'orders', [[Authentication::class, 'admin']]);
+
     }
 
     public function run()

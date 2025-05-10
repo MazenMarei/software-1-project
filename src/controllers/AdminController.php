@@ -7,9 +7,9 @@ use App\models\User;
 use App\models\Artwork;
 use App\core\Database;
 use App\models\ArtFair;
-use App\models\Collection;
-use App\models\Gust;
 use App\models\Order;
+use App\models\SpectailCollection;
+use App\models\Offer;
 
 class AdminController
 {
@@ -42,19 +42,13 @@ class AdminController
                 'salesData' => $salesData
             ];
 
+            $offer = Offer::getInstance();
+
             // Include the dashboard view
             require_once VIEWS . 'pages/Admin/index.php';
         } catch (\Exception $e) {
-            // Log the detailed error
-            error_log('AdminController::dashboard - Error: ' . $e->getMessage());
-            error_log('Error details: ' . $e->getTraceAsString());
+            $_SESSION['error'] = 'Dashboard Error: ' . $e->getMessage();
 
-            // Show a more detailed error message in development
-            if (true) { // Change this to a development environment check in production
-                $_SESSION['error'] = 'Dashboard Error: ' . $e->getMessage();
-            } else {
-                $_SESSION['error'] = 'An error occurred while loading some dashboard components. Showing limited dashboard.';
-            }
 
             $admin = Admin::getCurrentAdmin();
             $stats = ['totalArtworks' => 0, 'activeUsers' => 0, 'ordersThisMonth' => 0, 'monthlyRevenue' => 0];
@@ -64,11 +58,6 @@ class AdminController
         }
     }
 
-    /**
-     * Get dashboard statistics
-     * 
-     * @return array Statistics for the dashboard
-     */
     private function getDashboardStats()
     {
         $db = Database::getInstance()->getConnection();
@@ -121,62 +110,8 @@ class AdminController
         ];
     }
 
-    /**
-     * Get pending approvals for the dashboard
-     * 
-     * @return array Pending artworks, artists, and fairs
-     */
 
 
-    /**
-     * Get recent orders for the dashboard
-     * 
-     * @return array Recent orders
-     */
-    private function getRecentOrders()
-    {
-        $db = Database::getInstance()->getConnection();
-
-        // Check if order table has any records
-        $checkOrdersSql = "SELECT COUNT(*) as count FROM `order`";
-        $checkOrdersStmt = $db->prepare($checkOrdersSql);
-        $checkOrdersStmt->execute();
-        $orderCount = $checkOrdersStmt->fetch(\PDO::FETCH_ASSOC)['count'] ?? 0;
-
-        // Return empty array if no orders exist
-        if ($orderCount == 0) {
-            return [];
-        }
-
-        $sql = "SELECT o.*, u.Fname, u.Lname FROM `order` o
-                JOIN user u ON o.customerID = u.userID
-                ORDER BY o.orderDate DESC
-                LIMIT 5";
-        $stmt = $db->prepare($sql);
-        $stmt->execute();
-
-        $orders = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        $formattedOrders = [];
-
-        foreach ($orders as $order) {
-            $formattedOrders[] = [
-                'id' => $order['orderID'],
-                'customer' => $order['Fname'] . ' ' . $order['Lname'],
-                'amount' => $order['totalPrice'],
-                'date' => $order['orderDate'],
-                'status' => $order['orderStatus']
-            ];
-        }
-
-        return $formattedOrders;
-    }
-
-    /**
-     * Get sales data for the dashboard chart
-     * 
-     * @param string $period 'week', 'month', or 'year'
-     * @return array Sales data for the chart
-     */
     private function getSalesChartData($period = 'week')
     {
         $db = Database::getInstance()->getConnection();
@@ -554,40 +489,7 @@ class AdminController
 
         require_once VIEWS . 'pages/Admin/orders.php';
     }
-    /**
-     * Get all artworks from the database with artist information and pagination
-     * 
-     * @param int $page Current page number (default: 1)
-     * @param int $limit Number of items per page (default: 25)
-     * @param array $filters Optional associative array of filters (status, category, price, search)
-     * @return array Artworks with pagination information
-     */
 
-    /**
-     * Get all artwork categories for filtering
-     * 
-     * @return array Categories list
-     */
-    public function getArtworkCategories()
-    {
-        $db = Database::getInstance()->getConnection();
-
-        $sql = "SELECT DISTINCT category FROM artwork";
-        $stmt = $db->prepare($sql);
-        $stmt->execute();
-
-        // Create an array of unique categories
-        $categories = [];
-        $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-        foreach ($results as $result) {
-            if (!empty($result['category'])) {
-                $categories[] = $result['category'];
-            }
-        }
-
-        return $categories;
-    }
 
     /**
      * Update artwork status (approve or reject)
@@ -945,16 +847,79 @@ class AdminController
         $admin = Admin::getCurrentAdmin();
         $artworks = $admin->getAllArtworks();
         $categories = Artwork::getCategories();
-        $collection = Collection::getCollectionById("1");
+        $collection = SpectailCollection::getInstance();
         if ($collection) {
-            $selectedArtworks = $collection->fetchCollectionsArtworks();
+            $selectedArtworksDate = $collection->getArtworks();
             $selectedArtworks = [];
-            foreach ($selectedArtworks as $artwork) {
+            foreach ($selectedArtworksDate as $artwork) {
                 array_push($selectedArtworks, $artwork->getArtworkID());
             }
         }
 
-
         require_once VIEWS . 'pages/Admin/collections.php';
+    }
+
+    public function updateSpecialCollections()
+    {
+
+        if (!isset($_POST['collectionName']) || !isset($_POST['selectedArtworks'])) {
+            $_SESSION['error'] = 'Invalid request';
+            header('Location: /admin/collections');
+            exit;
+        }
+
+        $collectionName = $_POST['collectionName'];
+        $selectedArtworks = explode(',', $_POST['selectedArtworks']);
+
+        $admin = Admin::getCurrentAdmin();
+        if (!$admin) {
+            $_SESSION['error'] = 'You must be logged in as an admin to perform this action';
+            header('Location: /index');
+            exit;
+        }
+
+        $success = false;
+        $success = $admin->updateSpecialCollections($collectionName, $selectedArtworks);
+
+        if ($success) {
+            $_SESSION['success'] = "Special Collection has been updated successfully";
+        } else {
+            $_SESSION['error'] = "Failed to update Special Collection. " . $_SESSION['error'];
+        }
+
+        header('Location: /admin/collections');
+        exit;
+    }
+
+    public function updateOffer()
+    {
+        if (!isset($_POST['discount'])) {
+            $_SESSION['error'] = 'Invalid request';
+            header('Location: /admin/dashboard');
+            exit;
+        }
+        $enableOffer = isset($_POST['enableOffer']) ? 1 : 0;
+        $discount = $_POST['discount'];
+
+        $admin = Admin::getCurrentAdmin();
+
+        if (!$admin) {
+            $_SESSION['error'] = 'You must be logged in as an admin to perform this action';
+            header('Location: /index');
+            exit;
+        }
+
+        $offer = Offer::getInstance();
+        $success = $offer->updateOffer([
+            'discount' => $discount,
+            'enabled' => $enableOffer
+        ]);
+        if ($success) {
+            $_SESSION['success'] = "Offer has been updated successfully";
+        } else {
+            $_SESSION['error'] = "Failed to update Offer. " . $_SESSION['error'];
+        }
+        header('Location: /admin/dashboard');
+        exit;
     }
 }

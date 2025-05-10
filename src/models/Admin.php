@@ -4,6 +4,7 @@ namespace App\models;
 
 use App\core\Database;
 
+
 class Admin extends User
 {
     private $adminID;
@@ -481,12 +482,27 @@ class Admin extends User
         }
     }
 
-
-    public function getAllCollections() {
+    public function updateSpecialCollections($collectionName, $artworksID)
+    {
         try {
-       
+            $specialCollection = SpectailCollection::getInstance();
+            $update = $specialCollection->updateCollection([
+                'name' => $collectionName,
+            ]);
+            if (!$update) {
+                $_SESSION['error'] = "Failed to update special collection. " . $_SESSION['error'];
+                return false;
+            }
+
+            $artworks = $specialCollection->setArtworks($artworksID);
+            if (!$artworks) {
+                $_SESSION['error'] = "Failed to update artworks in special collection.";
+                return false;
+            }
+            return true;
         } catch (\Throwable $th) {
-            return [];
+            $_SESSION['error'] = "Failed to update special collection: " . $th->getMessage();
+            return false;
         }
     }
 

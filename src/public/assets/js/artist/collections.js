@@ -4,9 +4,6 @@ $(document).ready(function () {
   const tableElement = $("#SelectedArtworksTable");
   const specitialCollection = $("#specitialCollection");
 
-    if(specitialCollection) {
-        
-    }
 
   if (tableElement) {
     // Simple initialization with DataTables

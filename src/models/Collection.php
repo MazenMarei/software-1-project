@@ -60,6 +60,8 @@ class Collection
             return false;
         }
     }
+
+
     public function getCollectionArtworks()
     {
         return $this->artworks;

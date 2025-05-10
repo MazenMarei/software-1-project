@@ -54,12 +54,6 @@
                 Withdrawals
             </a>
         </li>
-        <li class="admin-nav-item">
-            <a href="/admin/offers" class="admin-nav-link <?php echo ($_SERVER['REQUEST_URI'] === '/admin/offers') ? 'active' : ''; ?>">
-                <i class="fas fa-tag"></i>
-                Offers
-            </a>
-        </li>
    
     </ul>
 </aside>

@@ -74,24 +74,6 @@
                 <canvas id="salesChart" style="max-height: 300px"></canvas>
             </div>
 
-            <!-- Recent Activity -->
-
-            <!-- <div class="row mt-4">
-
-                <div class="col-lg-6">
-                    <div class="table-container">
-                        <div class="table-header">
-                            <h2 class="table-title">Notifications</h2>
-                            <button class="btn btn-outline-primary btn-sm">
-                                Mark All Read
-                            </button>
-                        </div>
-                        <ul id="notifications-list" class="notification-list">
-                        </ul>
-                    </div>
-                </div>
-            </div> -->
-
             <div class="row mt-4">
                 <div class="col-lg-6">
                     <a id="upload-artwork-btn" href="/artist/new-artwork" class="btn btn-primary w-100 mb-4">

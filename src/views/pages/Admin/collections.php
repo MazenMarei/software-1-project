@@ -43,10 +43,10 @@
 
 
         <div class="stat-card my-5">
-            <form action="" method="post" id="specitialCollection">
+            <form action="/admin/special-collections" method="post" id="specialCollection">
                 <div class=" my-3">
                     <label for="collectionName" class="form-label">Collection Name</label>
-                    <input type="text" class="form-control" id="collectionName" name="collectionName" required>
+                    <input type="text" class="form-control" id="collectionName" name="collectionName" value="<?php echo htmlspecialchars($collection->getName()); ?>" required>
                     <input type="hidden" id="selectedArtworks" name="selectedArtworks" value="<?php echo join(',', $selectedArtworks); ?>">
                 </div>
                 <div class="row  flex-row-reverse">
@@ -124,6 +124,7 @@
                             </tr>
                         <?php else: ?>
                             <?php foreach ($artworks as $artwork): ?>
+                                <?php $isSelected = in_array($artwork['artworkID'], $selectedArtworks); ?>
                                 <tr>
                                     <td>
                                         <img
@@ -153,17 +154,17 @@
                                     </td>
                                     <td>
                                         <div class="my-5">
-                                            <span class="status-badge rejected"><?php (in_array($artwork['artworkID'], $selectedArtworks) ? 'Rejected' : 'Accepted') ?></span>
+                                            <span class="status-badge <?php echo $isSelected ? 'accepted' : 'rejected' ?>"><?php echo $isSelected ? 'Accepted' : 'Rejected' ?></span>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="btn-group btn-group-sm my-5">
                                             <button
                                                 type="button"
-                                                class="btn btn-outline-success"
+                                                class="btn <?php echo $isSelected ? 'btn-outline-danger' : 'btn-outline-success' ?>"
                                                 onclick="ArtToggle(this)"
                                                 data-id="<?php echo $artwork['artworkID']; ?>">
-                                                <i class="fa-solid fa-plus"></i>
+                                                <i class="fa-solid <?php echo $isSelected ? 'fa-trash' : 'fa-plus'; ?>"></i>
                                             </button>
                                         </div>
                                     </td>

@@ -72,6 +72,45 @@
             </div>
             <canvas id="salesChart" style="max-height: 300px;"></canvas>
         </div>
+
+
+
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <h5 class="card-title">Special Offer Settings</h5>
+            </div>
+            <div class="card-body">
+                <form action="/admin/updateOffer" method="post">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="discount" class="form-label">Discount Percentage:</label>
+                            <div class="input-group">
+                                <input type="number" min="0" max="20" class="form-control" id="discount"
+                                    name="discount" value="<?php echo htmlspecialchars($offer->getDiscount()); ?>" required>
+                                <span class="input-group-text">%</span>
+                            </div>
+                            <div class="form-text">Set the discount percentage for all artworks (0-20%)</div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                    id="enableOffer" name="enableOffer" value="1"
+                                    <?php echo $offer->isEnabled() ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="enableOffer">Enable Special Offer</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Update Offer
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
         <!-- Admin Footer -->
         <footer class="admin-footer">
             <p>&copy; <?php echo date('Y'); ?> ArtShelf Admin Dashboard. All rights reserved.</p>
