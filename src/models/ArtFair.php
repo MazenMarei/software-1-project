@@ -79,7 +79,8 @@ class ArtFair
             throw new \Exception("Error creating art fair: " . $e->getMessage());
         }
     }
-    public static function getFairsByArtistId($artistID)
+
+    public static function getArtFairsByArtistId($artistID)
     {
         try {
             $sql = "SELECT * FROM localfair WHERE artistID = :artistID";
@@ -114,20 +115,8 @@ class ArtFair
             $stmt->bindParam(':id', $id);
             return $stmt->execute();
         } catch (\PDOException $e) {
-            throw new \Exception("Error deleting art fair: " . $e->getMessage());
-        }
-    }
-
-    public function updateArtFairStatus($id, $status)
-    {
-        try {
-            $sql = "UPDATE localfair SET status = :status WHERE eventID = :id";
-            $stmt = Database::getInstance()->getConnection()->prepare($sql);
-            $stmt->bindParam(':status', $status);
-            $stmt->bindParam(':id', $id);
-            return $stmt->execute();
-        } catch (\PDOException $e) {
-            throw new \Exception("Error updating art fair status: " . $e->getMessage());
+            $_SESSION['error'] = "Error deleting art fair: " . $e->getMessage();
+            return false;
         }
     }
 
@@ -180,7 +169,8 @@ class ArtFair
             }
             return $localFairs;
         } catch (\PDOException $e) {
-            throw new \Exception("Error fetching all art fairs: " . $e->getMessage());
+            $_SESSION['error'] = "Error fetching art fairs: " . $e->getMessage();
+            return false;
         }
     }
 

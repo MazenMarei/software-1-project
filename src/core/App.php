@@ -6,7 +6,7 @@ namespace App\core;
 use App\controllers\AuthController;
 use App\controllers\AdminController;
 use App\controllers\ArtistController;
-
+use App\Controllers\CustomerController;
 use App\Middlewares\Authentication;
 use App\Middlewares\Authorization;
 
@@ -83,7 +83,6 @@ class App
         Route::post('/artist/create-collection', ArtistController::class, 'createCollection', [[Authentication::class, 'artist']]);
         Route::post('/artist/delete-collection', ArtistController::class, 'deleteCollection', [[Authentication::class, 'artist']]);
 
-        Route::get('/customer/dashboard', AuthController::class, 'customerDashboard', [[Authentication::class, 'customer']]);
 
         // Admin functionality routes
         Route::post('/admin/update-artist-status', AdminController::class, 'updateArtistStatus', [[Authentication::class, 'admin']]);
@@ -110,6 +109,22 @@ class App
         Route::get('/admin/profile', AdminController::class, 'profile', [[Authentication::class, 'admin']]);
         Route::get('/admin/orders', AdminController::class, 'orders', [[Authentication::class, 'admin']]);
 
+
+
+
+
+
+
+
+        Route::get('/customer/dashboard', CustomerController::class, 'index', [[Authentication::class, 'customer']]);
+        Route::get('/customer/cart', CustomerController::class, 'cart', [[Authentication::class, 'customer']]);
+        Route::get('/customer/profile', CustomerController::class, 'profile', [[Authentication::class, 'customer']]);
+
+
+
+        Route::post('/customer/add-to-cart/{id}', CustomerController::class, 'addToCart', [[Authentication::class, 'customer']]);
+        Route::post('/customer/remove-from-cart/{id}', CustomerController::class, 'removeFromCart', [[Authentication::class, 'customer']]);
+        Route::post('/customer/checkout', CustomerController::class, 'checkout', [[Authentication::class, 'customer']]);
     }
 
     public function run()

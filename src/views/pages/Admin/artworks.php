@@ -60,7 +60,7 @@
           </div>
           <div class="stat-content">
             <h3> <?php echo count(array_filter($artworks, function ($artwork) {
-                    return $artwork['status'] === 'sold';
+                    return $artwork->getStatus() === 'sold';
                   })); ?> </h3>
             <p>Sold Artist</p>
           </div>
@@ -73,7 +73,7 @@
           </div>
           <div class="stat-content">
             <h3> <?php echo count(array_filter($artworks, function ($artwork) {
-                    return $artwork['status'] === 'Pending';
+                    return $artwork->getStatus() === 'Pending';
                   })); ?> </h3>
             <p>Pending Artwork</p>
           </div>
@@ -86,7 +86,7 @@
           </div>
           <div class="stat-content">
             <h3> <?php echo count(array_filter($artworks, function ($artwork) {
-                    return $artwork['status'] === 'Rejected';
+                    return $artwork->getStatus() === 'Rejected';
                   })); ?> </h3>
             <p>Rejected Artwoks</p>
           </div>
@@ -157,56 +157,55 @@
                 <tr>
                   <td>
                     <img
-                      src="/uploads/artworks/<?php echo htmlspecialchars($artwork['images']); ?>"
-                      alt="<?php echo htmlspecialchars($artwork['title']); ?>"
+                      src="/uploads/artworks/<?php echo htmlspecialchars($artwork->getImages()); ?>"
+                      alt="<?php echo htmlspecialchars($artwork->getTitle()); ?>"
                       class="img-thumbnail"
                       style="width: 80px; height: 60px; object-fit: cover;">
                   </td>
-                  <td><?php echo htmlspecialchars($artwork['title']); ?></td>
+                  <td><?php echo htmlspecialchars($artwork->getTitle()); ?></td>
                   <td>
                     <div class="d-flex align-items-center">
                       <img
-                        src="/uploads/profiles/<?php echo htmlspecialchars($artwork['profilePic']); ?>"
+                        src="/uploads/profiles/<?php echo htmlspecialchars($artwork->getArtist()->getProfilePic()); ?>"
                         alt="Artist"
                         class="rounded-circle me-2"
                         width="30"
                         height="30">
-                      <?php echo htmlspecialchars($artwork['Fname'] . ' ' . $artwork['Lname']); ?>
+                      <?php echo htmlspecialchars($artwork->getArtist()->getFirstName() . ' ' . $artwork->getArtist()->getLastName()); ?>
                     </div>
                   </td>
-                  <td><?php echo htmlspecialchars($artwork['category']); ?></td>
-                  <td>$<?php echo ($artwork['price']); ?></td>
+                  <td><?php echo htmlspecialchars($artwork->getCategory()); ?></td>
+                  <td>$<?php echo ($artwork->getPrice()); ?></td>
                   <td>
-                    <span class="status-badge <?php echo strtolower($artwork['status']); ?>">
-                      <?php echo $artwork['status']; ?>
+                    <span class="status-badge <?php echo strtolower($artwork->getStatus()); ?>">
+                      <?php echo $artwork->getStatus(); ?>
                     </span>
                   </td>
-                  <td><?php echo date('Y-m-d', strtotime($artwork['createDate'])); ?></td>
+                  <td><?php echo ($artwork->getDateCreated()); ?></td>
                   <td>
                     <div class="btn-group btn-group-sm">
                       <button
                         type="button"
                         onclick="showDetails(this)"
                         class="btn btn-outline-primary view-artwork-btn"
-                        data-id="<?php echo $artwork['artworkID']; ?>"
-                        data-id="<?php echo $artwork['artworkID']; ?>"
-                        data-image="/artworks/<?php echo htmlspecialchars($artwork['images']); ?>"
-                        data-title="<?php echo htmlspecialchars($artwork['title']); ?>"
-                        data-price="<?php echo htmlspecialchars($artwork['price']); ?>"
-                        data-description="<?php echo htmlspecialchars($artwork['description']); ?>"
-                        data-status="<?php echo htmlspecialchars($artwork['status']); ?>"
-                        data-category="<?php echo htmlspecialchars($artwork['category']); ?>"
-                        data-medium="<?php echo htmlspecialchars($artwork['medium']); ?>"
-                        data-dimensions="<?php echo htmlspecialchars($artwork['dimensions']); ?>"
-                        data-date="<?php echo htmlspecialchars($artwork['createDate']); ?>">
+                        data-id="<?php echo $artwork->getArtworkID(); ?>"
+                        data-image="/artworks/<?php echo ($artwork->getImages()); ?>"
+                        data-title="<?php echo ($artwork->getTitle()); ?>"
+                        data-price="<?php echo ($artwork->getPrice()); ?>"
+                        data-description="<?php echo ($artwork->getDescription()); ?>"
+                        data-status="<?php echo ($artwork->getStatus()); ?>"
+                        data-category="<?php echo ($artwork->getCategory()); ?>"
+                        data-medium="<?php echo ($artwork->getMedium()); ?>"
+                        data-dimensions="<?php echo join("x", array_values($artwork->getDimensions())); ?>"
+                        data-date="<?php echo ($artwork->getDateCreated()); ?>">
 
                         <i class="fas fa-eye"></i>
                       </button>
-                      <?php if ($artwork['status'] === 'Pending'): ?>
+                      <?php if ($artwork->getStatus() === 'Pending'): ?>
                         <button
                           type="button"
                           class="btn btn-outline-success approve-btn"
-                          data-id="<?php echo $artwork['artworkID']; ?>"
+                          data-id="<?php echo $artwork->getArtworkID(); ?>"
                           data-bs-toggle="modal"
                           onclick="approvalFun(this)"
                           data-bs-target="#approvalModal">
@@ -216,26 +215,26 @@
                           type="button"
                           class="btn btn-outline-danger reject-btn"
                           onclick="rejectionFun(this)"
-                          data-id="<?php echo $artwork['artworkID']; ?>"
+                          data-id="<?php echo $artwork->getArtworkID(); ?>"
                           data-bs-toggle="modal"
                           data-bs-target="#rejectionModal">
                           <i class="fas fa-times"></i>
                         </button>
-                      <?php elseif ($artwork['status'] === 'Accepted'): ?>
+                      <?php elseif ($artwork->getStatus() === 'Accepted'): ?>
                         <button
                           type="button"
                           class="btn btn-outline-danger reject-btn"
                           onclick="rejectionFun(this)"
-                          data-id="<?php echo $artwork['artworkID']; ?>"
+                          data-id="<?php echo $artwork->getArtworkID(); ?>"
                           data-bs-toggle="modal"
                           data-bs-target="#rejectionModal">
                           <i class="fa-solid fa-ban"></i>
                         </button>
-                      <?php elseif ($artwork['status'] === 'Rejected') : ?>
+                      <?php elseif ($artwork->getStatus() === 'Rejected') : ?>
                         <button
                           type="button"
                           class="btn btn-outline-success approve-btn"
-                          data-id="<?php echo $artwork['artworkID']; ?>"
+                          data-id="<?php echo $artwork->getArtworkID(); ?>"
                           data-bs-toggle="modal"
                           onclick="approvalFun(this)"
                           data-bs-target="#approvalModal">

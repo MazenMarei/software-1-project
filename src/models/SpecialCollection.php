@@ -5,13 +5,10 @@ namespace App\models;
 use App\core\Database;
 
 
-class SpectailCollection
+class SpecialCollection
 {
     private $collectionID;
     private $name;
-    private $description;
-    private $createDate;
-    private $artistID;
     private $artworks;
     private $coverImage;
     private static $instance;
@@ -31,12 +28,9 @@ class SpectailCollection
         if ($this->checkExist() == false) {
             $this->createCollection();
         }
-        $spectailCollection = $this->getSpecialCollection();
-        $this->collectionID = $spectailCollection['collectionID'];
-        $this->name = $spectailCollection['name'];
-        $this->description = $spectailCollection['description'];
-        $this->createDate = $spectailCollection['createDate'];
-        $this->artistID = $spectailCollection['artistID'];
+        $SpecialCollection = $this->getSpecialCollection();
+        $this->collectionID = $SpecialCollection['collectionID'];
+        $this->name = $SpecialCollection['name'];
         $this->artworks = $this->fetchArtworks();
     }
 
@@ -62,12 +56,7 @@ class SpectailCollection
             if (isset($data['name'])) {
                 $sql .= " SET name = :name";
             }
-            if (isset($data['description'])) {
-                $sql .= ", description = :description";
-            }
-            if (isset($data['artistID'])) {
-                $sql .= ", artistID = :artistID";
-            }
+
 
             if (isset($data['coverImage'])) {
                 $sql .= ", coverImage = :coverImage";
@@ -80,12 +69,6 @@ class SpectailCollection
             $stmt = Database::getInstance()->getConnection()->prepare($sql);
             if (isset($data['name'])) {
                 $stmt->bindParam(':name', $data['name']);
-            }
-            if (isset($data['description'])) {
-                $stmt->bindParam(':description', $data['description']);
-            }
-            if (isset($data['artistID'])) {
-                $stmt->bindParam(':artistID', $data['artistID']);
             }
             if (isset($data['coverImage'])) {
                 $stmt->bindParam(':coverImage', $data['coverImage']);
@@ -100,6 +83,7 @@ class SpectailCollection
             return false;
         }
     }
+
     public function setArtworks($artworkID)
     {
         try {
@@ -140,7 +124,7 @@ class SpectailCollection
         }
     }
 
-    private function fetchArtworks()
+    public function fetchArtworks()
     {
         $sql = "SELECT * FROM collection_artwork WHERE collectionID = :collectionID";
         $stmt = Database::getInstance()->getConnection()->prepare($sql);
@@ -150,6 +134,10 @@ class SpectailCollection
         $artworks = [];
         foreach ($artWorksIDs as $artworkID) {
             $artwork = Artwork::getArtworkById($artworkID['artworkID']);
+            if ($artwork && $artwork->getStatus() !== "Accepted") {
+                $this->deleteArtworks($artworkID['artworkID']);
+                continue;
+            }
             if ($artwork) {
                 $artworks[] = $artwork;
             }
@@ -192,18 +180,6 @@ class SpectailCollection
     public function getName()
     {
         return $this->name;
-    }
-    public function getDescription()
-    {
-        return $this->description;
-    }
-    public function getCreateDate()
-    {
-        return $this->createDate;
-    }
-    public function getArtistID()
-    {
-        return $this->artistID;
     }
     public function getArtworks()
     {

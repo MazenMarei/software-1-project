@@ -124,32 +124,32 @@
                             </tr>
                         <?php else: ?>
                             <?php foreach ($artworks as $artwork): ?>
-                                <?php $isSelected = in_array($artwork['artworkID'], $selectedArtworks); ?>
+                                <?php $isSelected = in_array($artwork->getArtworkID(), $selectedArtworks); ?>
                                 <tr>
                                     <td>
                                         <img
-                                            src="/uploads/artworks/<?php echo htmlspecialchars($artwork['images']); ?>"
-                                            alt="<?php echo htmlspecialchars($artwork['title']); ?>"
+                                            src="/uploads/artworks/<?php echo htmlspecialchars($artwork->getImages()); ?>"
+                                            alt="<?php echo htmlspecialchars($artwork->getTitle()); ?>"
                                             class="img-thumbnail"
                                             style="width: 130px; height: 110px; object-fit: cover;">
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center my-4">
                                             <img
-                                                src="/uploads/profiles/<?php echo htmlspecialchars($artwork['profilePic']); ?>"
-                                                alt="<?php echo htmlspecialchars($artwork['Fname'] . ' ' . $artwork['Lname']); ?>"
+                                                src="/uploads/profiles/<?php echo htmlspecialchars($artwork->getArtist()->getProfilePic()); ?>"
+                                                alt="<?php echo htmlspecialchars($artwork->getArtist()->getFirstName() . ' ' . $artwork->getArtist()->getLastName()); ?>"
                                                 class="small-avatar me-3">
-                                            <span><?php echo htmlspecialchars($artwork['Fname'] . ' ' . $artwork['Lname']); ?></span>
+                                            <span><?php echo htmlspecialchars($artwork->getArtist()->getFirstName() . ' ' . $artwork->getArtist()->getLastName()); ?></span>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="my-5">
-                                            <?php echo htmlspecialchars($artwork['title']); ?>
+                                            <?php echo htmlspecialchars($artwork->getTitle()); ?>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="my-5">
-                                            <?php echo htmlspecialchars($artwork['category']); ?>
+                                            <?php echo htmlspecialchars($artwork->getCategory()); ?>
                                         </div>
                                     </td>
                                     <td>
@@ -163,7 +163,7 @@
                                                 type="button"
                                                 class="btn <?php echo $isSelected ? 'btn-outline-danger' : 'btn-outline-success' ?>"
                                                 onclick="ArtToggle(this)"
-                                                data-id="<?php echo $artwork['artworkID']; ?>">
+                                                data-id="<?php echo $artwork->getArtworkID(); ?>">
                                                 <i class="fa-solid <?php echo $isSelected ? 'fa-trash' : 'fa-plus'; ?>"></i>
                                             </button>
                                         </div>

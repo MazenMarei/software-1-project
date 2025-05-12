@@ -8,7 +8,7 @@ use App\models\Artwork;
 use App\core\Database;
 use App\models\ArtFair;
 use App\models\Order;
-use App\models\SpectailCollection;
+use App\models\SpecialCollection;
 use App\models\Offer;
 
 class AdminController
@@ -441,12 +441,11 @@ class AdminController
 
 
             // Get artworks with pagination
-            $artworks = $admin->getAllArtworks();
+            $artworks = Artwork::getAllArtworks();
 
 
             // Get the list of unique categories for the filter
             $categories = Artwork::getCategories();
-
             // Load the view
             require_once VIEWS . 'pages/Admin/artworks.php';
         } catch (\Exception $e) {
@@ -790,7 +789,7 @@ class AdminController
         }
 
         // Get all fairs from the database
-        $fairs = $admin->getAllLocalFairs();
+        $fairs = $admin->getAllArtFairs();
         $totalFairs = count($fairs);
         $acceptedFairs  = count(array_filter($fairs, function ($fair) {
             return $fair->getStatus() === 'accepted';
@@ -829,7 +828,7 @@ class AdminController
             exit;
         }
         $success = false;
-        $success = $admin->updateFairStatus($id, $status, $reason);
+        $success = $admin->updateArtFairStatus($id, $status, $reason);
 
         if ($success) {
             $_SESSION['success'] = "Fair Status has been updated successfully";
@@ -845,9 +844,10 @@ class AdminController
     {
 
         $admin = Admin::getCurrentAdmin();
-        $artworks = $admin->getAllArtworks();
+        $artworks =  Artwork::getAllAcceptedArtworks();
+  
         $categories = Artwork::getCategories();
-        $collection = SpectailCollection::getInstance();
+        $collection = SpecialCollection::getInstance();
         if ($collection) {
             $selectedArtworksDate = $collection->getArtworks();
             $selectedArtworks = [];

@@ -14,6 +14,8 @@ class Customer extends User
     private $balance;
     private $cartID;
 
+    private $cart;
+    
     public function __construct($firstName = null, $lastName = null, $email = null, $username = null, $profilePic = null, $phone = null, $address = null, $currency = 'USD', $balance = 0.00)
     {
         parent::__construct($firstName, $lastName, $email, 'customer', $username, $profilePic);
@@ -23,6 +25,9 @@ class Customer extends User
         $this->balance = $balance;
         $this->date = date('Y-m-d');
     }
+
+
+
 
     public function getCustomerById($id)
     {
@@ -43,7 +48,7 @@ class Customer extends User
             $this->address = $customer['address'];
             $this->currency = $customer['currency'];
             $this->balance = $customer['balance'];
-            $this->cartID = $customer['cartID'];
+            $this->cart = new Cart($this->customerID);
             return $this;
         } else {
             return false;
@@ -103,21 +108,7 @@ class Customer extends User
         }
     }
 
-    public function getCart()
-    {
-        if (!$this->cartID) {
-            return false;
-        }
 
-        $sql = "SELECT a.* FROM artwork a 
-                JOIN cart_art ca ON a.artworkID = ca.artworkID
-                WHERE ca.cartID = :cartID";
-        $stmt = Database::getInstance()->getConnection()->prepare($sql);
-        $stmt->bindParam(':cartID', $this->cartID, \PDO::PARAM_INT);
-        $stmt->execute();
-
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    }
 
     /**
      * Get the currently logged-in customer from session
@@ -137,6 +128,11 @@ class Customer extends User
         // Create a new Customer object and load data
         $customer = new Customer();
         return $customer->getCustomerById($user->getUserID());
+    }
+
+    public function getCart()
+    {
+        return $this->cart;
     }
 
     // Getters

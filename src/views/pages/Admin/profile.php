@@ -206,8 +206,7 @@
   <!-- DataTables -->
   <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-  <!-- Toastr JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
   <!-- Custom JS -->
   <script src="../../assets/js/admin/artists.js"></script>
   <script src="../../assets/js/admin.js"></script>

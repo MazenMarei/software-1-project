@@ -11,7 +11,7 @@ class Transaction
     private $date;
     private $type;
     private $status;
-
+    private $user;
     public function __construct($amount, $type, $status = 'pending', $date = null)
     {
         $this->amount = $amount;

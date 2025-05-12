@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 - Page Not Found | ArtShelf</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/main.css">
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="../assets/css/all.min.css">
-    
+
     <style>
         .error-container {
             height: 100vh;
@@ -24,7 +25,7 @@
             text-align: center;
             background-color: #f8f9fa;
         }
-        
+
         .error-code {
             font-size: 120px;
             font-weight: 700;
@@ -32,28 +33,28 @@
             margin-bottom: 0;
             line-height: 1;
         }
-        
+
         .error-divider {
             height: 4px;
             width: 60px;
             background-color: #dc3545;
             margin: 20px auto;
         }
-        
+
         .error-message {
             font-size: 24px;
             font-weight: 500;
             margin-bottom: 20px;
             color: #343a40;
         }
-        
+
         .error-description {
             font-size: 16px;
             max-width: 600px;
             margin: 0 auto 30px;
             color: #6c757d;
         }
-        
+
         .error-artwork {
             max-width: 300px;
             margin-bottom: 30px;
@@ -61,6 +62,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="error-container">
         <img src="../assets/images/404-art.png" alt="404 Artwork" class="error-artwork">
@@ -81,4 +83,5 @@
     <script src="../assets/js/bootstrap.bundle.min.js"></script>
     <script src="../assets/js/jquery-3.7.1.min.js"></script>
 </body>
+
 </html>

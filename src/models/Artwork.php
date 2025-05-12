@@ -17,6 +17,7 @@ class Artwork
     private $dimensions;
     private $category;
     private $status = 'Pending';
+    private $artist;
     private static $categories = [
         "Painting",
         "Photography",
@@ -91,6 +92,8 @@ class Artwork
             if ($artwork) {
                 $artworkObj = new Artwork($artwork);
                 $artworkObj->artworkID = $artwork['artworkID'];
+                $artist = new Artist();
+                $artworkObj->artist = $artist->getArtistById($artwork['artistID']);
                 return $artworkObj;
             }
             return false;
@@ -134,7 +137,49 @@ class Artwork
         }
     }
 
+    public static function getAllArtworks()
+    {
+        try {
+            $sql = "SELECT * FROM artwork";
+            $stmt = Database::getInstance()->getConnection()->prepare($sql);
+            $stmt->execute();
+            $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $artworks = [];
+            foreach ($data as $artwork) {
+                $artworkObj = new Artwork($artwork);
+                $artworkObj->artworkID = $artwork['artworkID'];
+                $artist = new Artist();
+                $artworkObj->artist = $artist->getArtistById($artwork['artistID']);
+                array_push($artworks, $artworkObj);
+            }
+            return $artworks;
+        } catch (\Throwable $th) {
+            $_SESSION['error'] = $th->getMessage();
+            return [];
+        }
+    }
 
+    public static function getAllAcceptedArtworks()
+    {
+        try {
+            $sql = "SELECT * FROM artwork WHERE status = 'Accepted'";
+            $stmt = Database::getInstance()->getConnection()->prepare($sql);
+            $stmt->execute();
+            $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $artworks = [];
+            foreach ($data as $artwork) {
+                $artworkObj = new Artwork($artwork);
+                $artworkObj->artworkID = $artwork['artworkID'];
+                $artist = new Artist();
+                $artworkObj->artist = $artist->getArtistById($artwork['artistID']);
+                array_push($artworks, $artworkObj);
+            }
+            return $artworks;
+        } catch (\Throwable $th) {
+            $_SESSION['error'] = $th->getMessage();
+            return [];
+        }
+    }
     public static function deleteArtwork($id)
     {
         $sql = "DELETE FROM artwork WHERE artworkID = :artworkID";
@@ -200,5 +245,10 @@ class Artwork
     public function getStatus()
     {
         return $this->status;
+    }
+
+    public function getArtist()
+    {
+        return $this->artist;
     }
 }

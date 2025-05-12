@@ -6,14 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Dashboard | ArtShelf</title>
     <!-- Bootstrap CSS -->
-    <link
-        href="../../assets/css/bootstrap.min.css"
-        rel="stylesheet" />
+    <link href="../../../assets/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="../../assets/css/main.css" />
-    <link rel="stylesheet" href="../../assets/css/admin.dashboard.css" />
+    <link href="../../../assets/css/main.css" rel="stylesheet">
+    <link href="../../../assets/css/customer.dashboard.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="../../assets/css/all.min.css" />
+    <link rel="stylesheet" href="../../../assets/css/all.min.css">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,99 +21,7 @@
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="dashboard.html">
-                <img src="../../assets/images/artshelf-logo.png" alt="ArtShelf Logo" height="40">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="dashboard.html">Discover</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="artists.html">Artists</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="collections.html">Collections</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="fairs.html">Art Fairs</a>
-                    </li>
-                </ul>
-                <div class="navbar-right d-flex align-items-center">
-                    <div class="search-container me-3">
-                        <button class="btn-search">
-                            <i class="fa fa-search"></i>
-                        </button>
-                        <div class="search-dropdown">
-                            <form class="search-form">
-                                <input type="text" class="form-control" placeholder="Search artworks, artists...">
-                                <button type="submit" class="btn-search-submit">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="dropdown me-3">
-                        <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="far fa-heart"></i>
-                            <span class="badge bg-accent">3</span>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end">
-                            <h6 class="dropdown-header">Favorites</h6>
-                            <div class="favorites-preview">
-                                <!-- Will be populated by JavaScript -->
-                            </div>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-center" href="favorites.html">View All Favorites</a>
-                        </div>
-                    </div>
-                    <div class="dropdown me-3">
-                        <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa fa-shopping-cart"></i>
-                            <span class="badge bg-accent">1</span>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end">
-                            <h6 class="dropdown-header">Shopping Cart</h6>
-                            <div class="cart-preview">
-                                <!-- Will be populated by JavaScript -->
-                            </div>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-center" href="cart.html">View Cart</a>
-                        </div>
-                    </div>
-                    <div class="dropdown">
-                        <button class="btn btn-icon profile-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Profile Picture" class="profile-picture">
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end">
-                            <h6 class="dropdown-header">John Smith</h6>
-                            <a class="dropdown-item" href="profile.html">
-                                <i class="fa fa-user me-2"></i> My Profile
-                            </a>
-                            <a class="dropdown-item" href="orders.html">
-                                <i class="fa fa-shopping-bag me-2"></i> My Orders
-                            </a>
-                            <a class="dropdown-item" href="following.html">
-                                <i class="fa fa-users me-2"></i> Following
-                            </a>
-                            <a class="dropdown-item" href="settings.html">
-                                <i class="fa fa-cog me-2"></i> Settings
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-danger" href="#" onclick="window.auth.logout(); return false;">
-                                <i class="fa fa-sign-out-alt me-2"></i> Logout
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <?php require_once VIEWS . 'components/customer_navbard.php'; ?>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -138,7 +45,7 @@
                 <div class="overlay"></div>
             </div>
         </section>
-
+        <?php require_once VIEWS . 'components/error_display.php'; ?>
         <!-- Featured Section -->
         <section id="featured" class="section">
             <div class="container">
@@ -147,7 +54,54 @@
                     <a href="artworks.html" class="btn btn-link">View All <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="row artwork-grid" id="featuredArtworks">
-                    <!-- Will be populated by JavaScript -->
+                    <?php if (empty($featuredArtworks)) : ?>
+                        <div class="col-12">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fas fa-palette"></i>
+                                </div>
+                                <h3 class="empty-state-title">No Artworks Found</h3>
+                                <p class="empty-state-message">We're currently updating our featured artworks. Please check back soon!</p>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <?php foreach ($featuredArtworks as $artwork) : ?>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="artwork-card">
+                                <div class="artwork-image">
+                                    <img src="/uploads/artworks/<?php echo htmlspecialchars($artwork->getImages()); ?>"
+                                        alt="<?php echo htmlspecialchars($artwork->getTitle()); ?>"
+                                        class="img-fluid">
+
+                                    <div class="artwork-actions">
+                                        <form action="/" method="post">
+                                            <button href="#" class="btn-circle btn-favorite" type="submit">
+                                                <i class="far fa-heart"></i>
+                                            </button>
+                                        </form>
+                                        <button class="btn-circle btn-quickview"
+                                            data-id="<?php echo $artwork->getArtworkId(); ?>"
+                                            onclick="showQuickView(<?php echo $artwork->getArtworkId(); ?>); return false;">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <?php if (in_array($artwork, $cartItems)) : ?>
+                                            <form action="/customer/remove-from-cart/<?php echo $artwork->getArtworkId(); ?>" method="post">
+                                                <button class="btn-circle btn-report" type="submit">
+                                                    <i class="fa fa-shopping-cart"></i>
+                                                </button>
+                                            </form>
+                                        <?php else : ?>
+                                            <form action="/customer/add-to-cart/<?php echo $artwork->getArtworkId(); ?>" method="post">
+                                                <button class="btn-circle btn-report" type="submit">
+                                                    <i class="fa fa-shopping-cart"></i>
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </section>
@@ -156,11 +110,73 @@
         <section class="section bg-secondary">
             <div class="container">
                 <div class="section-header">
-                    <h2 class="section-title">Weekly Collections</h2>
-                    <a href="collections.html" class="btn btn-link">View All <i class="fas fa-arrow-right"></i></a>
+                    <h2 class="section-title"><?php echo $specialCollections->getName(); ?></h2>
                 </div>
                 <div class="row collections-slider" id="weeklyCollections">
-                    <!-- Will be populated by JavaScript -->
+                    <?php if (empty($specialCollections->getArtworks())) : ?>
+                        <div class="col-12">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fas fa-palette"></i>
+                                </div>
+                                <h3 class="empty-state-title">No Artworks Found</h3>
+                                <p class="empty-state-message">We're currently updating our featured collection. Please check back soon!</p>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <?php foreach ($specialCollections->getArtworks() as $artwork) : ?>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="artwork-card">
+                                <div class="artwork-image">
+                                    <img src="/uploads/artworks/<?php echo htmlspecialchars($artwork->getImages()); ?>"
+                                        alt="<?php echo htmlspecialchars($artwork->getTitle()); ?>"
+                                        class="img-fluid">
+
+                                    <div class="artwork-actions">
+                                        <form action="/" method="post">
+                                            <button href="#" class="btn-circle btn-favorite" type="submit">
+                                                <i class="far fa-heart"></i>
+                                            </button>
+                                        </form>
+
+                                        <form action="/" method="post">
+                                            <button href="#" class="btn-circle btn-quickview" type="submit">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="artwork-info">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-2">
+                                            <img src="/uploads/profiles/<?php echo htmlspecialchars($artwork->getArtist()->getProfilePic()); ?>"
+                                                alt="<?php echo htmlspecialchars($artwork->getArtist()->getFirstName()); ?>"
+                                                class="small-avatar" />
+                                        </div>
+                                        <div class="col">
+                                            <h3 class="artwork-title"><?php echo htmlspecialchars($artwork->getTitle()); ?></h3>
+                                            <p class="artwork-artist"><?php echo htmlspecialchars($artwork->getArtist()->getLastName()); ?></p>
+                                        </div>
+                                    </div>
+                                    <div class="artwork-price">$<?php echo number_format($artwork->getPrice(), 2); ?></div>
+
+                                    <div class="artwork-actions-bottom d-flex justify-content-start gap-3">
+                                        <a href="/artwork/<?php echo $artwork->getArtworkId(); ?>" class="btn btn-outline-primary btn-sm">View Details</a>
+                                        <?php if (in_array($artwork, $cartItems)) : ?>
+                                            <form action="/customer/remove-from-cart/<?php echo $artwork->getArtworkId(); ?>" method="post">
+                                                <button class="btn btn-primary btn-sm" type="submit">Remove from Cart</button>
+                                            </form>
+                                        <?php else : ?>
+                                            <form action="/customer/add-to-cart/<?php echo $artwork->getArtworkId(); ?>" method="post">
+                                                <button class="btn btn-primary btn-sm" type="submit">Add to Cart</button>
+                                            </form>
+                                        <?php endif; ?>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </section>
@@ -173,7 +189,32 @@
                     <a href="artists.html" class="btn btn-link">View All <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="row artists-grid" id="featuredArtists">
-                    <!-- Will be populated by JavaScript -->
+                    <?php if (empty($featuredArtists)) : ?>
+                        <div class="col-12">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fa-solid fa-people-group"></i>
+                                </div>
+                                <h3 class="empty-state-title">No Artists Found</h3>
+                                <p class="empty-state-message">We're currently updating our featured artists. Please check back soon!</p>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <?php foreach ($featuredArtists as $artist) : ?>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="artist-card">
+                                <img src="/uploads/profiles/<?php echo htmlspecialchars($artist->getProfilePic()); ?>"
+                                    alt="<?php echo htmlspecialchars($artist->getFirstName() . ' ' . $artist->getLastName()); ?>"
+                                    class="img-fluid artist-image">
+                                <h3 class="artist-name"><?php echo htmlspecialchars($artist->getFirstName() . ' ' . $artist->getLastName()); ?></h3>
+                                <p class="artist-bio"><?php echo htmlspecialchars($artist->getBio()); ?></p>
+                                <div class="d-flex flex-row justify-content-center gap-3">
+                                    <form action="/" method="post" class=""><button class="btn btn-primary">View Profile</button></form>
+                                    <form action="/" method="post" class=""><button class="btn btn-outline-primary">Follow</button></form>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </section>
@@ -240,88 +281,20 @@
                     <div class="col-lg-6">
                         <div class="gift-card-showcase">
                             <div class="gift-card">
-                                <img src="https://images.pexels.com/photos/1092364/pexels-photo-1092364.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="ArtShelf Gift Card" class="img-fluid rounded-lg shadow-md">
+                                <img src="../../assets/images/Egift-2.webp" alt="ArtShelf Gift Card" class="img-fluid rounded-lg shadow-md">
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4">
-                    <div class="footer-logo">
-                        <img src="../../assets/images/artshelf-logo.png" alt="ArtShelf Logo" height="40">
-                    </div>
-                    <p class="footer-description">Discover, buy, and sell extraordinary art from artists around the world.</p>
-                    <div class="social-links">
-                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-pinterest-p"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-2">
-                    <h5 class="footer-heading">Explore</h5>
-                    <ul class="footer-links">
-                        <li><a href="artworks.html">Artworks</a></li>
-                        <li><a href="artists.html">Artists</a></li>
-                        <li><a href="collections.html">Collections</a></li>
-                        <li><a href="fairs.html">Art Fairs</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2">
-                    <h5 class="footer-heading">Account</h5>
-                    <ul class="footer-links">
-                        <li><a href="profile.html">My Profile</a></li>
-                        <li><a href="favorites.html">Favorites</a></li>
-                        <li><a href="orders.html">Orders</a></li>
-                        <li><a href="settings.html">Settings</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2">
-                    <h5 class="footer-heading">Support</h5>
-                    <ul class="footer-links">
-                        <li><a href="../help/faq.html">FAQ</a></li>
-                        <li><a href="../help/contact.html">Contact Us</a></li>
-                        <li><a href="../help/shipping.html">Shipping</a></li>
-                        <li><a href="../help/returns.html">Returns</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2">
-                    <h5 class="footer-heading">Legal</h5>
-                    <ul class="footer-links">
-                        <li><a href="../legal/terms.html">Terms of Service</a></li>
-                        <li><a href="../legal/privacy.html">Privacy Policy</a></li>
-                        <li><a href="../legal/copyright.html">Copyright</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <p class="copyright">&copy; 2023 ArtShelf. All rights reserved.</p>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="payment-methods">
-                            <span>Secured by Stripe</span>
-                            <img src="../../assets/images/payment-methods.png" alt="Payment Methods" height="24">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS Bundle with Popper -->
-
-    <!-- Stripe.js -->
+    </main> <!-- footer -->
+    <?php require_once VIEWS . 'components/customer_footer.php'; ?> <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="../../../assets/js/jquery-3.7.1.min.js"></script>
+    <script src="../../../assets/js/popper.min.js"></script>
+    <script src="../../../assets/js/bootstrap.min.js"></script>
     <!-- Custom Scripts -->
-
+    <script src="../../../assets/js/customer-dropdown.js"></script>
 </body>
 
 </html>

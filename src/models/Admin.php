@@ -7,13 +7,9 @@ use App\core\Database;
 
 class Admin extends User
 {
-    private $adminID;
-    private $secureCode;
-
-    public function __construct($firstName = null, $lastName = null, $email = null, $username = null, $profilePic = null, $secureCode = null)
+    public function __construct($firstName = null, $lastName = null, $email = null, $username = null, $profilePic = null)
     {
         parent::__construct($firstName, $lastName, $email, 'admin', $username, $profilePic);
-        $this->secureCode = $secureCode;
     }
 
     /**
@@ -22,11 +18,13 @@ class Admin extends User
      * @param int $id Admin ID
      * @return Admin|false Admin object or false if not found
      */
-    public function getAdminById($id)
+    private function getAdminById($id)
     {
         // First get the user data
-        parent::getUserById($id);
-
+        $parent = parent::getUserById($id);
+        if (!$parent) {
+            return false;
+        }
         // Then get the admin-specific data
         $sql = "SELECT * FROM admin WHERE adminID = :id";
         $stmt = Database::getInstance()->getConnection()->prepare($sql);
@@ -35,39 +33,13 @@ class Admin extends User
 
         $admin = $stmt->fetch(\PDO::FETCH_ASSOC);
         if ($admin) {
-            $this->adminID = $admin['adminID'];
-            $this->secureCode = $admin['secureCode'];
+            $this->userID = $admin['adminID'];
             return $this;
         } else {
             return false;
         }
     }
 
-    /**
-     * Generate a new secure code for the admin
-     * 
-     * @return bool Success status
-     */
-    public function generateSecureCode()
-    {
-        try {
-            // Generate a random 6-digit code
-            $secureCode = sprintf("%06d", mt_rand(1, 999999));
-
-            $sql = "UPDATE admin SET secureCode = :secureCode WHERE adminID = :id";
-            $stmt = Database::getInstance()->getConnection()->prepare($sql);
-            $stmt->bindParam(':secureCode', $secureCode, \PDO::PARAM_STR);
-            $stmt->bindParam(':id', $this->userID, \PDO::PARAM_INT);
-
-            if ($stmt->execute()) {
-                $this->secureCode = $secureCode;
-                return true;
-            }
-            return false;
-        } catch (\Throwable $th) {
-            return false;
-        }
-    }
 
     public function getWithdrawRequests()
     {
@@ -97,93 +69,14 @@ class Admin extends User
             t.date DESC;";
             $stmt = Database::getInstance()->getConnection()->prepare($sql);
             $stmt->execute();
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            $trasactionsData = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            if (!$trasactionsData) {
+                return [];
+            }
+            return $trasactionsData;
         } catch (\Throwable $th) {
             $_SESSION['error'] = 'Error fetching withdraw requests: ' . $th->getMessage();
-            return [];
-        }
-    }
-
-    /**
-     * Verify an admin's secure code
-     * 
-     * @param string $secureCode Code to verify
-     * @return bool True if code matches
-     */
-    public function verifySecureCode($secureCode)
-    {
-        return $this->secureCode === $secureCode;
-    }
-
-    /**
-     * Get pending artist registrations
-     * 
-     * @return array List of pending artists
-     */
-    public function getPendingArtists()
-    {
-        try {
-            $sql = "SELECT u.* FROM user u
-                    JOIN artist a ON u.userID = a.artistID
-                    WHERE u.role = 'artist' AND u.status = 'Pending'";
-            $stmt = Database::getInstance()->getConnection()->prepare($sql);
-            $stmt->execute();
-
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\Throwable $th) {
-            return [];
-        }
-    }
-
-    /**
-     * Get pending artworks for approval
-     * 
-     * @return array List of pending artworks
-     */
-    public function getPendingArtworks()
-    {
-        try {
-            $sql = "SELECT a.*, u.Fname, u.Lname FROM artwork a
-                    JOIN user u ON a.artistID = u.userID
-                    WHERE a.status = 'Pending'";
-            $stmt = Database::getInstance()->getConnection()->prepare($sql);
-            $stmt->execute();
-
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\Throwable $th) {
-            return [];
-        }
-    }
-
-    public function getAllArtworks()
-    {
-        try {
-            $sql = "SELECT a.*, u.Fname, u.Lname, u.profilePic FROM artwork a
-                    JOIN user u ON a.artistID = u.userID";
-            $stmt = Database::getInstance()->getConnection()->prepare($sql);
-            $stmt->execute();
-
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\Throwable $th) {
-            return [];
-        }
-    }
-    /**
-     * Get pending local fairs for approval
-     * 
-     * @return array List of pending local fairs
-     */
-    public function getPendingLocalFairs()
-    {
-        try {
-            $sql = "SELECT f.*, u.Fname, u.Lname FROM localfair f
-                    JOIN user u ON f.atristID = u.userID
-                    WHERE f.status = 'Pending'";
-            $stmt = Database::getInstance()->getConnection()->prepare($sql);
-            $stmt->execute();
-
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\Throwable $th) {
             return [];
         }
     }
@@ -215,16 +108,17 @@ class Admin extends User
             // If there's a reason, add a notification
             if ($reason && $status === 'Rejected') {
                 $message = "Your account registration was rejected. Reason: $reason";
-                $this->addNotification($userId, $message);
+                $this->sendNotification($userId, $message);
             } elseif ($status === 'Accepted') {
                 $message = "Your account has been approved. Welcome to ArtShelf!";
-                $this->addNotification($userId, $message);
+                $this->sendNotification($userId, $message);
             }
 
             Database::getInstance()->getConnection()->commit();
             return true;
         } catch (\Throwable $th) {
-            Database::getInstance()->getConnection()->rollBack();
+            // Database::getInstance()->getConnection()->rollBack();
+            $_SESSION['error'] = 'Error updating user status: ' . $th->getMessage();
             return false;
         }
     }
@@ -265,45 +159,17 @@ class Admin extends User
             $artistId = $artwork['artistID'];
             if ($reason && $status === 'Rejected') {
                 $message = "Your artwork submission was rejected. Reason: $reason";
-                $this->addNotification($artistId, $message);
+                $this->sendNotification($artistId, $message);
             } elseif ($status === 'Approved') {
                 $message = "Your artwork has been approved and is now available on ArtShelf!";
-                $this->addNotification($artistId, $message);
+                $this->sendNotification($artistId, $message);
             }
 
             Database::getInstance()->getConnection()->commit();
             return true;
         } catch (\Throwable $th) {
-            Database::getInstance()->getConnection()->rollBack();
-            return false;
-        }
-    }
-    /**
-     * Create a special collection
-     * 
-     * @param string $name Collection name
-     * @param string $description Collection description
-     * @return bool|int Collection ID on success, false on failure
-     */
-    public function createSpecialCollection($name, $description)
-    {
-        try {
-            $sql = "INSERT INTO artcollection (createDate, name, description, adminID, special) 
-                    VALUES (:createDate, :name, :description, :adminID, 1)";
-            $stmt = Database::getInstance()->getConnection()->prepare($sql);
-
-            $createDate = date('Y-m-d');
-
-            $stmt->bindParam(':createDate', $createDate, \PDO::PARAM_STR);
-            $stmt->bindParam(':name', $name, \PDO::PARAM_STR);
-            $stmt->bindParam(':description', $description, \PDO::PARAM_STR);
-            $stmt->bindParam(':adminID', $this->userID, \PDO::PARAM_INT);
-
-            if ($stmt->execute()) {
-                return Database::getInstance()->getConnection()->lastInsertId();
-            }
-            return false;
-        } catch (\Throwable $th) {
+            // Database::getInstance()->getConnection()->rollBack();
+            $_SESSION['error'] = 'Error updating artwork status: ' . $th->getMessage();
             return false;
         }
     }
@@ -315,7 +181,7 @@ class Admin extends User
      * @param string $message Notification message
      * @return bool Success status
      */
-    public function addNotification($userId, $message)
+    public function sendNotification($userId, $message)
     {
         try {
             $sql = "INSERT INTO notification (userid, Message, datesent) 
@@ -334,66 +200,6 @@ class Admin extends User
             return false;
         }
     }
-
-    /**
-     * Create a new artwork offer
-     * 
-     * @param int $artworkId Artwork ID for the offer
-     * @param int $discount Discount percentage (1-100)
-     * @param string $endDate End date (YYYY-MM-DD)
-     * @return bool Success status
-     */
-    public function createOffer($artworkId, $discount, $endDate)
-    {
-        try {
-            if ($discount < 1 || $discount > 100) {
-                return false;
-            }
-
-            $sql = "INSERT INTO offer (artworkID, discount, enabled, endDate) 
-                    VALUES (:artworkID, :discount, 1, :endDate)";
-            $stmt = Database::getInstance()->getConnection()->prepare($sql);
-
-            $stmt->bindParam(':artworkID', $artworkId, \PDO::PARAM_INT);
-            $stmt->bindParam(':discount', $discount, \PDO::PARAM_INT);
-            $stmt->bindParam(':endDate', $endDate, \PDO::PARAM_STR);
-
-            return $stmt->execute();
-        } catch (\Throwable $th) {
-            return false;
-        }
-    }
-
-    /**
-     * Get all transactions
-     * 
-     * @param string $type Optional transaction type filter
-     * @return array List of transactions
-     */
-    public function getAllTransactions($type = null)
-    {
-        try {
-            $sql = "SELECT * FROM transaction";
-
-            if ($type) {
-                $sql .= " WHERE type = :type";
-            }
-
-            $sql .= " ORDER BY datee DESC";
-
-            $stmt = Database::getInstance()->getConnection()->prepare($sql);
-
-            if ($type) {
-                $stmt->bindParam(':type', $type, \PDO::PARAM_STR);
-            }
-
-            $stmt->execute();
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\Throwable $th) {
-            return [];
-        }
-    }
-
     /**
      * Get the currently logged-in admin from session
      * 
@@ -422,17 +228,13 @@ class Admin extends User
      * @param string $status Optional status filter
      * @return array List of all artists
      */
-    public function getAllArtists($status = null)
+    public function getAllArtists()
     {
         try {
             $sql = "SELECT  u.* FROM user u
                     INNER JOIN artist a ON u.userID = a.artistID
                     WHERE u.role = :role";
 
-            // Add status filter if provided
-            if ($status !== null) {
-                $sql .= " AND u.status = :status";
-            }
 
             // Single ORDER BY with valid column
             $sql .= " ORDER BY u.registerDate DESC";
@@ -442,10 +244,6 @@ class Admin extends User
             // Always bind role parameter
             $stmt->bindValue(':role', 'artist', \PDO::PARAM_STR);
 
-            // Conditionally bind status
-            if ($status !== null) {
-                $stmt->bindValue(':status', $status, \PDO::PARAM_STR);
-            }
 
             $stmt->execute();
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -456,24 +254,24 @@ class Admin extends User
     }
 
 
-    public function updateFairStatus($fairId, $status, $reason = '')
+    public function updateArtFairStatus($artFairId, $status, $reason = '')
     {
 
         try {
-            $update = ArtFair::updateArtFairStatusById($fairId, $status);
-            $_SESSION['success'] = "AArtist ID " . $update->getArtistID();
+            $update = ArtFair::updateArtFairStatusById($artFairId, $status);
+            $_SESSION['success'] = "Artist ID " . $update->getArtistID();
             if (!$update) {
                 return false;
             }
             if ($reason && $status === 'rejected') {
                 $message = "Your local fair registration was rejected. Reason: $reason";
                 if ($update->getArtistID() !== null) {
-                    $this->addNotification($update->getArtistID(), $message);
+                    $this->sendNotification($update->getArtistID(), $message);
                 }
             } elseif ($status === 'accepted') {
                 $message = "Your local fair has been approved. Welcome to ArtShelf!";
                 if ($update->getArtistID() !== null) {
-                    $this->addNotification($update->getArtistID(), $message);
+                    $this->sendNotification($update->getArtistID(), $message);
                 }
             }
             return true;
@@ -485,7 +283,7 @@ class Admin extends User
     public function updateSpecialCollections($collectionName, $artworksID)
     {
         try {
-            $specialCollection = SpectailCollection::getInstance();
+            $specialCollection = SpecialCollection::getInstance();
             $update = $specialCollection->updateCollection([
                 'name' => $collectionName,
             ]);
@@ -512,16 +310,11 @@ class Admin extends User
      * @param string $status Optional status filter
      * @return array List of all customers
      */
-    public function getAllCustomers($status = null)
+    public function getAllCustomers()
     {
         try {
             $sql = "SELECT u.* FROM user u
                     WHERE u.role = :role";
-
-            // Add status filter if provided
-            if ($status !== null) {
-                $sql .= " AND u.status = :status";
-            }
 
             // Single ORDER BY with valid column
             $sql .= " ORDER BY u.registerDate DESC";
@@ -531,10 +324,6 @@ class Admin extends User
             // Always bind role parameter
             $stmt->bindValue(':role', 'customer', \PDO::PARAM_STR);
 
-            // Conditionally bind status
-            if ($status !== null) {
-                $stmt->bindValue(':status', $status, \PDO::PARAM_STR);
-            }
 
             $stmt->execute();
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -544,31 +333,18 @@ class Admin extends User
         }
     }
 
-
-    public function getAllLocalFairs()
+    public function getAllArtFairs()
     {
         try {
             return ArtFair::getAllArtFairs();
         } catch (\Throwable $th) {
-            $_SESSION['error'] = 'Error fetching local fairs: ' . $th->getMessage();
+            $_SESSION['error'] = 'Error fetching art fairs: ' . $th->getMessage();
             return [];
         }
     }
 
-    // Getters
     public function getAdminID()
     {
-        return $this->adminID;
-    }
-
-    public function getSecureCode()
-    {
-        return $this->secureCode;
-    }
-
-    // Setters
-    public function setSecureCode($secureCode)
-    {
-        $this->secureCode = $secureCode;
+        return $this->userID;
     }
 }

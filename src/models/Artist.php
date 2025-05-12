@@ -6,12 +6,14 @@ use App\core\Database;
 
 class Artist extends User
 {
-    private $artistID; /// 
+    private $artistID;
     private $phone;
     private $bio;
     private $balance;
     private $address;
     private $bDate;
+    /// should add payment method attribute
+    private $paymentMethod;
 
     public function __construct($firstName = null, $lastName = null, $email = null, $username = null, $profilePic = null, $phone = null, $bio = null, $address = null, $bDate = null)
     {
@@ -36,7 +38,6 @@ class Artist extends User
 
         $artist = $stmt->fetch(\PDO::FETCH_ASSOC);
         if ($artist) {
-            $this->artistID = $artist['artistID'];
             $this->phone = $artist['phone'];
             $this->bio = $artist['Bio'];
             $this->balance = $artist['Balance'];
@@ -126,6 +127,42 @@ class Artist extends User
         }
     }
 
+    public function withdrawRequest($amount, $type)
+    {
+        try {
+            $amount = $type == "urgent" ? $amount - 5 : $amount;
+            $transaction = new Transaction($amount, "withdraw", $type == "urgent" ? "Accepted" : "pending", $type == "urgent" ? date('Y-m-d') : date('Y-m-d', strtotime('+7 days')));
+            $transactionId =  $transaction->createTransaction();
+            if (!$transactionId) {
+                return false;
+            }
+            $sql = "INSERT INTO artisttransaction (artistID, transactionID) VALUES (:artistID, :transactionID)";
+            $stmt = Database::getInstance()->getConnection()->prepare($sql);
+            $stmt->bindParam(':artistID', $this->userID, \PDO::PARAM_INT);
+            $stmt->bindParam(':transactionID', $transactionId, \PDO::PARAM_INT);
+            $success = $stmt->execute();
+            if (!$success) {
+                $_SESSION['error'] = "Failed to create transaction record.";
+                return false;
+            }
+            // Deduct the amount from the artist's balance
+            $sql = "UPDATE artist SET Balance = Balance - :amount WHERE artistID = :artistID";
+            $stmt = Database::getInstance()->getConnection()->prepare($sql);
+            $stmt->bindParam(':amount', $amount, \PDO::PARAM_STR);
+
+            $stmt->bindParam(':artistID', $this->userID, \PDO::PARAM_INT);
+            $success = $stmt->execute();
+            if (!$success) {
+                $_SESSION['error'] = "Failed to update artist balance.";
+                return false;
+            }
+            return true;
+        } catch (\Throwable $th) {
+            $_SESSION['error'] =  $th->getMessage();
+            return false;
+        }
+    }
+
     public function getAllTransactions()
     {
         try {
@@ -167,12 +204,12 @@ class Artist extends User
             if (!$followers || count($followers) == 0) {
                 return [];
             }
-            $users = [];
+            $Customers = [];
             foreach ($followers as $key => $value) {
-                $user = new User($value['Fname'], $value['Lname'], $value['Email'], 'customer', $value["username"], $value['profilePic']);
-                array_push($users, $user);
+                $user = new Customer($value['Fname'], $value['Lname'], $value['Email'], $value["username"],  $value['profilePic']);
+                array_push($Customers, $user);
             }
-            return $users;
+            return $Customers;
         } catch (\PDOException $e) {
             error_log("Error fetching artist followers: " . $e->getMessage());
             return [];
@@ -262,21 +299,14 @@ class Artist extends User
      * @param string $status Optional status filter
      * @return array Artworks
      */
-    public function getArtworks($status = null)
+    public function getArtworks()
     {
         try {
             $sql = "SELECT * FROM artwork WHERE artistID = :artistID";
 
-            if ($status) {
-                $sql .= " AND status = :status";
-            }
 
             $stmt = Database::getInstance()->getConnection()->prepare($sql);
             $stmt->bindParam(':artistID', $this->userID, \PDO::PARAM_INT);
-
-            if ($status) {
-                $stmt->bindParam(':status', $status, \PDO::PARAM_STR);
-            }
 
             $stmt->execute();
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -299,24 +329,23 @@ class Artist extends User
         }
     }
 
-    /**
-     * Get artist's transactions
-     * 
-     * @return array Transactions
-     */
-    public function getTransactions()
+
+    public static function getFeaturedArtists()
     {
         try {
-            $sql = "SELECT t.* FROM transaction t
-                    JOIN artisttransaction at ON t.transactionID = at.transactionID
-                    WHERE at.artistID = :artistID
-                    ORDER BY t.datee DESC";
+            $sql = "SELECT * FROM artist JOIN user ON artist.artistID = user.userID ORDER BY Balance DESC LIMIT 3";
             $stmt = Database::getInstance()->getConnection()->prepare($sql);
-            $stmt->bindParam(':artistID', $this->userID, \PDO::PARAM_INT);
             $stmt->execute();
-
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $featuredArtists = [];
+            foreach ($data as $artist) {
+                $artistObj = new Artist($artist['Fname'], $artist['Lname'], $artist['Email'], $artist['username'], $artist['profilePic']);
+                $artistObj->getArtistById($artist['artistID']);
+                array_push($featuredArtists, $artistObj);
+            }
+            return $featuredArtists;
         } catch (\Throwable $th) {
+            $_SESSION['error'] = $th->getMessage();
             return [];
         }
     }
@@ -337,8 +366,7 @@ class Artist extends User
         }
 
         // Create a new Artist object and load data
-        $artist = new Artist();
-        return $artist->getArtistById($user->getUserID());
+        return (new self())->getArtistById($user->getUserID());
     }
 
     public function deleteArtwork($artworkId)
@@ -393,7 +421,7 @@ class Artist extends User
     // Getters
     public function getArtistID()
     {
-        return $this->artistID;
+        return $this->userID;
     }
 
     public function getPhone()
@@ -421,67 +449,8 @@ class Artist extends User
         return $this->bDate;
     }
 
-    // Setters
-    public function setPhone($phone)
-    {
-        $this->phone = $phone;
-    }
 
-    public function setBio($bio)
-    {
-        $this->bio = $bio;
-    }
 
-    public function setBalance($balance)
-    {
-        $this->balance = $balance;
-    }
-
-    public function setAddress($address)
-    {
-        $this->address = $address;
-    }
-
-    public function setBDate($bDate)
-    {
-        $this->bDate = $bDate;
-    }
-
-    public function withdrawRequest($amount, $type)
-    {
-        try {
-            $amount = $type == "urgent" ? $amount - 5 : $amount;
-            $transaction = new Transaction($amount, "withdraw", $type == "urgent" ? "Accepted" : "pending", $type == "urgent" ? date('Y-m-d') : date('Y-m-d', strtotime('+7 days')));
-            $transactionId =  $transaction->createTransaction();
-            if (!$transactionId) {
-                return false;
-            }
-            $sql = "INSERT INTO artisttransaction (artistID, transactionID) VALUES (:artistID, :transactionID)";
-            $stmt = Database::getInstance()->getConnection()->prepare($sql);
-            $stmt->bindParam(':artistID', $this->userID, \PDO::PARAM_INT);
-            $stmt->bindParam(':transactionID', $transactionId, \PDO::PARAM_INT);
-            $success = $stmt->execute();
-            if (!$success) {
-                $_SESSION['error'] = "Failed to create transaction record.";
-                return false;
-            }
-            // Deduct the amount from the artist's balance
-            $sql = "UPDATE artist SET Balance = Balance - :amount WHERE artistID = :artistID";
-            $stmt = Database::getInstance()->getConnection()->prepare($sql);
-            $stmt->bindParam(':amount', $amount, \PDO::PARAM_STR);
-
-            $stmt->bindParam(':artistID', $this->userID, \PDO::PARAM_INT);
-            $success = $stmt->execute();
-            if (!$success) {
-                $_SESSION['error'] = "Failed to update artist balance.";
-                return false;
-            }
-            return true;
-        } catch (\Throwable $th) {
-            $_SESSION['error'] =  $th->getMessage();
-            return false;
-        }
-    }
     public function getReviews()
     {
         try {
@@ -496,21 +465,21 @@ class Artist extends User
         }
     }
 
-    public function registerArtFair($data)
-    {
-        try {
-            $artFair = new ArtFair($data['name'], $data['location'], $data['startDate'], $data['description'], $data['image']);
-            $artFair->createArtFair();
-            return true;
-        } catch (\Throwable $th) {
-            return false;
-        }
-    }
+    // public function registerArtFair($data)
+    // {
+    //     try {
+    //         $artFair = new ArtFair($data['name'], $data['location'], $data['startDate'], $data['description'], $data['image']);
+    //         $artFair->createArtFair();
+    //         return true;
+    //     } catch (\Throwable $th) {
+    //         return false;
+    //     }
+    // }
 
     public function getArtFairs()
     {
         try {
-            $localFairs = ArtFair::getFairsByArtistId($this->userID);
+            $localFairs = ArtFair::getArtFairsByArtistId($this->userID);
             if (!$localFairs || count($localFairs) == 0) {
                 return [];
             }
