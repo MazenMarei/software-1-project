@@ -40,8 +40,7 @@ class Transaction
         return $this->status;
     }
 
-    public function createTransaction()
-    {
+    public function createTransaction()  {
         try {
             $sql = "INSERT INTO transaction ( amount, type, date, status) VALUES (:amount, :type, :date, :status)";
             $stmt = Database::getInstance()->getConnection()->prepare($sql);

@@ -6,7 +6,6 @@ use App\core\Database;
 
 class Artist extends User
 {
-    private $artistID;
     private $phone;
     private $bio;
     private $balance;
@@ -239,7 +238,7 @@ class Artist extends User
                     JOIN customer c ON o.customerID = c.customerID
                     JOIN user u ON c.customerID = u.userID
                     WHERE a.artistID = :artistId
-                    AND t.status = 'accepted'";
+                    AND t.status = 'completed'";
 
             $stmt = $db->prepare($sql);
             $stmt->bindValue(':artistId', $this->userID, \PDO::PARAM_INT);
@@ -247,36 +246,44 @@ class Artist extends User
             $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             return $data;
         } catch (\PDOException $e) {
-            var_dump($e->getMessage());
             return false;
         }
     }
     public function getPaymentMethod()
     {
         try {
-            $paymentMethod = ArtistPayments::getPaymentMethodByArtistId($this->userID);
+            $paymentMethod = Payments::getPaymentMethodByUserId($this->userID);
             if (!$paymentMethod) {
                 return false;
             }
-            return $paymentMethod;
+            $this->paymentMethod = $paymentMethod;
+            return $this->paymentMethod;
         } catch (\Throwable $th) {
+            $_SESSION['error'] = $th->getMessage();
             return false;
         }
     }
 
 
 
-    public function addPaymentMethod($data)
+    private function addPaymentMethod($data)
     {
         try {
 
-            $payment = new ArtistPayments($this->userID, $data['cardNumber'], $data['expMonth'], $data['expYear'], $data['cvv']);
+            $payment = new Payments([
+                'userID' => $this->userID,
+                'cardNumber' => $data['cardNumber'],
+                'expMonth' => $data['expMonth'],
+                'expYear' => $data['expYear'],
+                'cvv' => $data['cvv']
+            ]);
             return $payment->save();
         } catch (\Throwable $th) {
+            $_SESSION['error'] =  $th->getMessage();
             return false;
         }
     }
-    public function updatePayement($data)
+    public function updatePayment($data)
     {
         try {
             /// check if there is a payment method
@@ -284,7 +291,9 @@ class Artist extends User
             if (!$paymentMethod) {
                 return $this->addPaymentMethod($data);
             } else {
-                $payment = new ArtistPayments($this->userID, $data['cardNumber'], $data['expMonth'], $data['expYear'], $data['cvv']);
+                $payment = new Payments($data);
+                $_SESSION['success'] = "Payment method updated successfully 214124.";
+                $_SESSION['error'] = $data['cardNumber'];
                 return $payment->updatePaymentMethod($this->userID, $data);
             }
         } catch (\Throwable $th) {

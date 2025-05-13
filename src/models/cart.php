@@ -17,7 +17,7 @@ class Cart
     public function __construct($customerID)
     {
         $this->customerID = $customerID;
-        $this->cartID = $this->createCart() ?? null;
+        $this->createCart();
         $this->getItems();
     }
 
@@ -31,7 +31,8 @@ class Cart
             $stmt = Database::getInstance()->getConnection()->prepare($sql);
             $stmt->bindParam(':customerID', $this->customerID, \PDO::PARAM_INT);
             if ($stmt->execute()) {
-                return Database::getInstance()->getConnection()->lastInsertId();
+                $this->cartID = Database::getInstance()->getConnection()->lastInsertId() ?? null;
+                return true;
             } else {
                 return false;
             }
@@ -163,5 +164,66 @@ class Cart
     {
         return $this->totalPrice;
     }
-    public function checkOut() {}
+
+    public function clearCart()
+    {
+        try {
+            $sql = "DELETE FROM cart_art WHERE cartID = :cartID";
+            $stmt = Database::getInstance()->getConnection()->prepare($sql);
+            $stmt->bindParam(':cartID', $this->cartID, \PDO::PARAM_INT);
+            if ($stmt->execute()) {
+                $this->artworks = [];
+                $this->totalPrice = 0.00;
+                return true;
+            }
+            return false;
+        } catch (\Throwable $th) {
+            $_SESSION['error'] = "Error clearing cart: " . $th->getMessage();
+            return false;
+        }
+    }
+    public function checkout($shippingAddress, $shippingCity, $shippingPostalCode)
+    {
+
+
+        try {
+            if (empty($this->artworks)) {
+                $_SESSION['error'] = "Cart is empty";
+                return false;
+            }
+            foreach ($this->artworks as $artwork) {
+                $artworkID = $artwork->getArtworkID();
+                $sql = "UPDATE artwork SET status = 'sold' WHERE artworkID = :artworkID";
+                $stmt = Database::getInstance()->getConnection()->prepare($sql);
+                $stmt->bindParam(':artworkID', $artworkID, \PDO::PARAM_INT);
+                if (!$stmt->execute()) {
+                    $_SESSION['error'] = "Error during checkout";
+                    return false;
+                }
+            }
+            $transaction = new Transaction($this->totalPrice, 'purchase',  'completed', date('Y-m-d H:i:s'));
+            $transactionID = $transaction->createTransaction();
+            $order = new Order($this->customerID, $transactionID, 'completed', $this->totalPrice, $shippingAddress, $shippingCity, $shippingPostalCode);
+            $order->createOrder();
+
+            foreach ($this->artworks as $artwork) {
+                $artworkID = $artwork->getArtworkID();
+                $sql = "INSERT INTO order_artwork (orderID, artworkID) VALUES (:orderID, :artworkID)";
+                $stmt = Database::getInstance()->getConnection()->prepare($sql);
+                $stmt->bindParam(':orderID', $order->getOrderID(), \PDO::PARAM_INT);
+                $stmt->bindParam(':artworkID', $artworkID, \PDO::PARAM_INT);
+                if (!$stmt->execute()) {
+                    $_SESSION['error'] = "Error during checkout";
+                    return false;
+                }
+            }
+
+
+            $this->clearCart();
+            return true;
+        } catch (\Throwable $th) {
+            $_SESSION['error'] = "Error during checkout: " . $th->getMessage();
+            return false;
+        }
+    }
 }

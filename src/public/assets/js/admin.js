@@ -13,8 +13,13 @@ $(document).on("click", function (e) {
   }
 });
 
+      console.log("asdasf");
+      
+
 $("#avatarUpload").on("change", function () {
   const file = this.files[0];
+  console.log("File selected:", file);
+  
   if (file) {
     const reader = new FileReader();
     reader.onload = function (e) {

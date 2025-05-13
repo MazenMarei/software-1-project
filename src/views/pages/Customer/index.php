@@ -161,7 +161,7 @@
                                     <div class="artwork-price">$<?php echo number_format($artwork->getPrice(), 2); ?></div>
 
                                     <div class="artwork-actions-bottom d-flex justify-content-start gap-3">
-                                        <a href="/artwork/<?php echo $artwork->getArtworkId(); ?>" class="btn btn-outline-primary btn-sm">View Details</a>
+                                        <a href="artworks/<?php echo $artwork->getArtworkId(); ?>" class="btn btn-outline-primary btn-sm">View Details</a>
                                         <?php if (in_array($artwork, $cartItems)) : ?>
                                             <form action="/customer/remove-from-cart/<?php echo $artwork->getArtworkId(); ?>" method="post">
                                                 <button class="btn btn-primary btn-sm" type="submit">Remove from Cart</button>
@@ -227,7 +227,7 @@
                         <div class="feature-content">
                             <h2 class="feature-title">View Art in Your Space</h2>
                             <p class="feature-description">Our innovative "View in Room" feature lets you visualize how artwork will look on your walls before you purchase. Simply upload a photo of your room and try different pieces to find the perfect match.</p>
-                            <a href="view-in-room.html" class="btn btn-primary">Try It Now</a>
+                            <a href="live-preview" class="btn btn-primary">Try It Now</a>
                         </div>
                     </div>
                     <div class="col-lg-6">
@@ -247,7 +247,7 @@
                         <div class="feature-content">
                             <h2 class="feature-title">Personalized Art Advisory</h2>
                             <p class="feature-description">Not sure where to start? Our expert art advisors will help you find pieces that match your style, space, and budget. Complete a quick questionnaire and receive personalized recommendations.</p>
-                            <a href="art-advisor.html" class="btn btn-primary">Get Art Advice</a>
+                            <a href="art-advisor" class="btn btn-primary">Get Art Advice</a>
                         </div>
                     </div>
                     <div class="col-lg-6 order-lg-1">

@@ -10,6 +10,7 @@ use App\models\ArtFair;
 use App\models\Order;
 use App\models\SpecialCollection;
 use App\models\Offer;
+use App\models\Questionnaire;
 
 class AdminController
 {
@@ -845,7 +846,7 @@ class AdminController
 
         $admin = Admin::getCurrentAdmin();
         $artworks =  Artwork::getAllAcceptedArtworks();
-  
+
         $categories = Artwork::getCategories();
         $collection = SpecialCollection::getInstance();
         if ($collection) {
@@ -920,6 +921,58 @@ class AdminController
             $_SESSION['error'] = "Failed to update Offer. " . $_SESSION['error'];
         }
         header('Location: /admin/dashboard');
+        exit;
+    }
+
+    public function questionnaire()
+    {
+        $admin = Admin::getCurrentAdmin();
+        if (!$admin) {
+            $_SESSION['error'] = 'You must be logged in as an admin to access this page';
+            header('Location: /index');
+            exit;
+        }
+
+        // Get all questionnaire responses from the database
+        $questionnaires = Questionnaire::getAllQuestionnaires() ?? [];
+        $totalResponses = count($questionnaires);
+
+        require_once VIEWS . 'pages/Admin/questionnaire.php';
+    }
+
+    public function questionnaireResponse()
+    {
+        if (!isset($_POST['questionnaireID']) || !isset($_POST['customerID']) || !isset($_POST['response'])) {
+            $_SESSION['error'] = 'Invalid request';
+            header('Location: /admin/questionnaire');
+            exit;
+        }
+
+        $id = $_POST['questionnaireID'];
+        $customerID = $_POST['customerID'];
+        $response = $_POST['response'];
+        $admin = Admin::getCurrentAdmin();
+        if (!$admin) {
+            $_SESSION['error'] = 'You must be logged in as an admin to perform this action';
+            header('Location: /index');
+            exit;
+        }
+
+        $admin->sendNotification($customerID, 'Questionnaire Response :  ' . $response);
+        $questionnaire = Questionnaire::getQuestionnaireById($id);
+        if (!$questionnaire) {
+            $_SESSION['error'] = 'Questionnaire not found';
+            header('Location: /admin/questionnaire');
+            exit;
+        }
+        $success = $questionnaire->response($response);
+        if ($success) {
+            $_SESSION['success'] = "Questionnaire has been deleted successfully";
+        } else {
+            $_SESSION['error'] = "Failed to delete Questionnaire. " . $_SESSION['error'];
+        }
+
+        header('Location: /admin/questionnaire');
         exit;
     }
 }

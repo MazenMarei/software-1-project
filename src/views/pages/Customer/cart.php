@@ -147,111 +147,52 @@
                                 data-bs-parent="#accordionChart">
                                 <div class="row p-4">
                                     <!-- ------------------------ shipping form ------------------------ -->
-
-                                    <!-- ------------------------ name field ------------------------ -->
-                                    <div class="mb-3">
-                                        <label for="shippingName" class="form-label">Name</label>
-                                        <input
-                                            type="text"
-                                            class="form-control"
-                                            id="shippingName"
-                                            placeholder="Enter your name"
-                                            minlength="5"
-                                            required />
-                                        <div class="invalid-feedback">Please Type your name.</div>
-                                    </div>
-                                    <!-- --------------------------- address 1 field --------------------------- -->
-                                    <div class="mb-3">
-                                        <label for="shippingAddress1" class="form-label">Address 1</label>
-                                        <input
-                                            type="text"
-                                            class="form-control"
-                                            id="shippingAddress1"
-                                            placeholder="Enter your address"
-                                            minlength="20"
-                                            required />
-                                        <div class="invalid-feedback">
-                                            Please Type your address.
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <div class="row mb-3">
+                                                <div class="col">
+                                                    <label for="city" class="form-label">City</label>
+                                                    <select
+                                                        class="form-control"
+                                                        id="city"
+                                                        name="city"
+                                                        required>
+                                                        <option value="" disabled selected>Select your city</option>
+                                                        <?php foreach ($governments as $government): ?>
+                                                            <option value="<?php echo htmlspecialchars($government); ?>" <?php echo ($customer->getCity() == $government) ? 'selected' : ''; ?>>
+                                                                <?php echo htmlspecialchars($government); ?>
+                                                            </option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                </div>
+                                                <div class="col">
+                                                    <label for="postal_code">Postal Code</label>
+                                                    <input
+                                                        type="text"
+                                                        class="form-control"
+                                                        id="postal_code"
+                                                        name="postal_code"
+                                                        required
+                                                        pattern="^\d{5}$"
+                                                        value="<?php echo $customer->getPostalCode(); ?>" />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <!-- --------------------------- address 2 field --------------------------- -->
-                                    <div class="mb-3">
-                                        <label for="shippingAddress2" class="form-label">Address 2
-                                            <span class="light-text-color">(optional)</span></label>
-                                        <input
-                                            type="text"
-                                            class="form-control"
-                                            id="shippingAddress2"
-                                            placeholder="Enter your address" />
-                                        <div class="invalid-feedback">
-                                            Please Type your address.
-                                        </div>
-                                    </div>
-                                    <!-- --------------------------- city field --------------------------- -->
-                                    <div class="mb-3">
-                                        <label for="shippingCity" class="form-label">City</label>
-                                        <input
-                                            type="text"
-                                            class="form-control"
-                                            id="shippingCity"
-                                            placeholder="Enter your city"
-                                            minlength="4"
-                                            required />
-                                        <div class="invalid-feedback">Please Type your city.</div>
-                                    </div>
-                                    <!-- --------------------------- country field --------------------------- -->
-
-                                    <div class="mb-3">
-                                        <label for="shippingCountry" class="form-label">Country</label>
-                                        <select class="form-select" id="shippingCountry" required>
-                                            <option value="" selected disabled>
-                                                Select your country
-                                            </option>
-                                            <option value="egypt">Egypt</option>
-                                            <option value="usa">USA</option>
-                                            <option value="uk">UK</option>
-                                            <option value="germany">Germany</option>
-                                            <option value="france">France</option>
-                                            <option value="italy">Italy</option>
-                                            <option value="spain">Spain</option>
-                                            <option value="japan">Japan</option>
-                                            <option value="china">China</option>
-                                            <option value="russia">Russia</option>
-                                            <option value="brazil">Brazil</option>
-                                            <option value="australia">Australia</option>
-                                            <option value="canada">Canada</option>
-                                        </select>
-                                        <div class="invalid-feedback">
-                                            Please Type your country.
-                                        </div>
-                                    </div>
-
-                                    <!-- --------------------------- postal code field --------------------------- -->
-                                    <div class="mb-3">
-                                        <label for="shippingPostalCode" class="form-label">Postal Code</label>
-                                        <input
-                                            type="text"
-                                            class="form-control"
-                                            id="shippingPostalCode"
-                                            placeholder="Enter your postal code"
-                                            minlength="5"
-                                            required />
-                                        <div class="invalid-feedback">
-                                            Please Type your postal code.
-                                        </div>
-                                    </div>
-                                    <!-- --------------------------- phone field --------------------------- -->
-                                    <div class="mb-3">
-                                        <label for="shippingPhone" class="form-label">Phone</label>
-                                        <input
-                                            type="text"
-                                            class="form-control"
-                                            id="shippingPhone"
-                                            placeholder="Enter your phone"
-                                            minlength="11"
-                                            required />
-                                        <div class="invalid-feedback">
-                                            Please Type your phone.
+                                    <div class="row mb-4">
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <label for="address" class="form-label">Address</label>
+                                                <textarea
+                                                    class="form-control"
+                                                    id="address"
+                                                    name="address"
+                                                    rows="3"
+                                                    required><?php echo $customer->getAddress(); ?></textarea>
+                                                <div class="invalid-feedback">
+                                                    Please enter your address
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -269,7 +210,7 @@
                                     data-bs-target="#paymentMethod"
                                     aria-expanded="false"
                                     aria-controls="collapseOne">
-                                    Payment Method
+                                    Payment
                                 </button>
                             </div>
                             <!-- ------------------------ accordion-item body ------------------------ -->
@@ -279,45 +220,27 @@
                                 data-bs-parent="#accordionChart">
                                 <div class="row p-4">
                                     <!-- ------------------------ payment form ------------------------ -->
-                                    <div class="form-check">
-                                        <input
-                                            class="form-check-input"
-                                            type="radio"
-                                            name="flexRadioDefault"
-                                            id="flexRadioDefault1"
-                                            checked />
-                                        <label class="form-check-label" for="flexRadioDefault1">
-                                            Cash on delivery
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input
-                                            class="form-check-input"
-                                            type="radio"
-                                            name="flexRadioDefault"
-                                            id="flexRadioDefault2" />
-                                        <label class="form-check-label" for="flexRadioDefault2">
-                                            Paypal
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input
-                                            class="form-check-input"
-                                            type="radio"
-                                            name="flexRadioDefault"
-                                            id="flexRadioDefault3" />
-                                        <label class="form-check-label" for="flexRadioDefault3">
-                                            Credit Card
-                                        </label>
-                                    </div>
+
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- ------------------------ checkout and total row ------------------------ -->
+                    </div> <!-- ------------------------ checkout and total row ------------------------ -->
                     <div class="row mt-5">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="useBalanceCheckbox" name="useBalance">
+                                    <label class="form-check-label" for="useBalanceCheckbox">
+                                        Use my balance ($<span id="customerBalance"><?php echo number_format($customer->getBalance(), 2); ?></span>)
+                                    </label>
+                                    <input type="hidden" id="customerBalanceValue" value="<?php echo $customer->getBalance(); ?>">
+                                </div>
+                            </div>
+                        </div>
                         <div class="row text-end text-black fs-5 fw-semibold heading-font">
-                            <p>Total Price: <span id="cartTotal"><?php echo number_format($cart->getTotalPrice(), 2); ?></span></p>
+                            <p>Total Price: $<span id="cartTotal"><?php echo number_format($cart->getTotalPrice(), 2); ?></span></p>
+                            <input type="hidden" id="originalTotalValue" value="<?php echo $cart->getTotalPrice(); ?>">
+                            <input type="hidden" name="appliedBalance" id="appliedBalance" value="0">
                         </div>
                         <div class="row justify-content-center">
                             <button
@@ -336,14 +259,44 @@
                 class="row fs-4 text-black fw-semibold justify-content-center"
                 id="checkoutError"></div>
         </div>
-    </main>
-    <!-- footer -->
+    </main> <!-- footer -->
     <?php require_once VIEWS . 'components/customer_footer.php'; ?> <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="../../../assets/js/jquery-3.7.1.min.js"></script>
     <script src="../../../assets/js/popper.min.js"></script>
     <script src="../../../assets/js/bootstrap.min.js"></script>
     <!-- Custom Scripts -->
     <script src="../../../assets/js/customer-dropdown.js"></script>
+    <script>
+        // Handle the balance checkbox
+        $(document).ready(function() {
+            const useBalanceCheckbox = $('#useBalanceCheckbox');
+            const customerBalance = parseFloat($('#customerBalanceValue').val()) || 0;
+            const originalTotal = parseFloat($('#originalTotalValue').val()) || 0;
+            const cartTotalElement = $('#cartTotal');
+            const appliedBalanceInput = $('#appliedBalance');
+
+            useBalanceCheckbox.on('change', function() {
+                let newTotal = originalTotal;
+                let appliedBalance = 0;
+
+                if (this.checked) {
+                    // If customer has sufficient balance to cover the entire amount
+                    if (customerBalance >= originalTotal) {
+                        appliedBalance = originalTotal;
+                        newTotal = 0;
+                    } else {
+                        // If customer balance is less than the total, deduct what they have
+                        appliedBalance = customerBalance;
+                        newTotal = originalTotal - customerBalance;
+                    }
+                }
+
+                // Update the displayed total and the hidden input
+                cartTotalElement.text(newTotal.toFixed(2));
+                appliedBalanceInput.val(appliedBalance);
+            });
+        });
+    </script>
 </body>
 
 </html>

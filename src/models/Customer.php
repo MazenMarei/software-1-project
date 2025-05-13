@@ -6,16 +6,17 @@ use App\core\Database;
 
 class Customer extends User
 {
-    private $customerID;
     private $phone;
-    private $date;
     private $address;
+    private $city;
+    private $postal_code;
     private $currency;
     private $balance;
     private $cartID;
 
     private $cart;
-    
+    private $paymentMethod;
+
     public function __construct($firstName = null, $lastName = null, $email = null, $username = null, $profilePic = null, $phone = null, $address = null, $currency = 'USD', $balance = 0.00)
     {
         parent::__construct($firstName, $lastName, $email, 'customer', $username, $profilePic);
@@ -23,7 +24,6 @@ class Customer extends User
         $this->address = $address;
         $this->currency = $currency;
         $this->balance = $balance;
-        $this->date = date('Y-m-d');
     }
 
 
@@ -42,20 +42,21 @@ class Customer extends User
 
         $customer = $stmt->fetch(\PDO::FETCH_ASSOC);
         if ($customer) {
-            $this->customerID = $customer['customerID'];
+            $this->userID = $customer['customerID'];
             $this->phone = $customer['phone'];
-            $this->date = $customer['date'];
             $this->address = $customer['address'];
             $this->currency = $customer['currency'];
             $this->balance = $customer['balance'];
-            $this->cart = new Cart($this->customerID);
+            $this->postal_code = $customer['postal_code'];
+            $this->city = $customer['city'];
+            $this->cart = new Cart($this->userID);
             return $this;
         } else {
             return false;
         }
     }
 
-    public function updateCustomerProfile($data)
+    public function updateProfile($data)
     {
         try {
             // First update the user table
@@ -66,26 +67,61 @@ class Customer extends User
             }
 
             // Then update the customer table
-            $sql = "UPDATE customer SET 
-                phone = :phone, 
-                address = :address, 
-                currency = :currency
-                WHERE customerID = :id";
-
+            $sql = "UPDATE customer SET ";
+            if (isset($data['phone'])) {
+                $sql .= "phone = :phone,";
+            }
+            if (isset($data['address'])) {
+                $sql .= "address = :address ,";
+            }
+            if (isset($data['city'])) {
+                $sql .= "city = :city ,";
+            }
+            if (isset($data['postal_code'])) {
+                $sql .= "postal_code = :postal_code ,";
+            }
+            if (isset($data['currency'])) {
+                $sql .= "currency = :currency ,";
+            }
+            if ($sql !== "UPDATE artist SET ") {
+                
+                $sql = rtrim($sql, ',') . " WHERE customerID = :id";
+                $stmt = Database::getInstance()->getConnection()->prepare($sql);
+            } else {
+                return true;
+            }
             $stmt = Database::getInstance()->getConnection()->prepare($sql);
-            $stmt->bindParam(':phone', $data['phone'], \PDO::PARAM_STR);
-            $stmt->bindParam(':address', $data['address'], \PDO::PARAM_STR);
-            $stmt->bindParam(':currency', $data['currency'], \PDO::PARAM_STR);
+
+            if (isset($data['phone'])) {
+                $stmt->bindParam(':phone', $data['phone'], \PDO::PARAM_STR);
+            }
+            if (isset($data['address'])) {
+                $stmt->bindParam(':address', $data['address'], \PDO::PARAM_STR);
+            }
+            if (isset($data['city'])) {
+                $stmt->bindParam(':city', $data['city'], \PDO::PARAM_STR);
+            }
+            if (isset($data['postal_code'])) {
+                $stmt->bindParam(':postal_code', $data['postal_code'], \PDO::PARAM_STR);
+            }
+            if (isset($data['currency'])) {
+                $stmt->bindParam(':currency', $data['currency'], \PDO::PARAM_STR);
+            }
+
             $stmt->bindParam(':id', $this->userID, \PDO::PARAM_INT);
+
 
             if ($stmt->execute()) {
                 $this->phone = $data['phone'];
                 $this->address = $data['address'];
+                $this->city = $data['city'];
+                $this->postal_code = $data['postal_code'];
                 $this->currency = $data['currency'];
                 return true;
             }
             return false;
         } catch (\Throwable $th) {
+            $_SESSION['error'] = "Failed to update profile. " . $th->getMessage();
             return false;
         }
     }
@@ -108,13 +144,62 @@ class Customer extends User
         }
     }
 
+    public function getPaymentMethod()
+    {
+        try {
+            $paymentMethod = Payments::getPaymentMethodByUserId($this->userID);
+            if (!$paymentMethod) {
+                return false;
+            }
+            $this->paymentMethod = $paymentMethod;
+            return $this->paymentMethod;
+        } catch (\Throwable $th) {
+            $_SESSION['error'] = $th->getMessage();
+            return false;
+        }
+    }
+    private function addPaymentMethod($data)
+    {
+        try {
 
+            $payment = new Payments([
+                'userID' => $this->userID,
+                'cardNumber' => $data['cardNumber'],
+                'expMonth' => $data['expMonth'],
+                'expYear' => $data['expYear'],
+                'cvv' => $data['cvv']
+            ]);
+            return $payment->save();
+        } catch (\Throwable $th) {
+            $_SESSION['error'] =  $th->getMessage();
+            return false;
+        }
+    }
+    public function updatePayment($data)
+    {
+        try {
+            /// check if there is a payment method
+            $paymentMethod = $this->getPaymentMethod();
+            if (!$paymentMethod) {
+                return $this->addPaymentMethod($data);
+            } else {
+                $payment = new Payments($data);
+                $_SESSION['success'] = "Payment method updated successfully 214124.";
+                $_SESSION['error'] = $data['cardNumber'];
+                return $payment->updatePaymentMethod($this->userID, $data);
+            }
+        } catch (\Throwable $th) {
+            $_SESSION['error'] =  $th->getMessage();
+            return false;
+        }
+    }
 
     /**
      * Get the currently logged-in customer from session
      * 
      * @return Customer|false The current customer object or false if not logged in or not a customer
      */
+
     public static function getCurrentCustomer()
     {
         // First get the current user
@@ -130,6 +215,9 @@ class Customer extends User
         return $customer->getCustomerById($user->getUserID());
     }
 
+
+    public function getOrders() {}
+
     public function getCart()
     {
         return $this->cart;
@@ -138,7 +226,7 @@ class Customer extends User
     // Getters
     public function getCustomerID()
     {
-        return $this->customerID;
+        return $this->userID;
     }
 
     public function getPhone()
@@ -146,10 +234,6 @@ class Customer extends User
         return $this->phone;
     }
 
-    public function getDate()
-    {
-        return $this->date;
-    }
 
     public function getAddress()
     {
@@ -170,30 +254,12 @@ class Customer extends User
     {
         return $this->cartID;
     }
-
-    // Setters
-    public function setPhone($phone)
+    public function getCity()
     {
-        $this->phone = $phone;
+        return $this->city;
     }
-
-    public function setAddress($address)
+    public function getPostalCode()
     {
-        $this->address = $address;
-    }
-
-    public function setCurrency($currency)
-    {
-        $this->currency = $currency;
-    }
-
-    public function setBalance($balance)
-    {
-        $this->balance = $balance;
-    }
-
-    public function setCartID($cartID)
-    {
-        $this->cartID = $cartID;
+        return $this->postal_code;
     }
 }

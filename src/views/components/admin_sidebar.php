@@ -54,6 +54,12 @@
                 Withdrawals
             </a>
         </li>
+        <li class="admin-nav-item">
+            <a href="/admin/questionnaire" class="admin-nav-link <?php echo ($_SERVER['REQUEST_URI'] === '/admin/questionnaire') ? 'active' : ''; ?>">
+                <i class="fas fa-money-bill-wave"></i>
+                Questionnaire
+            </a>
+        </li>
    
     </ul>
 </aside>

@@ -5,19 +5,9 @@ namespace App\models;
 use App\core\Database;
 use App\Middlewares\Authentication;
 
-class User
+class User extends GeneralUser
 {
-    protected $userID;
-    protected $firstName;
-    protected $lastName;
-    protected $email;
-    protected $role;
-    protected $username;
-    protected $password;
-    protected $profilePic;
-    protected $emailNotification;
-    protected $status;
-    protected $registerDate; /// add to artist
+
 
     public function __construct($firstName = null, $lastName = null, $email = null, $role = null, $username = null, $profilePic = null)
     {
@@ -167,9 +157,11 @@ class User
                 $sql .= "profilePic = :profilePic, ";
             }
 
-            $sql = rtrim($sql, ', ') . " WHERE userID = :id";
-
-            $stmt = Database::getInstance()->getConnection()->prepare($sql);
+            if ($sql !== "UPDATE user SET ") {
+                $sql = rtrim($sql, ',') . " WHERE userID = :id";
+                $stmt = Database::getInstance()->getConnection()->prepare($sql);
+                $stmt->bindParam(':id', $this->userID, \PDO::PARAM_INT);
+            }
             if (isset($data['profilePic'])) {
                 $stmt->bindParam(':profilePic', $data['profilePic'], \PDO::PARAM_STR);
             }
@@ -185,29 +177,31 @@ class User
             if (isset($data['emailNotification'])) {
                 $stmt->bindParam(':emailNotification', $data['emailNotification'], \PDO::PARAM_BOOL);
             }
-            $stmt->bindParam(':id', $this->userID, \PDO::PARAM_INT);
 
-            if ($stmt->execute()) {
-                if (isset($data['firstName'])) {
-                    $this->firstName = $data['firstName'];
-                }
-                if (isset($data['lastName'])) {
-                    $this->lastName = $data['lastName'];
-                }
-                if (isset($data['email'])) {
-                    $this->email = $data['email'];
-                }
+            if ($sql !== "UPDATE user SET ") {
+                if ($stmt->execute()) {
+                    if (isset($data['firstName'])) {
+                        $this->firstName = $data['firstName'];
+                    }
+                    if (isset($data['lastName'])) {
+                        $this->lastName = $data['lastName'];
+                    }
+                    if (isset($data['email'])) {
+                        $this->email = $data['email'];
+                    }
 
-                if (isset($data['emailNotification'])) {
-                    $this->emailNotification = $data['emailNotification'];
+                    if (isset($data['emailNotification'])) {
+                        $this->emailNotification = $data['emailNotification'];
+                    }
+                    if (isset($data['profilePic'])) {
+                        $this->profilePic = $data['profilePic'];
+                    }
+                    return true;
                 }
-                if (isset($data['profilePic'])) {
-                    $this->profilePic = $data['profilePic'];
-                }
-                return true;
+                $_SESSION['error'] = "Failed to update profile4";
+                return false;
             }
-            $_SESSION['error'] = "Failed to update profile4";
-            return false;
+            return true;
         } catch (\Throwable $th) {
             $_SESSION['error'] = "Failed to update profile5" . $th->getMessage();
             return false;

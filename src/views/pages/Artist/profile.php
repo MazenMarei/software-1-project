@@ -247,7 +247,7 @@
                       name="cvvNumber"
                       maxlength="3"
                       minlength="3"
-                      value="<?php (!$payment) ? "" : $payment->getCvv(); ?>"
+                      value="<?php echo (!$payment) ? "" : $payment->getCvv(); ?>"
                       required
                       pattern="^\d{3}$" />
                     <div class="invalid-feedback" id="newPasswordFeedback">
@@ -428,21 +428,6 @@
         }
       });
 
-      // For avatar upload
-      $("#avatarUpload").on("change", function() {
-        const file = this.files[0];
-        if (file) {
-          // Show preview
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            $("#profileAvatar").attr("src", e.target.result);
-          };
-          reader.readAsDataURL(file);
-
-
-        }
-      });
-
       function updatePasswordStrength(password) {
         let strength = 0;
         let feedback = "Password strength";
@@ -493,6 +478,22 @@
 
         $("#passwordStrengthText").text(feedback);
       }
+      // For avatar upload
+      $("#avatarUpload").on("change", function() {
+        const file = this.files[0];
+        if (file) {
+          // Show preview
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            $("#profileAvatar").attr("src", e.target.result);
+          };
+          reader.readAsDataURL(file);
+
+
+        }
+      });
+
+
     });
 
 
@@ -520,11 +521,6 @@
     $("#cvvNumber").on("input", function() {
       this.value = this.value.replace(/[^0-9]/g, '');
     });
-    // make the phone input accept only numbers and dashes 
-    $("#phone").on("input", function() {
-      this.value = this.value.replace(/[^0-9-]/g, '');
-    });
-
     /// valiate exp month and year
     $("#expMonth").on("input", function() {
       if (new Date().getMonth() + 1 > this.value && new Date().getFullYear() == $("#expYear").val()) {
@@ -540,6 +536,12 @@
       } else {
         this.setCustomValidity("");
       }
+    });
+
+
+    // make the phone input accept only numbers and dashes 
+    $("#phone").on("input", function() {
+      this.value = this.value.replace(/[^0-9-]/g, '');
     });
   </script>
 </body>

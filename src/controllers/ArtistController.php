@@ -50,7 +50,6 @@ class ArtistController
     {
         $artist = Artist::getCurrentArtist();
         $payment = $artist->getPaymentMethod();
-
         require_once VIEWS . 'pages\Artist\profile.php';
     }
 
@@ -444,7 +443,7 @@ class ArtistController
             exit;
         }
 
-        $success = $artist->updatePayement([
+        $success = $artist->updatePayment([
             'expYear' => $expYear,
             'expMonth' => $expMonth,
             'cardNumber' => $cardNumber,

@@ -94,6 +94,7 @@ class App
         Route::post("/admin/updateFairStatus",  AdminController::class, 'updateFairStatus', [[Authentication::class, 'admin']]);
         Route::post("/admin/special-collections",  AdminController::class, 'updateSpecialCollections', [[Authentication::class, 'admin']]);
         Route::post("/admin/updateOffer",  AdminController::class, 'updateOffer', [[Authentication::class, 'admin']]);
+        Route::post("/admin/questionnaire/response",  AdminController::class, 'questionnaireResponse', [[Authentication::class, 'admin']]);
 
         Route::get('/admin/artworks', AdminController::class, 'artworks', [[Authentication::class, 'admin']]);
         Route::get('/admin/withdrawals', AdminController::class, 'withdrawals', [[Authentication::class, 'admin']]);
@@ -108,6 +109,7 @@ class App
         Route::get('/admin/settings', AdminController::class, 'settings', [[Authentication::class, 'admin']]);
         Route::get('/admin/profile', AdminController::class, 'profile', [[Authentication::class, 'admin']]);
         Route::get('/admin/orders', AdminController::class, 'orders', [[Authentication::class, 'admin']]);
+        Route::get('/admin/questionnaire', AdminController::class, 'questionnaire', [[Authentication::class, 'admin']]);
 
 
 
@@ -119,12 +121,19 @@ class App
         Route::get('/customer/dashboard', CustomerController::class, 'index', [[Authentication::class, 'customer']]);
         Route::get('/customer/cart', CustomerController::class, 'cart', [[Authentication::class, 'customer']]);
         Route::get('/customer/profile', CustomerController::class, 'profile', [[Authentication::class, 'customer']]);
+        Route::get('/customer/artworks/{id}', CustomerController::class, 'artworks', [[Authentication::class, 'customer']]);
+        Route::get('/customer/live-preview', CustomerController::class, 'livePreview', [[Authentication::class, 'customer']]);
+        Route::get('/customer/art-advisor', CustomerController::class, 'artAdvisor', [[Authentication::class, 'customer']]);
 
 
 
         Route::post('/customer/add-to-cart/{id}', CustomerController::class, 'addToCart', [[Authentication::class, 'customer']]);
         Route::post('/customer/remove-from-cart/{id}', CustomerController::class, 'removeFromCart', [[Authentication::class, 'customer']]);
         Route::post('/customer/checkout', CustomerController::class, 'checkout', [[Authentication::class, 'customer']]);
+        Route::post('/customer/updateProfile', CustomerController::class, 'updateProfile', [[Authentication::class, 'customer']]);
+        Route::post('/customer/changePassword', CustomerController::class, 'changePassword', [[Authentication::class, 'customer']]);
+        Route::post('/customer/updatePayment', CustomerController::class, 'updatePayment', [[Authentication::class, 'customer']]);
+        Route::post('/customer/art-advisor', CustomerController::class, 'artAdvisor', [[Authentication::class, 'customer']]);
     }
 
     public function run()

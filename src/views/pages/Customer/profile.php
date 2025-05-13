@@ -37,7 +37,7 @@
                 <h1 class="mb-3">Account Settings</h1>
                 <p class="text-muted">Manage your account settings and preferences</p>
             </div>
-
+            <?php require_once VIEWS . 'components/error_display.php'; ?>
             <!-- Settings Navigation -->
             <ul class="nav nav-tabs settings-tabs" id="settingsTabs" role="tablist">
                 <li class="nav-item">
@@ -70,7 +70,7 @@
                         id="address-tab"
                         data-bs-toggle="tab"
                         href="#address"
-                        role="tab">Addresses</a>
+                        role="tab">Address</a>
                 </li>
                 <li class="nav-item">
                     <a
@@ -80,14 +80,6 @@
                         href="#notifications"
                         role="tab">Notifications</a>
                 </li>
-                <li class="nav-item">
-                    <a
-                        class="nav-link"
-                        id="privacy-tab"
-                        data-bs-toggle="tab"
-                        href="#privacy"
-                        role="tab">Privacy</a>
-                </li>
             </ul>
 
             <!-- Tab Content -->
@@ -96,7 +88,7 @@
                 <div class="tab-pane fade show active" id="general" role="tabpanel">
                     <div class="settings-section">
                         <h3 class="section-title">Profile Information</h3>
-                        <form class="settings-form" id="profile-form">
+                        <form class="settings-form" id="profile-form" action="/customer/updateProfile" method="POST" enctype="multipart/form-data">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -105,6 +97,9 @@
                                             type="text"
                                             class="form-control"
                                             id="firstName"
+                                            name="firstName"
+                                            required
+                                            minlength="2"
                                             value="<?php echo ($customer->getFirstName()); ?>">
                                     </div>
                                 </div>
@@ -115,6 +110,9 @@
                                             type="text"
                                             class="form-control"
                                             id="lastName"
+                                            name="lastName"
+                                            required
+                                            minlength="2"
                                             value="<?php echo ($customer->getLastName()); ?>" />
                                     </div>
                                 </div>
@@ -125,6 +123,10 @@
                                     type="email"
                                     class="form-control"
                                     id="email"
+                                    required
+                                    pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                                    title="Please enter a valid email address"
+                                    name="email"
                                     value="<?php echo ($customer->getEmail()); ?>" />
                             </div>
                             <div class="form-group">
@@ -133,6 +135,8 @@
                                     type="tel"
                                     class="form-control"
                                     id="phone"
+                                    required
+                                    name="phone"
                                     value="<?php echo ($customer->getPhone()); ?>" />
                             </div>
                             <div class="form-group">
@@ -142,13 +146,23 @@
                                         src="/uploads/profiles/<?php echo ($customer->getProfilePic()); ?>"
                                         alt="Profile Picture"
                                         class="rounded-circle me-3"
+                                        id="profileAvatar"
                                         style="width: 80px; height: 80px; object-fit: cover" />
                                     <div>
                                         <button
                                             type="button"
-                                            class="btn btn-outline-primary mb-2">
+                                            class="btn btn-outline-primary mb-2"
+                                            onclick="document.getElementById('avatarUpload').click()">
                                             Change Picture
                                         </button>
+                                        <input
+                                            type="file"
+                                            class="form-control-file"
+                                            id="avatarUpload"
+                                            name="profilePic"
+                                            hidden
+                                            required
+                                            accept="image/*" />
                                         <p class="text-muted small">
                                             Recommended size: 400×400 pixels
                                         </p>
@@ -163,32 +177,14 @@
                         </form>
                     </div>
 
-                    <div class="settings-section">
-                        <h3 class="section-title">Account Preferences</h3>
-                        <form class="settings-form" id="preferences-form">
-                            <div class="form-group">
-                                <label for="currency">Currency</label>
-                                <select class="form-control" id="currency">
-                                    <option value="usd" selected>USD ($)</option>
-                                    <option value="eur">EUR (€)</option>
-                                    <option value="gbp">GBP (£)</option>
-                                    <option value="jpy">JPY (¥)</option>
-                                </select>
-                            </div>
-                            <div class="text-end">
-                                <button type="submit" class="btn btn-primary">
-                                    Save Changes
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+
                 </div>
 
                 <!-- Security Tab -->
                 <div class="tab-pane fade" id="security" role="tabpanel">
                     <div class="settings-section">
                         <h2 class="settings-section-title">Security</h2>
-                        <form id="passwordForm" action="/admin/changePassword" method="POST" novalidate>
+                        <form id="passwordForm" action="/customer/changePassword" method="POST" novalidate>
                             <div class="row mb-4">
                                 <div class="col-md-6">
                                     <div class="mb-3">
@@ -260,290 +256,207 @@
                 <!-- Payment Methods Tab -->
                 <div class="tab-pane fade" id="payment" role="tabpanel">
                     <div class="settings-section">
-                        <h3 class="section-title">Payment Methods</h3>
-                        <div class="payment-method default">
-                            <img
-                                src="https://cdn-icons-png.flaticon.com/512/179/179457.png"
-                                alt="Visa"
-                                class="payment-logo" />
-                            <div class="payment-details">
-                                <p class="payment-title">Visa ending in 4242</p>
-                                <p class="payment-info">Expires 05/2026</p>
+                        <h2 class="profile-section-title">Payment Information</h2>
+                        <form id="paymentForm" action="/customer/updatePayment" method="POST" novalidate>
+                            <div class="row mb-4">
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label for="cardNumber" class="form-label">Card Number</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="cardNumber"
+                                            name="cardNumber"
+                                            pattern="^\d{4}-\d{4}-\d{4}-\d{4}$"
+                                            value="<?php echo (!$payment) ? "" : $payment->getCardNumber(); ?>"
+                                            maxlength="19"
+                                            minlength="19"
+                                            required />
+                                        <div class="invalid-feedback">
+                                            Please enter a valid card number (format: 1234-5678-9012-3456)
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="payment-actions">
-                                <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                                <button class="btn btn-sm btn-outline-danger">Remove</button>
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="cvvNumber" class="form-label">CVV</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="cvvNumber"
+                                            name="cvvNumber"
+                                            maxlength="3"
+                                            minlength="3"
+                                            value="<?php (!$payment) ? "" : $payment->getCvv(); ?>"
+                                            required
+                                            pattern="^\d{3}$" />
+                                        <div class="invalid-feedback" id="newPasswordFeedback">
+                                            Please enter a valid CVV number
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="expMonth" class="form-label">Exp Month</label>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            max="12"
+                                            step="1"
+                                            class="form-control"
+                                            id="expMonth"
+                                            name="expMonth"
+                                            maxlength="2"
+                                            value="<?php echo (!$payment) ? "" : $payment->getExpiryMonth(); ?>"
+                                            minlength="2"
+                                            pattern="^\d{2}$"
+                                            required />
+                                        <div class="invalid-feedback">
+                                            Please enter a valid expiration month
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="expYear" class="form-label">Exp Year</label>
+                                        <input
+                                            type="number"
+                                            class="form-control"
+                                            id="expYear"
+                                            name="expYear"
+                                            min="<?php echo date('Y'); ?>"
+                                            max="<?php echo date('Y') + 20; ?>"
+                                            value="<?php echo (!$payment) ? "" : $payment->getExpiryYear(); ?>"
+                                            required />
+                                        <div class="invalid-feedback">
+                                            Please enter a valid expiration year
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
-                        </div>
-                        <div class="payment-method">
-                            <img
-                                src="https://cdn-icons-png.flaticon.com/512/5968/5968299.png"
-                                alt="MasterCard"
-                                class="payment-logo" />
-                            <div class="payment-details">
-                                <p class="payment-title">MasterCard ending in 5555</p>
-                                <p class="payment-info">Expires 03/2025</p>
-                            </div>
-                            <div class="payment-actions">
-                                <button class="btn btn-sm btn-outline-primary">
-                                    Set as Default
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                                <button class="btn btn-sm btn-outline-danger">Remove</button>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <button class="btn btn-primary" id="addPaymentMethodBtn">
-                                <i class="fas fa-plus me-2"></i> Add Payment Method
+                            <button type="submit" class="btn btn-primary">
+                                Save Card
                             </button>
-                        </div>
+                        </form>
                     </div>
                 </div>
 
                 <!-- Addresses Tab -->
                 <div class="tab-pane fade" id="address" role="tabpanel">
                     <div class="settings-section">
-                        <h3 class="section-title">Your Addresses</h3>
-                        <div class="address-item default">
-                            <div class="address-title">
-                                <span>Home</span>
-                                <span class="address-badge">Default</span>
+                        <h3 class="section-title">Your Address</h3>
+                        <form id="addressForm" action="/customer/updateProfile" method="POST">
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label for="city" class="form-label">City</label>
+                                            <select
+                                                class="form-control"
+                                                id="city"
+                                                name="city"
+                                                required>
+                                                <option value="" disabled selected>Select your city</option>
+                                                <?php foreach ($governments as $government): ?>
+                                                    <option value="<?php echo htmlspecialchars($government); ?>" <?php echo ($customer->getCity() == $government) ? 'selected' : ''; ?>>
+                                                        <?php echo htmlspecialchars($government); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col">
+                                            <label for="postal_code">Postal Code</label>
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="postal_code"
+                                                name="postal_code"
+                                                required
+                                                pattern="^\d{5}$"
+                                                value="<?php echo $customer->getPostalCode(); ?>" />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <p class="address-text">
-                                John Smith<br />
-                                123 Main Street, Apt 4B<br />
-                                New York, NY 10001<br />
-                                United States<br />
-                                Phone: +1 (555) 123-4567
-                            </p>
-                            <div class="address-actions">
-                                <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                                <button class="btn btn-sm btn-outline-danger">Remove</button>
+                            <div class="row mb-4">
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label for="address" class="form-label">Address</label>
+                                        <textarea
+                                            class="form-control"
+                                            id="address"
+                                            name="address"
+                                            rows="3"
+                                            required><?php echo $customer->getAddress(); ?></textarea>
+                                        <div class="invalid-feedback">
+                                            Please enter your address
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="address-item">
-                            <div class="address-title">
-                                <span>Office</span>
-                            </div>
-                            <p class="address-text">
-                                John Smith<br />
-                                456 Business Ave, Suite 201<br />
-                                New York, NY 10002<br />
-                                United States<br />
-                                Phone: +1 (555) 987-6543
-                            </p>
-                            <div class="address-actions">
-                                <button class="btn btn-sm btn-outline-primary">
-                                    Set as Default
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">
+                                    Save Address
                                 </button>
-                                <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                                <button class="btn btn-sm btn-outline-danger">Remove</button>
                             </div>
-                        </div>
-                        <div class="mt-4">
-                            <button class="btn btn-primary" id="addAddressBtn">
-                                <i class="fas fa-plus me-2"></i> Add Address
-                            </button>
-                        </div>
+                        </form>
                     </div>
                 </div>
 
                 <!-- Notifications Tab -->
                 <div class="tab-pane fade" id="notifications" role="tabpanel">
                     <div class="settings-section">
-                        <h3 class="section-title">Notification Preferences</h3>
 
-                        <div class="preferences-section">
-                            <h4>Email Notifications</h4>
-                            <div class="preference-item">
-                                <div class="preference-info">
-                                    <h5>New Artwork Alerts</h5>
-                                    <p>Get notified when artists you follow add new artworks</p>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="newArtworkNotification"
-                                        checked />
-                                </div>
-                            </div>
-                            <div class="preference-item">
-                                <div class="preference-info">
-                                    <h5>Special Offers</h5>
-                                    <p>Receive discounts and special promotions</p>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="specialOffersNotification"
-                                        checked />
-                                </div>
-                            </div>
-                            <div class="preference-item">
-                                <div class="preference-info">
-                                    <h5>Order Updates</h5>
-                                    <p>Get notified about order status changes</p>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="orderUpdatesNotification"
-                                        checked />
-                                </div>
-                            </div>
-                            <div class="preference-item">
-                                <div class="preference-info">
-                                    <h5>Newsletter</h5>
-                                    <p>Receive our weekly newsletter with art insights</p>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="newsletterNotification" />
-                                </div>
-                            </div>
-                        </div>
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h2 class="table-title">All Notifications</h2>
 
-                        <div class="preferences-section">
-                            <h4>Push Notifications</h4>
-                            <div class="preference-item">
-                                <div class="preference-info">
-                                    <h5>New Messages</h5>
-                                    <p>Get notified when you receive new messages</p>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="newMessagesNotification"
-                                        checked />
-                                </div>
                             </div>
-                            <div class="preference-item">
-                                <div class="preference-info">
-                                    <h5>Artist Updates</h5>
-                                    <p>Get notified about updates from artists you follow</p>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="artistUpdatesNotification"
-                                        checked />
-                                </div>
-                            </div>
-                        </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover search-table" id="customersTable">
 
-                        <div class="text-end">
-                            <button
-                                type="submit"
-                                class="btn btn-primary"
-                                id="saveNotificationSettings">
-                                Save Preferences
-                            </button>
+                                    <thead>
+                                        <tr>
+                                            <th>Message</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <?php if (isset($notifications) && !empty($notifications)) : ?>
+                                            <?php foreach ($notifications as $notification) : ?>
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center my-2 w-100">
+                                                            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                                                <i class="fas fa-info-circle me-2"></i><?php echo htmlspecialchars($notification['Message']); ?>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                    <td>
+                                                        <div class="d-flex my-4"><?php echo htmlspecialchars($notification['datesent']); ?></div>
+                                                    </td>
+
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        <?php else : ?>
+                                            <tr>
+                                                <td colspan="8" class="text-center">No Followers found.</td>
+                                            </tr>
+
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Privacy Tab -->
-                <div class="tab-pane fade" id="privacy" role="tabpanel">
-                    <div class="settings-section">
-                        <h3 class="section-title">Privacy Settings</h3>
-
-                        <div class="preferences-section">
-                            <h4>Profile Visibility</h4>
-                            <div class="preference-item">
-                                <div class="preference-info">
-                                    <h5>Public Profile</h5>
-                                    <p>Allow other users to view your profile</p>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="publicProfileSetting"
-                                        checked />
-                                </div>
-                            </div>
-                            <div class="preference-item">
-                                <div class="preference-info">
-                                    <h5>Show Artwork Collection</h5>
-                                    <p>Display your purchased artworks on your profile</p>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="showCollectionSetting"
-                                        checked />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="preferences-section">
-                            <h4>Data Usage</h4>
-                            <div class="preference-item">
-                                <div class="preference-info">
-                                    <h5>Personalized Recommendations</h5>
-                                    <p>
-                                        Allow us to use your browsing history to recommend
-                                        artworks
-                                    </p>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="personalRecommendationsSetting"
-                                        checked />
-                                </div>
-                            </div>
-                            <div class="preference-item">
-                                <div class="preference-info">
-                                    <h5>Browsing Data</h5>
-                                    <p>
-                                        Allow us to collect browsing data to improve your
-                                        experience
-                                    </p>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="browsingDataSetting"
-                                        checked />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-end">
-                            <button
-                                type="submit"
-                                class="btn btn-primary"
-                                id="savePrivacySettings">
-                                Save Privacy Settings
-                            </button>
-                        </div>
-
-                        <div class="delete-account-section">
-                            <h4>Delete Account</h4>
-                            <p class="text-muted">
-                                Once you delete your account, there is no going back. Please
-                                be certain.
-                            </p>
-                            <button
-                                type="button"
-                                class="btn btn-danger"
-                                id="deleteAccountBtn">
-                                Delete My Account
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </main>
@@ -552,11 +465,163 @@
     <?php include_once VIEWS . 'components/customer_footer.php'; ?>
 
     <!-- Bootstrap and jQuery JS -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../../assets/js/jquery-3.7.1.min.js"></script>
+    <script src="../../../assets/js/popper.min.js"></script>
+    <script src="../../../assets/js/bootstrap.min.js"></script>
     <!-- Custom JS -->
-    <script src="../../js/config.js"></script>
-    <script src="../../js/customer/settings.js"></script>
+    <script src="../../../assets/js/admin.js"></script>
+
+
+    <script>
+        $(document).ready(function() {
+            const newPassword = document.getElementById('newPassword');
+            const confirmPassword = document.getElementById('confirmPassword');
+            const currentPassword = document.getElementById('currentPassword');
+            const passwordForm = document.getElementById('passwordForm');
+
+            // Form validation
+            passwordForm.addEventListener('submit', function(event) {
+                if (!passwordForm.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                // Check if passwords match
+                if (newPassword.value !== confirmPassword.value) {
+                    confirmPassword.setCustomValidity('Passwords do not match');
+                } else {
+                    confirmPassword.setCustomValidity('');
+                }
+
+                passwordForm.classList.add('was-validated');
+            });
+
+            // Clear confirm password validation when typing
+            confirmPassword.addEventListener('input', function() {
+                if (confirmPassword.value !== newPassword.value) {
+                    confirmPassword.setCustomValidity('Passwords do not match');
+                } else {
+                    confirmPassword.setCustomValidity('');
+                }
+            });
+
+            // Password strength meter
+            newPassword.addEventListener('input', function() {
+                const password = newPassword.value;
+                updatePasswordStrength(password);
+
+                // Validate password format
+                let isValid = true;
+
+                // Check length
+                if (password.length >= 8) {
+                    document.getElementById('length-check').classList.replace('text-muted', 'text-success');
+                } else {
+                    document.getElementById('length-check').classList.replace('text-success', 'text-muted');
+                    isValid = false;
+                }
+
+                // Check uppercase
+                if (/[A-Z]/.test(password)) {
+                    document.getElementById('uppercase-check').classList.replace('text-muted', 'text-success');
+                } else {
+                    document.getElementById('uppercase-check').classList.replace('text-success', 'text-muted');
+                    isValid = false;
+                }
+
+                // Check number
+                if (/[0-9]/.test(password)) {
+                    document.getElementById('number-check').classList.replace('text-muted', 'text-success');
+                } else {
+                    document.getElementById('number-check').classList.replace('text-success', 'text-muted');
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    newPassword.setCustomValidity('Password does not meet requirements');
+                } else {
+                    newPassword.setCustomValidity('');
+                }
+            });
+            /// make the card number input accept only numbers and dashes
+            $("#cardNumber").on("input", function() {
+                this.value = this.value.replace(/[^0-9-]/g, '');
+                this.value = this.value.replace(/(\d{4})(?=\d)/g, '$1-');
+            });
+            // make the cvv input accept only numbers
+            $("#cvvNumber").on("input", function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+            /// valiate exp month and year
+            $("#expMonth").on("input", function() {
+                if (new Date().getMonth() + 1 > this.value && new Date().getFullYear() == $("#expYear").val()) {
+                    this.setCustomValidity("Expiration month is in the past");
+                } else {
+                    this.setCustomValidity("");
+                }
+            });
+
+            $("#expYear").on("input", function() {
+                if (new Date().getFullYear() > this.value) {
+                    this.setCustomValidity("Expiration year is in the past");
+                } else {
+                    this.setCustomValidity("");
+                }
+            });
+
+            function updatePasswordStrength(password) {
+                let strength = 0;
+                let feedback = "Password strength";
+
+                // Empty password
+                if (password.length === 0) {
+                    $("#passwordStrengthBar").css("width", "0%").removeClass().addClass("progress-bar");
+                    $("#passwordStrengthText").text(feedback);
+                    return;
+                }
+
+                // Length check (up to 25 points)
+                const lengthScore = Math.min(25, Math.floor(password.length * 3));
+                strength += lengthScore;
+
+                // Uppercase letters (25 points)
+                if (/[A-Z]/.test(password)) {
+                    strength += 25;
+                }
+
+                // Numbers (25 points)
+                if (/[0-9]/.test(password)) {
+                    strength += 25;
+                }
+
+                // Special characters (25 points)
+                if (/[^A-Za-z0-9]/.test(password)) {
+                    strength += 25;
+                }
+
+                // Trim to max 100
+                strength = Math.min(100, strength);
+
+                // Update progress bar
+                $("#passwordStrengthBar").css("width", strength + "%");
+
+                // Set color and text based on strength
+                if (strength < 50) {
+                    $("#passwordStrengthBar").removeClass().addClass("progress-bar bg-danger");
+                    feedback = "Weak password";
+                } else if (strength < 75) {
+                    $("#passwordStrengthBar").removeClass().addClass("progress-bar bg-warning");
+                    feedback = "Moderate password";
+                } else {
+                    $("#passwordStrengthBar").removeClass().addClass("progress-bar bg-success");
+                    feedback = "Strong password";
+                }
+
+                $("#passwordStrengthText").text(feedback);
+            }
+        });
+    </script>
+
 </body>
 
 </html>

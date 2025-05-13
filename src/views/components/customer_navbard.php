@@ -22,36 +22,6 @@
                     </li>
                 </ul>
                 <div class="navbar-right d-flex align-items-center">
-                    <div class="search-container me-3">
-                        <button class="btn-search">
-                            <i class="fa fa-search"></i>
-                        </button>
-                        <div class="search-dropdown">
-                            <form class="search-form">
-
-                                <div class="input-group mb-3">
-                                    <input type="text" class="form-control" placeholder="Search artworks, artists..." aria-label="Search artworks, artists..." aria-describedby="basic-addon2">
-                                    <span class="input-group-text p-0" id="basic-addon2"> <button type="submit" class="btn-search-submit h-100 w-100 d-flex align-items-center justify-content-center">
-                                            <i class="fa fa-search"></i>
-                                        </button></span>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="dropdown me-3">
-                        <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="far fa-heart"></i>
-                            <!-- <span class="badge bg-accent">3</span> -->
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end">
-                            <h6 class="dropdown-header">Favorites</h6>
-                            <div class="favorites-preview">
-                                <!-- Will be populated by JavaScript -->
-                            </div>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-center" href="/customer/favorites">View All Favorites</a>
-                        </div>
-                    </div>
                     <div class="dropdown me-3">
                         <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa fa-shopping-cart"></i>
@@ -59,9 +29,6 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
                             <h6 class="dropdown-header">Shopping Cart</h6>
-                            <div class="cart-preview">
-                                <!-- Will be populated by JavaScript -->
-                            </div>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item text-center" href="/customer/cart">View Cart</a>
                         </div>

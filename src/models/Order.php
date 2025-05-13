@@ -10,22 +10,50 @@ class Order
     private $customerID;
     private $transactionID;
     private $status;
-    private $quantity;
     private $totalPrice;
     private $date;
     private $items;
     private $shippingAddress;
+    private $shippingCity;
+    private $shippingPostalCode;
 
-    public function __construct($customerID, $transactionID, $status, $quantity, $totalPrice, $items)
+    public function __construct($customerID, $transactionID, $status, $totalPrice, $shippingAddress, $shippingCity, $shippingPostalCode)
     {
         $this->customerID = $customerID;
         $this->transactionID = $transactionID;
         $this->status = $status;
-        $this->quantity = $quantity;
         $this->totalPrice = $totalPrice;
-        $this->items = $items;
+        $this->shippingAddress = $shippingAddress;
+        $this->shippingCity = $shippingCity;
+        $this->shippingPostalCode = $shippingPostalCode;
     }
-
+    public function getOrderById($orderID)
+    {
+        $sql = "SELECT * FROM `order` WHERE orderID = :orderID";
+        $stmt = Database::getInstance()->getConnection()->prepare($sql);
+        $stmt->bindParam(':orderID', $orderID);
+        $stmt->execute();
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+    public function createOrder()
+    {
+        try {
+            $sql = "INSERT INTO `order` (customerID, transactionID, orderStatus, totalPrice, postal_code, city, address) VALUES (:customerID, :transactionID, :status, :totalPrice, :shippingPostalCode, :shippingCity, :shippingAddress)";
+            $stmt = Database::getInstance()->getConnection()->prepare($sql);
+            $stmt->bindParam(':customerID', $this->customerID);
+            $stmt->bindParam(':transactionID', $this->transactionID);
+            $stmt->bindParam(':status', $this->status);
+            $stmt->bindParam(':totalPrice', $this->totalPrice);
+            $stmt->bindParam(':shippingAddress', $this->shippingAddress);
+            $stmt->bindParam(':shippingCity', $this->shippingCity);
+            $stmt->bindParam(':shippingPostalCode', $this->shippingPostalCode);
+            $stmt->execute();
+            return $this->orderID = Database::getInstance()->getConnection()->lastInsertId();
+        } catch (\PDOException $e) {
+            $_SESSION['error'] =  $e->getMessage();
+            return false;
+        }
+    }
 
     public static function getAllOrders()
     {
@@ -72,10 +100,6 @@ class Order
     {
         return $this->status;
     }
-    public function getQuantity()
-    {
-        return $this->quantity;
-    }
     public function getTotalPrice()
     {
         return $this->totalPrice;
@@ -91,6 +115,14 @@ class Order
     public function getShippingAddress()
     {
         return $this->shippingAddress;
+    }
+    public function getShippingCity()
+    {
+        return $this->shippingCity;
+    }
+    public function getShippingPostalCode()
+    {
+        return $this->shippingPostalCode;
     }
     public function setStatus($status)
     {

@@ -1021,3 +1021,8 @@
   padding-top: var(--space-xl);
   margin-top: var(--space-xl);
 }
+
+
+.room-select {
+  cursor: pointer !important;
+}
