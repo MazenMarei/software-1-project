@@ -54,8 +54,7 @@ class Route
 
             // get the route parameters from the regex pattern => /{id} or {name} => $matches['id'] or $matches['name']
             if (preg_match($pattern, $path, $matches)) {
-                /// fillter the array to get only the parameters from the regex pattern and get the values from the $matches array 
-                /// with string keys only
+              
                 $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
                 // get the controller and action from the route info
                 $controller = $routeInfo['controller'];
@@ -65,23 +64,17 @@ class Route
                 // check if the controller is a callable function or a class name
                 if (is_object($controller)) {
 
-                    /// make a closure function to call the controller with the parameters
                     $next = function ($request) use ($controller, $params) {
                         return $controller(...$params);
                     };
-                    // handle the middleware for the closure function
                     $next = self::handleMiddleware($middleware, $next);
                     return $next($path);
                 } elseif (class_exists($controller)) {
-                    // create an instance of the class
                     $controllerInstance = new $controller();
-                    // check if the action is a callable function or a method of the class
                     if (method_exists($controllerInstance, $action)) {
-                        // make a closure function to call the controller with the parameters
                         $next = function ($request) use ($controllerInstance, $action, $params) {
                             return $controllerInstance->$action(...$params);
                         };
-                        // handle the middleware for the closure function
                         $next = self::handleMiddleware($middleware, $next);
                         return $next($path);
                     } else {
