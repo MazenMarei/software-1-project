@@ -8,18 +8,7 @@ use \Firebase\JWT\JWT;
 
 class Gust
 {
-    /**
-     * Register a new user
-     * 
-     * @param string $fname First name
-     * @param string $lname Last name
-     * @param string $username Username
-     * @param string $email Email
-     * @param string $password Password
-     * @param string $role Role (customer or artist)
-     * @param string $profilePic Profile picture path (optional)
-     * @return array Response with status and message
-     */
+
     public function register(string $fname, string $lname, string $username, string $email, string $password, string $role, string $profilePic = 'default.jpg')
     {
         // Validate the input data
@@ -188,12 +177,7 @@ class Gust
     }
 
 
-    /**
-     * Check if a user exists by email
-     * 
-     * @param string $email Email to check
-     * @return bool True if user exists, false otherwise
-     */
+
     public function userExistsByEmail(string $email)
     {
         $sql = "SELECT * FROM user WHERE Email = :email";
@@ -204,12 +188,7 @@ class Gust
         return $stmt->rowCount() > 0;
     }
 
-    /**
-     * Check if a username is already taken
-     * 
-     * @param string $username Username to check
-     * @return bool True if username is taken, false otherwise
-     */
+
     public function userExistsByUsername(string $username)
     {
         $sql = "SELECT * FROM user WHERE username = :username";

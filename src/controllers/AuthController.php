@@ -192,25 +192,18 @@ class AuthController
         exit;
     }
 
-    /**
-     * Display customer dashboard
-     */
     public function customerDashboard()
     {
         require_once VIEWS . 'pages/Customer/index.php';
     }
 
-    /**
-     * Display artist dashboard
-     */
+
     public function artistDashboard()
     {
         require_once VIEWS . 'pages/Artist/index.php';
     }
 
-    /**
-     * Display admin dashboard
-     */
+
     public function adminDashboard()
     {
         require_once VIEWS . 'pages/Admin/index.php';

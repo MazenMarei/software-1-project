@@ -22,13 +22,7 @@ class User extends GeneralUser
         $this->registerDate = date('Y-m-d');
     }
 
-    /**
-     * Handle user login process
-     * 
-     * @param string $email User email
-     * @param string $password User password
-     * @return array Response with status, message, and token if successful
-     */
+
     public function login(string $email, string $password)
     {
         // Validate the input data
@@ -249,12 +243,7 @@ class User extends GeneralUser
         }
     }
 
-    /**
-     * Get notifications for this user
-     * 
-     * @param int $limit Number of notifications to retrieve
-     * @return array Notifications
-     */
+   
     public function getNotifications()
     {
         try {
@@ -269,11 +258,6 @@ class User extends GeneralUser
         }
     }
 
-    /**
-     * Create a new user in the database
-     * 
-     * @return bool|int False on failure, user ID on success
-     */
     public function create($password)
     {
         try {
@@ -308,12 +292,7 @@ class User extends GeneralUser
         }
     }
 
-    /**
-     * Update user status
-     * 
-     * @param string $status New status
-     * @return bool Success
-     */
+
     public function updateStatus($status)
     {
         try {
@@ -332,11 +311,7 @@ class User extends GeneralUser
         }
     }
 
-    /**
-     * Get the currently logged-in user from session
-     * 
-     * @return User|false The current user object or false if not logged in
-     */
+
     public static function getCurrentUser()
     {
         if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
