@@ -5,18 +5,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Account Settings | ArtShelf</title>
-    <!-- Bootstrap CSS -->
     <link href="../../../assets/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
     <link href="../../../assets/css/main.css" rel="stylesheet">
     <link href="../../../assets/css/customer.dashboard.css" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="../../../assets/css/all.min.css">
-    <!-- Font Awesome -->
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -26,19 +21,17 @@
 </head>
 
 <body>
-    <!-- Navbar -->
     <?php include_once VIEWS . '/components/customer_navbard.php'; ?>
 
-    <!-- Main Content -->
     <main class="main-content">
         <div class="container">
-            <!-- Settings Header -->
+
             <div class="settings-header">
                 <h1 class="mb-3">Account Settings</h1>
                 <p class="text-muted">Manage your account settings and preferences</p>
             </div>
             <?php require_once VIEWS . 'components/error_display.php'; ?>
-            <!-- Settings Navigation -->
+
             <ul class="nav nav-tabs settings-tabs" id="settingsTabs" role="tablist">
                 <li class="nav-item">
                     <a
@@ -82,9 +75,9 @@
                 </li>
             </ul>
 
-            <!-- Tab Content -->
+
             <div class="tab-content" id="settingsTabsContent">
-                <!-- General Settings Tab -->
+
                 <div class="tab-pane fade show active" id="general" role="tabpanel">
                     <div class="settings-section">
                         <h3 class="section-title">Profile Information</h3>

@@ -8,9 +8,7 @@ use App\models\User;
 
 class AuthController
 {
-    /**
-     * Display login/registration page
-     */
+
     public function index()
     {
         // Check if user is already logged in
@@ -36,12 +34,9 @@ class AuthController
         }
     }
 
-    /**
-     * Process login form submission
-     */
+
     public function login()
     {
-        // Check if email and password are set
         if (!isset($_POST['email']) || !isset($_POST['password'])) {
             $_SESSION['error'] = 'Email and password are required';
             header('Location: /index');
@@ -91,9 +86,7 @@ class AuthController
         }
     }
 
-    /**
-     * Process registration form submission
-     */
+  
     public function register()
     {
         // Validate all required fields
@@ -183,9 +176,7 @@ class AuthController
         }
     }
 
-    /**
-     * Process user logout
-     */
+ 
     public function logout()
     {
         // Clear session data

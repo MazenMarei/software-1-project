@@ -12,12 +12,7 @@ class Admin extends User
         parent::__construct($firstName, $lastName, $email, 'admin', $username, $profilePic);
     }
 
-    /**
-     * Get admin by ID
-     * 
-     * @param int $id Admin ID
-     * @return Admin|false Admin object or false if not found
-     */
+
     private function getAdminById($id)
     {
         // First get the user data
@@ -81,14 +76,7 @@ class Admin extends User
         }
     }
 
-    /**
-     * Approve or reject a user registration
-     * 
-     * @param int $userId User ID to approve/reject
-     * @param string $status New status (Accepted/Rejected)
-     * @param string $reason Reason for rejection (optional)
-     * @return bool Success status
-     */
+
     public function updateUserStatus($userId, $status, $reason = '')
     {
         try {
@@ -123,14 +111,7 @@ class Admin extends User
         }
     }
 
-    /**
-     * Approve or reject an artwork
-     * 
-     * @param int $artworkId Artwork ID to approve/reject
-     * @param string $status New status (Approved/Rejected)
-     * @param string $reason Reason for rejection (optional)
-     * @return bool Success status
-     */
+ 
     public function updateArtworkStatus($artworkId, $status, $reason = '')
     {
         try {
@@ -174,13 +155,7 @@ class Admin extends User
         }
     }
 
-    /**
-     * Add a notification for a user
-     * 
-     * @param int $userId User ID to notify
-     * @param string $message Notification message
-     * @return bool Success status
-     */
+
     public function sendNotification($userId, $message)
     {
         try {
@@ -200,34 +175,19 @@ class Admin extends User
             return false;
         }
     }
-    /**
-     * Get the currently logged-in admin from session
-     * 
-     * @return Admin|false The current admin object or false if not logged in or not an admin
-     */
+
     public static function getCurrentAdmin()
     {
-        // Make sure session is started
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
 
-        // Check if user session data exists and role is admin
         if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id']) || !isset($_SESSION['user']['role']) || $_SESSION['user']['role'] !== 'admin') {
             return false;
         }
 
-        // Create a new Admin object and load data
         $admin = new Admin();
         return $admin->getAdminById($_SESSION['user']['id']);
     }
 
-    /**
-     * Get all artists
-     * 
-     * @param string $status Optional status filter
-     * @return array List of all artists
-     */
+
     public function getAllArtists()
     {
         try {
@@ -241,7 +201,6 @@ class Admin extends User
 
             $stmt = Database::getInstance()->getConnection()->prepare($sql);
 
-            // Always bind role parameter
             $stmt->bindValue(':role', 'artist', \PDO::PARAM_STR);
 
 
@@ -304,12 +263,7 @@ class Admin extends User
         }
     }
 
-    /**
-     * Get all customers
-     * 
-     * @param string $status Optional status filter
-     * @return array List of all customers
-     */
+
     public function getAllCustomers()
     {
         try {

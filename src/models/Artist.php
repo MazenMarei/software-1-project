@@ -48,12 +48,6 @@ class Artist extends User
         }
     }
 
-    /**
-     * Update artist profile
-     * 
-     * @param array $data Profile data to update
-     * @return bool Success status
-     */
     public function updateProfile($data)
     {
         try {
@@ -302,12 +296,7 @@ class Artist extends User
         }
     }
 
-    /**
-     * Get artist's artworks
-     * 
-     * @param string $status Optional status filter
-     * @return array Artworks
-     */
+
     public function getArtworks()
     {
         try {
@@ -324,11 +313,7 @@ class Artist extends User
         }
     }
 
-    /**
-     * Get artist's collections
-     * 
-     * @return array Collections
-     */
+
     public function getCollections()
     {
         try {
@@ -359,11 +344,6 @@ class Artist extends User
         }
     }
 
-    /**
-     * Get the currently logged-in artist from session
-     * 
-     * @return Artist|false The current artist object or false if not logged in or not an artist
-     */
     public static function getCurrentArtist()
     {
         // First get the current user
@@ -473,17 +453,6 @@ class Artist extends User
             return [];
         }
     }
-
-    // public function registerArtFair($data)
-    // {
-    //     try {
-    //         $artFair = new ArtFair($data['name'], $data['location'], $data['startDate'], $data['description'], $data['image']);
-    //         $artFair->createArtFair();
-    //         return true;
-    //     } catch (\Throwable $th) {
-    //         return false;
-    //     }
-    // }
 
     public function getArtFairs()
     {

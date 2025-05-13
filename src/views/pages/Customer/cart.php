@@ -199,56 +199,23 @@
                             </div>
                         </div>
 
-                        <!-- ------------------------ payment accordion-item ------------------------ -->
-                        <div class="accordion-item">
-                            <!-- ------------------------ accordion-item header ------------------------ -->
-                            <div class="accordion-header">
-                                <button
-                                    class="accordion-button custom-accordion-button fw-semibold collapsed"
-                                    type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#paymentMethod"
-                                    aria-expanded="false"
-                                    aria-controls="collapseOne">
-                                    Payment
-                                </button>
-                            </div>
-                            <!-- ------------------------ accordion-item body ------------------------ -->
-                            <div
-                                id="paymentMethod"
-                                class="accordion-collapse collapse"
-                                data-bs-parent="#accordionChart">
-                                <div class="row p-4">
-                                    <!-- ------------------------ payment form ------------------------ -->
 
-                                </div>
-                            </div>
-                        </div>
-                    </div> <!-- ------------------------ checkout and total row ------------------------ -->
-                    <div class="row mt-5">
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="useBalanceCheckbox" name="useBalance">
-                                    <label class="form-check-label" for="useBalanceCheckbox">
-                                        Use my balance ($<span id="customerBalance"><?php echo number_format($customer->getBalance(), 2); ?></span>)
-                                    </label>
-                                    <input type="hidden" id="customerBalanceValue" value="<?php echo $customer->getBalance(); ?>">
-                                </div>
-                            </div>
-                        </div>
                         <div class="row text-end text-black fs-5 fw-semibold heading-font">
                             <p>Total Price: $<span id="cartTotal"><?php echo number_format($cart->getTotalPrice(), 2); ?></span></p>
                             <input type="hidden" id="originalTotalValue" value="<?php echo $cart->getTotalPrice(); ?>">
                             <input type="hidden" name="appliedBalance" id="appliedBalance" value="0">
                         </div>
                         <div class="row justify-content-center">
-                            <button
-                                class="btn col-5 col-md-2 bg-black fw-semibold text-white"
-                                type="submit"
-                                form="checkoutForm">
-                                Checkout
-                            </button>
+                            <?php if (count($cartItems) > 0): ?>
+                                <button
+                                    class="btn col-5 col-md-2 bg-black fw-semibold text-white"
+                                    type="submit"
+                                    form="checkoutForm">
+                                    Checkout
+                                </button>
+                            <?php else: ?>
+                                <p class="text-danger">Your cart is empty. Please add items to your cart before checking out.</p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </form>

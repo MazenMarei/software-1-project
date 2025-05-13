@@ -14,9 +14,7 @@ use App\models\Questionnaire;
 
 class AdminController
 {
-    /**
-     * Display admin dashboard
-     */
+
     public function dashboard()
     {
         // Get current admin from session
@@ -166,9 +164,6 @@ class AdminController
         ];
     }
 
-    /**
-     * Handle approval of a pending item (artwork, artist, or fair)
-     */
     public function approveItem()
     {
         if (!isset($_POST['id']) || !isset($_POST['type'])) {
@@ -378,9 +373,7 @@ class AdminController
         exit;
     }
 
-    /**
-     * Handle rejection of a pending item (artwork, artist, or fair)
-     */
+
     public function rejectItem()
     {
         if (!isset($_POST['id']) || !isset($_POST['type']) || !isset($_POST['reason'])) {
@@ -425,9 +418,6 @@ class AdminController
         exit;
     }
 
-    /**
-     * Display admin artworks management page
-     */
     public function artworks()
     {
         try {
@@ -450,8 +440,6 @@ class AdminController
             // Load the view
             require_once VIEWS . 'pages/Admin/artworks.php';
         } catch (\Exception $e) {
-            // Log the error
-            error_log('AdminController::artworks - Error: ' . $e->getMessage());
 
             // Set error message
             $_SESSION['error'] = 'An error occurred while loading artworks. Please try again later.';
@@ -491,9 +479,6 @@ class AdminController
     }
 
 
-    /**
-     * Update artwork status (approve or reject)
-     */
     public function updateArtworkStatus()
     {
         if (!isset($_POST['id']) || !isset($_POST['status'])) {
@@ -540,9 +525,7 @@ class AdminController
         require_once VIEWS . 'pages/Admin/profile.php';
     }
 
-    /**
-     * Display admin artists management page
-     */
+
     public function artists()
     {
         try {
@@ -578,10 +561,6 @@ class AdminController
 
 
 
-
-    /**
-     * Display admin customers management page
-     */
     public function customers()
     {
         try {

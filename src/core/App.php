@@ -55,7 +55,6 @@ class App
 
 
 
-        // Protected dashboard routes (authentication required with role check)
         Route::get('/admin/dashboard', AdminController::class, 'dashboard', [[Authentication::class, 'admin']]);
 
         Route::get('/artist/dashboard', ArtistController::class, 'dashboard', [[Authentication::class, 'artist']]);
@@ -124,6 +123,7 @@ class App
         Route::get('/customer/artworks/{id}', CustomerController::class, 'artworks', [[Authentication::class, 'customer']]);
         Route::get('/customer/live-preview', CustomerController::class, 'livePreview', [[Authentication::class, 'customer']]);
         Route::get('/customer/art-advisor', CustomerController::class, 'artAdvisor', [[Authentication::class, 'customer']]);
+        Route::get('/customer/artworks', CustomerController::class, 'allArtworks', [[Authentication::class, 'customer']]);
 
 
 

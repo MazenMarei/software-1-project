@@ -5,23 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ArtShelf - Discover, Buy, and Sell Art</title>
-    <!-- Bootstrap CSS -->
     <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="./assets/css/main.css">
     <link rel="stylesheet" href="./assets/css/auth.css">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="./assets/css/all.min.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Poppins:wght@300;400;500&display=swap"
+        href="./assets/css/font.css"
         rel="stylesheet">
 </head>
 
 <body>
-    <!-- Authentication Section -->
     <div class="auth-container">
         <div class="auth-form-container">
             <div class="text-center mb-5">
@@ -32,12 +25,10 @@
                 <button class="auth-tab" data-tab="register">Register</button>
             </div>
 
-            <!-- Login Form -->
             <div class="auth-form active" id="login-form">
                 <h2 class="fs-1 mb-1">Welcome Back</h2>
                 <p class="text-muted mb-4">Sign in to discover and purchase exquisite artworks</p>
 
-                <!-- Include error display component -->
                 <?php require_once VIEWS . 'components/error_display.php'; ?>
 
                 <form id="loginForm" class="needs-validation" novalidate action="/login" method="POST">
@@ -76,12 +67,10 @@
                 </form>
             </div>
 
-            <!-- Register Form -->
             <div class="auth-form" id="register-form">
                 <h2 class="fs-1 mb-1">Create an Account</h2>
                 <p class="text-muted mb-4">Join our community of art enthusiasts</p>
 
-                <!-- Include error display component -->
                 <?php require_once VIEWS . 'components/error_display.php'; ?>
 
                 <form id="registerForm" class="needs-validation" novalidate action="/register" method="POST" enctype="multipart/form-data">
@@ -170,12 +159,9 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS Bundle with Popper -->
     <script src="./assets/js/bootstrap.min.js"></script>
-    <!-- jQuery -->
     <script src="./assets/js/jquery-3.7.1.min.js"></script>
 
-    <!-- custome js -->
     <script src="./assets/js/main.js"></script>
 
 </body>

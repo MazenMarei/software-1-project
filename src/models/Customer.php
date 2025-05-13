@@ -194,11 +194,6 @@ class Customer extends User
         }
     }
 
-    /**
-     * Get the currently logged-in customer from session
-     * 
-     * @return Customer|false The current customer object or false if not logged in or not a customer
-     */
 
     public static function getCurrentCustomer()
     {
@@ -216,7 +211,14 @@ class Customer extends User
     }
 
 
-    public function getOrders() {}
+    public function getOrders() {
+        $sql = "SELECT * FROM orders WHERE customerID = :id";
+        $stmt = Database::getInstance()->getConnection()->prepare($sql);
+        $stmt->bindParam(':id', $this->userID, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 
     public function getCart()
     {

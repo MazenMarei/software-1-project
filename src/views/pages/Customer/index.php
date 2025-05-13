@@ -35,7 +35,7 @@
                             <p class="hero-subtitle">Find and collect unique artworks from emerging and established artists worldwide.</p>
                             <div class="hero-buttons">
                                 <a href="#featured" class="btn btn-primary btn-lg">Explore Artworks</a>
-                                <a href="#advisor" class="btn btn-outline-primary btn-lg ms-3">Get Art Advice</a>
+                                <a href="art-advisor" class="btn btn-outline-primary btn-lg ms-3">Get Art Advice</a>
                             </div>
                         </div>
                     </div>
@@ -51,7 +51,6 @@
             <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">Featured Artworks</h2>
-                    <a href="artworks.html" class="btn btn-link">View All <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="row artwork-grid" id="featuredArtworks">
                     <?php if (empty($featuredArtworks)) : ?>
@@ -186,7 +185,6 @@
             <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">Featured Artists</h2>
-                    <a href="artists.html" class="btn btn-link">View All <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="row artists-grid" id="featuredArtists">
                     <?php if (empty($featuredArtists)) : ?>
@@ -208,10 +206,7 @@
                                     class="img-fluid artist-image">
                                 <h3 class="artist-name"><?php echo htmlspecialchars($artist->getFirstName() . ' ' . $artist->getLastName()); ?></h3>
                                 <p class="artist-bio"><?php echo htmlspecialchars($artist->getBio()); ?></p>
-                                <div class="d-flex flex-row justify-content-center gap-3">
-                                    <form action="/" method="post" class=""><button class="btn btn-primary">View Profile</button></form>
-                                    <form action="/" method="post" class=""><button class="btn btn-outline-primary">Follow</button></form>
-                                </div>
+                         
                             </div>
                         </div>
                     <?php endforeach; ?>

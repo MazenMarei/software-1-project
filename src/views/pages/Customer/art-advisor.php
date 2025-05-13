@@ -32,7 +32,7 @@
     <!-- Main Content -->
     <main class="main-content">
         <div class="container">
-            <!-- Settings Header -->
+
             <div class="settings-header">
                 <h1 class="mb-3">Art Advisor</h1>
                 <p class="text-muted">Get personalized art recommendations</p>

@@ -110,7 +110,11 @@ class CustomerController
             header('Location: /customer/dashboard');
             exit;
         }
-
+        if (!$customer->getPaymentMethod()) {
+            $_SESSION['error'] = "You must add a payment method before checking out.";
+            header('Location: /customer/profile');
+            exit;
+        }
         if (!isset($_POST['city']) || !isset($_POST['address']) || !isset($_POST['postal_code'])) {
             $_SESSION['error'] = "All fields are required.";
             header('Location: /customer/cart');
@@ -178,7 +182,7 @@ class CustomerController
         }
         $artworks = $customer->getCart()->getItems();
         if (!$artworks) {
-            $_SESSION['error'] = "Artwork not found.";
+            $_SESSION['error'] = "You have no items in your cart.";
             header('Location: /customer/dashboard');
             exit;
         }
@@ -380,4 +384,48 @@ class CustomerController
         header('Location: /customer/dashboard');
     }
 
+    public function art_Advisor()
+    {
+        $customer = Customer::getCurrentCustomer();
+        if (!$customer) {
+            $_SESSION['error'] = "You must be logged in to view your artworks.";
+            header('Location: /index');
+            exit;
+        }
+
+        include_once  VIEWS . 'pages/Customer/art-advisor.php';
+    }
+
+    public function allArtworks() {
+        $customer = Customer::getCurrentCustomer();
+        if (!$customer) {
+            $_SESSION['error'] = "You must be logged in to view your artworks.";
+            header('Location: /index');
+            exit;
+        }
+        $artworks = Artwork::getAllArtworks();
+        if (!$artworks) {
+            $_SESSION['error'] = "You have no artworks.";
+            header('Location: /customer/dashboard');
+            exit;
+        }
+        include_once  VIEWS . 'pages/Customer/all-artworks.php';
+    }
+
+    public function allFairs() {
+        $customer = Customer::getCurrentCustomer();
+        if (!$customer) {
+            $_SESSION['error'] = "You must be logged in to view your artworks.";
+            header('Location: /index');
+            exit;
+        }
+        $artFairs = ArtFair::getAllArtFairs();
+        $governments = ArtFair::getGoverments();
+        if (!$artFairs) {
+            $_SESSION['error'] = "You have no artworks.";
+            header('Location: /customer/dashboard');
+            exit;
+        }
+        include_once  VIEWS . 'pages/Customer/artfair.php';
+    }
 }

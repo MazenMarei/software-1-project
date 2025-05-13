@@ -12,13 +12,7 @@
                         <a class="nav-link active" href="/customer/dashboard">Discover</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/customer/artists">Artists</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/customer/collections">Collections</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/customer/fairs">Art Fairs</a>
+                        <a class="nav-link" href="/customer/artworks">Art Works</a>
                     </li>
                 </ul>
                 <div class="navbar-right d-flex align-items-center">
@@ -41,15 +35,6 @@
                             <h6 class="dropdown-header"><?php echo isset($customer) ? $customer->getUserName() : 'User'; ?></h6>
                             <a class="dropdown-item" href="/customer/profile">
                                 <i class="fa fa-user me-2"></i> My Profile
-                            </a>
-                            <a class="dropdown-item" href="/customer/wallet">
-                                <i class="fa-solid fa-wallet"></i> My Wallet
-                            </a>
-                            <a class="dropdown-item" href="/customer/orders">
-                                <i class="fa fa-shopping-bag me-2"></i> My Orders
-                            </a>
-                            <a class="dropdown-item" href="/customer/following">
-                                <i class="fa fa-users me-2"></i> Following
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item text-danger" href="/logout">

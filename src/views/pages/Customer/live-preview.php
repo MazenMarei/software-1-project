@@ -32,7 +32,7 @@
     <!-- Main Content -->
     <main class="main-content">
         <div class="container">
-            <!-- Settings Header -->
+
             <div class="settings-header">
                 <h1 class="mb-3">Live preview Page</h1>
                 <p class="text-muted">Preview The Artworks and add to your collection</p>
