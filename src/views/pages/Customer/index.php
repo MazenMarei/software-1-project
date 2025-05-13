@@ -270,7 +270,7 @@
                                 <li><i class="fas fa-check text-accent"></i> Personalized message</li>
                                 <li><i class="fas fa-check text-accent"></i> Redeemable for any artwork</li>
                             </ul>
-                            <a href="gift-cards.html" class="btn btn-primary">Purchase Gift Card</a>
+                            <a href="#" class="btn btn-primary">Purchase Gift Card</a>
                         </div>
                     </div>
                     <div class="col-lg-6">
