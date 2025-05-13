@@ -880,7 +880,7 @@ class ArtistController
         if (empty($fairName) || empty($fairGovernment) || empty($fairLocationDetails) || empty($fairDescription) || $fairImage['error'] !== UPLOAD_ERR_OK || empty($fairDate)) {
             $_SESSION['error'] = 'All fields are required';
             header('Location: /artist/fairs');
-            exit;
+            return;
         }
 
 
@@ -888,15 +888,14 @@ class ArtistController
         if (!$artist) {
             $_SESSION['error'] = 'You must be logged in as an artist to perform this action';
             header('Location: /index');
-            exit;
+            return;
         }
-
         $uploaded = App::handleUploadImage($fairImage, 'localfairs');
 
         if (!$uploaded) {
             $_SESSION['error'] = 'Failed to upload fair image';
             header('Location: /artist/fairs');
-            exit;
+            return;
         }
 
         $artfair = new ArtFair([
@@ -909,14 +908,12 @@ class ArtistController
         ]);
 
         $success = $artfair->createArtFair();
-
         if ($success) {
             $_SESSION['success'] = 'Art Fair registration has been sent successfully';
         } else {
             $_SESSION['error'] = 'Failed to create fair ' . $_SESSION['error'];
         }
         header('Location: /artist/fairs');
-        exit;
     }
 
     public function deleteFair()

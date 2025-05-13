@@ -76,7 +76,8 @@ class ArtFair
             $this->id = Database::getInstance()->getConnection()->lastInsertId();
             return $stmt->execute();
         } catch (\PDOException $e) {
-            throw new \Exception("Error creating art fair: " . $e->getMessage());
+            $_SESSION['error'] = "Error creating art fair: " . $e->getMessage();
+            return false;
         }
     }
 
@@ -102,7 +103,8 @@ class ArtFair
             }
             return $localFairs;
         } catch (\PDOException $e) {
-            throw new \Exception("Error fetching art fairs: " . $e->getMessage());
+            $_SESSION['error'] = "Error fetching art fairs: " . $e->getMessage();
+            return false;
         }
     }
 

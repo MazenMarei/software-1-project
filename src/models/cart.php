@@ -216,6 +216,15 @@ class Cart
                     $_SESSION['error'] = "Error during checkout";
                     return false;
                 }
+                $artistID = $artwork->getArtistID();
+                $sql = "UPDATE artist SET balance = balance + :price WHERE artistID = :artistID";
+                $stmt = Database::getInstance()->getConnection()->prepare($sql);
+                $stmt->bindParam(':price', $artwork->getPrice(), \PDO::PARAM_STR);
+                $stmt->bindParam(':artistID', $artistID, \PDO::PARAM_INT);
+                if (!$stmt->execute()) {
+                    $_SESSION['error'] = "Error during checkout";
+                    return false;
+                }
             }
 
 

@@ -282,7 +282,7 @@
                                             name="cvvNumber"
                                             maxlength="3"
                                             minlength="3"
-                                            value="<?php (!$payment) ? "" : $payment->getCvv(); ?>"
+                                            value="<?php echo $payment->getCvv(); ?>"
                                             required
                                             pattern="^\d{3}$" />
                                         <div class="invalid-feedback" id="newPasswordFeedback">
